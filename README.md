@@ -16,6 +16,6 @@ One good example file showing off a lot of utility is
 
 Even though at first made and maybe most useful with a certain brand Linux,
 and a certain brand machine virtualization,
-some of the code here is useful for automation with other operating systems,
+code here is useful for automation with other operating systems,
 physical machines, etc.
 
