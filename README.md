@@ -19,4 +19,4 @@ and a certain brand machine virtualization,
 code here is useful for automation with other operating systems,
 physical machines, etc.
 
-This project is about good ways of getting stuff done reproducibly.
+This project is about getting stuff done reproducibly.
