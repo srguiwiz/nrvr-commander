@@ -293,8 +293,8 @@ class KickstartFileContent(object):
             gateway.
             If None then default to ip.1.
         
-        netmask
-            netmask.
+        nameserver
+            one nameserver or a list of nameservers.
             If None then default to gateway.
         
         return
@@ -312,8 +312,14 @@ class KickstartFileContent(object):
         gateway = IPAddress.asString(gateway)
         if nameserver is None:
             # default to gateway
-            nameserver = gateway
-        nameserver = IPAddress.asString(nameserver)
+            nameservers = [gateway]
+        elif not isinstance(nameserver, list):
+            # process one as a list of one
+            nameservers = [nameserver]
+        else:
+            # given a list already
+            nameservers = nameserver
+        nameserversStrings = [IPAddress.asString(oneNameserver) for oneNameserver in nameservers]
         # several set
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--ip[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
                                        r"\g<1>" + ip + r"\g<2>",
@@ -325,7 +331,7 @@ class KickstartFileContent(object):
                                        r"\g<1>" + gateway + r"\g<2>",
                                        commandSection.string)
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--nameserver[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
-                                       r"\g<1>" + nameserver + r"\g<2>",
+                                       r"\g<1>" + ",".join(nameserversStrings) + r"\g<2>",
                                        commandSection.string)
         return self
 
