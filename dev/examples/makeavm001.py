@@ -24,6 +24,7 @@ from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.remote.ssh import SshCommand, ScpCommand
 from nrvr.util.ipaddress import IPAddress
+from nrvr.util.nameserver import Nameserver
 from nrvr.util.requirements import SystemRequirements
 from nrvr.util.time import Timestamp
 from nrvr.util.user import ScriptUser
@@ -87,7 +88,7 @@ if exists == False:
     kickstartFileContent = KickstartFileContent(KickstartTemplates.usableKickstartTemplate001)
     kickstartFileContent.replaceRootpw(rootpw)
     kickstartFileContent.replaceHostname(exampleVm.basenameStem)
-    kickstartFileContent.replaceStaticIP(ipaddress)
+    kickstartFileContent.replaceStaticIP(ipaddress, nameserver=Nameserver.list)
     # some possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64Minimal)
     #kickstartFileContent.removePackage("@office-suite")
