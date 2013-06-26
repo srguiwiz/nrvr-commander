@@ -58,7 +58,7 @@ class IPAddress(object):
 
     @classmethod
     def asString(cls, ipaddress):
-        """For ipaddress=[192, 168, 95, 17] return "10, 123, 45, 67"."""
+        """For ipaddress=[10, 123, 45, 67] return "10.123.45.67"."""
         if isinstance(ipaddress, basestring):
             return ipaddress
         else:
