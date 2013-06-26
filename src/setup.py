@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name="NrvrCommander",
-      version="1.2.1",
+      version="1.2.2",
       description="Tools for automation.",
       long_description="""Tools for automation.
       
@@ -17,6 +17,7 @@ setup(name="NrvrCommander",
       * nrvr.script.util
       * nrvr.util.classproperty
       * nrvr.util.ipaddress
+      * nrvr.util.nameserver
       * nrvr.util.requirements
       * nrvr.util.time
       * nrvr.util.user
