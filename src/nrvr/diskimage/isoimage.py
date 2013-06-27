@@ -157,15 +157,15 @@ class IsoImage(object):
             print "making new {0}, this may take a few minutes".format(cloneIsoImagePath)
             if SystemRequirements.which("genisoimage"):
                 # preferred choice
-                commandName = "genisoimage"
+                makeIsoImageCommandName = "genisoimage"
             elif SystemRequirements.which("mkisofs"):
                 # acceptable choice
-                commandName = "mkisofs"
+                makeIsoImageCommandName = "mkisofs"
             else:
                 # preferred choice for error message
-                commandName = "genisoimage"
+                makeIsoImageCommandName = "genisoimage"
             genisoimageOptions = self.genisoimageOptions(label=timestamp)
-            CommandCapture([commandName] + 
+            CommandCapture([makeIsoImageCommandName] +
                            genisoimageOptions + 
                            ["-o", cloneIsoImagePath,
                             temporaryAssemblyDirectory],
