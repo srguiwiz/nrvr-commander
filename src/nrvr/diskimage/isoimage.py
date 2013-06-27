@@ -28,6 +28,7 @@ import re
 import shutil
 
 from nrvr.process.commandcapture import CommandCapture
+from nrvr.util.requirements import SystemRequirements
 from nrvr.util.time import Timestamp
 
 class IsoImage(object):
@@ -40,7 +41,7 @@ class IsoImage(object):
         This class can be passed to SystemRequirements.commandsRequiredByImplementations()."""
         return ["mount", "umount",
                 "iso-info", "iso-read",
-                "genisoimage"]
+                (["genisoimage"], ["mkisofs"])]
 
     def __init__(self, isoImagePath):
         """Create new IsoImage descriptor.
@@ -154,8 +155,17 @@ class IsoImage(object):
                 modification.writeIntoAssembly(temporaryAssemblyDirectory)
             # make new .iso image file
             print "making new {0}, this may take a few minutes".format(cloneIsoImagePath)
+            if SystemRequirements.which("genisoimage"):
+                # preferred choice
+                commandName = "genisoimage"
+            elif SystemRequirements.which("mkisofs"):
+                # acceptable choice
+                commandName = "mkisofs"
+            else:
+                # preferred choice for error message
+                commandName = "genisoimage"
             genisoimageOptions = self.genisoimageOptions(label=timestamp)
-            CommandCapture(["genisoimage"] + 
+            CommandCapture([commandName] + 
                            genisoimageOptions + 
                            ["-o", cloneIsoImagePath,
                             temporaryAssemblyDirectory],
