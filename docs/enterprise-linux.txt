@@ -1,0 +1,16 @@
+NrvrCommander is capable of telling which commands it needs on the host.
+
+Assuming RHEL 6.x or newer or a derivative (CentOS, Scientific Linux, etc.).
+
+For many features needs VMware Player and VMware VIX API (vmrun),
+for some features needs VMware Workstation (comes with vmrun).
+
+Assuming VMware 9 or newer.
+
+To install needed libraries:
+
+sudo yum install libcdio
+sudo yum install genisoimage
+sudo yum install qemu-img
+
+Possibly more to be listed here.
