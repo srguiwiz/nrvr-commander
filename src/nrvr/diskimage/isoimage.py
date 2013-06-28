@@ -84,7 +84,7 @@ class IsoImage(object):
             CommandCapture(["umount", "-d", self.mountDir],
                            exceptionIfNotZero=False, exceptionIfAnyStderr=False)
 
-    def copyToDirectory(self, copyDirectory):
+    def copyToDirectory(self, copyDirectory, tolerance=0.0):
         """Copy all files into a directory.
         
         Not using mount command, no need to run as root."""
@@ -111,6 +111,9 @@ class IsoImage(object):
                                   copyToStdio=False)
         # files without leading slash and without trailing slash
         files = re.findall(r"(?m)^[ \t]*[0-9]*[ \t]+/(.+?)/?[ \t]*$", isoInfoF.stdout)
+        # tolerate some defects in iso-read
+        readAttemptCount = 0
+        readSuccessCount = 0
         # copy files
         for relativePathOnIso in files:
             if relativePathOnIso in directories:
@@ -118,11 +121,22 @@ class IsoImage(object):
                 continue
             pathOnHost = os.path.join(copyDirectory, relativePathOnIso)
             # copy file
-            CommandCapture(["iso-read",
-                            "-i", self._isoImagePath,
-                            "-e", relativePathOnIso,
-                            "-o", pathOnHost],
-                           copyToStdio=False)
+            try:
+                readAttemptCount += 1
+                CommandCapture(["iso-read",
+                                "-i", self._isoImagePath,
+                                "-e", relativePathOnIso,
+                                "-o", pathOnHost],
+                               copyToStdio=False)
+                readSuccessCount += 1
+            except Exception as ex:
+                print ex
+        # check tolerance
+        readFailureCount = readAttemptCount - readSuccessCount
+        if readFailureCount > readAttemptCount * tolerance:
+            raise Exception("too many ({0} of {1}) failures reading {2}".format(readFailureCount, readAttemptCount, self._isoImagePath))
+        elif readFailureCount:
+            print "continuing despite some ({0} of {1}) failures reading {2}".format(readFailureCount, readAttemptCount, self._isoImagePath)
         return copyDirectory
 
     def cloneWithModifications(self, cloneIsoImagePath=None, modifications=[]):
