@@ -14,3 +14,8 @@ sudo yum install genisoimage
 sudo yum install qemu-img
 
 Possibly more to be listed here.
+
+There is a known problem with .iso files >4G not being read correctly,
+which means the example given won't make Scientific Linux 64-bit,
+but making 64-bit guests is known to work otherwise.
+Hoping for solution via http://savannah.gnu.org/bugs/?39373 before trying other fix.

@@ -1,0 +1,61 @@
+NrvrCommander is capable of telling which commands it needs on the host.
+
+Assuming Mac OS X 10.8 or newer.
+
+For many features needs VMware Fusion (comes with vmrun).
+
+Assuming VMware Fusion 5 or newer.
+
+To have vmrun and vmware-vdiskmanager on command line per
+http://www.vmware.com/support/developer/vix-api/vix112_vmrun_command.pdf
+do (but without \ they had on that page)
+export PATH="$PATH:/Applications/VMware Fusion.app/Contents/Library"
+or even better edit file ~/.profile to have that line.
+
+To install needed libraries:
+
+Install MacPorts from http://www.macports.org/
+
+Then:
+
+sudo port install libcdio
+sudo port install cdrtools
+sudo port install qemu
+
+Possibly more to be listed here.
+
+Following these steps in OS X currently iso-read cannot read the SL-6*.iso files
+used in some examples.  Solution provided here.
+
+As discussed http://savannah.gnu.org/bugs/?39354 there is a problem with libcdio 0.90.
+
+Hence install older version libcdio 0.81 per
+http://trac.macports.org/wiki/howto/InstallingOlderPort
+sudo port uninstall libcdio
+then using
+http://trac.macports.org/log/trunk/dports/devel/libcdio
+and
+http://trac.macports.org/browser/trunk/dports/devel/libcdio/Portfile?rev=41757
+mkdir ~/Downloads/libcdio-81-port
+mv ~/Downloads/Portfile ~/Downloads/libcdio-81-port/
+sudo chown -R macports:macports ~/Downloads/libcdio-81-port/Portfile
+cd ~/Downloads/libcdio-81-port/
+sudo port install
+may fail with
+Error: Unable to execute port: Could not open file: ~/Downloads/libcdio-81-port/Portfile
+per various postings probably a permission problem, not same but
+similar to http://trac.macports.org/ticket/38472
+found workaround
+mkdir /shared
+chmod 755 /shared
+cp ~/Downloads/libcdio-81-port/Portfile /shared/
+sudo chown macports:macports /shared/
+cd /shared/
+sudo port install
+check with
+iso-read --version
+
+There is a known problem with .iso files >4G not being read correctly,
+which means the example given won't make Scientific Linux 64-bit,
+but making 64-bit guests is known to work otherwise.
+Hoping for solution via http://savannah.gnu.org/bugs/?39373 before trying other fix.

@@ -19,4 +19,6 @@ and a certain brand machine virtualization,
 code here is useful for automation with other operating systems,
 physical machines, etc.
 
+Details for hosting on different operating systems are kept in docs/.
+
 This project is about getting stuff done reproducibly.
