@@ -240,6 +240,8 @@ class KickstartFileContent(object):
                                      "-salt", "sodiumchloride",
                                      plainPwd],
                                     copyToStdio=False).stdout
+        # get rid of extraneous newline or any extraneous whitespace
+        cryptedPwd = re.search(r"^\s*([^\s]+)", cryptedPwd).group(1)
         # here cryptedPwd should start with $
         return cryptedPwd
 
@@ -334,6 +336,45 @@ class KickstartFileContent(object):
                                        r"\g<1>" + ",".join(nameserversStrings) + r"\g<2>",
                                        commandSection.string)
         return self
+
+    def useGraphicalLogin(self):
+        """Use a graphical login on the installed system.
+        
+        Do not use in a kickstart that does not install the X Window System.
+        
+        return
+            self, for daisychaining."""
+        # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
+        commandSection = self.sectionByName("command")
+        commandSection.string = commandSection.string + """#
+# XWindows configuration information.
+xconfig --startxonboot
+"""
+        return self
+
+    def addUser(self, username, pwd=None):
+        """Add user.
+        
+        pwd
+            pwd will be encrypted.  If starting with $ it is assumed to be encrypted already.
+        
+        return
+            self, for daisychaining."""
+        # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
+        if pwd:
+            # if pwd starts with $ then assume encrypted
+            isCrypted = re.match(r"\$", pwd)
+            if not isCrypted:
+                pwd = KickstartFileContent.cryptedPwd(pwd)
+                isCrypted = True
+        else:
+            isCrypted = False
+        commandSection = self.sectionByName("command")
+        commandSection.string = commandSection.string + "#\n" \
+                                                      + "user --name=" + username \
+                                                      + (" --password=" + pwd if pwd else "") \
+                                                      + (" --iscrypted" if isCrypted else "") \
+                                                      + "\n"
 
     # .group(1) to be first word to whitespace or #
     firstWordOfLineRegex = re.compile(r"^[ \t]*([^\s#]*).*$")
@@ -477,5 +518,9 @@ if __name__ == "__main__":
                                              "package-a-for-testing",
                                              "package-b-for-testing",
                                              "package-c-for-testing"])
+    _kickstartFileContent.useGraphicalLogin()
+    _kickstartFileContent.addUser("jack", pwd="monkey")
+    _kickstartFileContent.addUser("jill", "sunshine")
+    _kickstartFileContent.addUser("pat")
     _kickstartFileContent.sectionByName("%post").string = "removed %post this time, weird, just for testing\n"
     print _kickstartFileContent.string

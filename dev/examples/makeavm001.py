@@ -82,9 +82,6 @@ if exists == False:
                                       ("Downloads/SL-64-i386-2013-03-18-Install-DVD.iso"))
     # some possible choices pointed out
     # server w command line only
-    #kickstartFileContent = KickstartFileContent(KickstartTemplates.usableKickstartTemplate001)
-    # server w GUI too
-    #kickstartFileContent = KickstartFileContent(KickstartTemplates.usableKickstartTemplate002)
     kickstartFileContent = KickstartFileContent(KickstartTemplates.usableKickstartTemplate001)
     kickstartFileContent.replaceRootpw(rootpw)
     kickstartFileContent.replaceHostname(exampleVm.basenameStem)
@@ -93,6 +90,10 @@ if exists == False:
     #kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64Minimal)
     #kickstartFileContent.removePackage("@office-suite")
     #kickstartFileContent.addPackage("httpd")
+    # some other possible modifications pointed out
+    #kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64MinimalDesktop)
+    #kickstartFileContent.useGraphicalLogin()
+    #kickstartFileContent.addUser("jack", pwd="monkey")
     # pick right temporary directory, ideally same as VM
     modifiedElIsoImage = downloadedElIsoImage.cloneWithAutoBootingKickstart \
     (kickstartFileContent, os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
