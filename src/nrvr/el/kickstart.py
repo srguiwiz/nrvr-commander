@@ -337,8 +337,8 @@ class KickstartFileContent(object):
                                        commandSection.string)
         return self
 
-    def useGraphicalLogin(self):
-        """Use a graphical login on the installed system.
+    def activateGraphicalLogin(self):
+        """Boot into graphical login on the installed system.
         
         Do not use in a kickstart that does not install the X Window System.
         
@@ -518,7 +518,7 @@ if __name__ == "__main__":
                                              "package-a-for-testing",
                                              "package-b-for-testing",
                                              "package-c-for-testing"])
-    _kickstartFileContent.useGraphicalLogin()
+    _kickstartFileContent.activateGraphicalLogin()
     _kickstartFileContent.addUser("jack", pwd="monkey")
     _kickstartFileContent.addUser("jill", "sunshine")
     _kickstartFileContent.addUser("pat")

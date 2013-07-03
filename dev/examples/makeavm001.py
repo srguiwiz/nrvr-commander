@@ -92,7 +92,7 @@ if exists == False:
     #kickstartFileContent.addPackage("httpd")
     # some other possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64MinimalDesktop)
-    #kickstartFileContent.useGraphicalLogin()
+    #kickstartFileContent.activateGraphicalLogin()
     #kickstartFileContent.addUser("jack", pwd="monkey")
     # pick right temporary directory, ideally same as VM
     modifiedElIsoImage = downloadedElIsoImage.cloneWithAutoBootingKickstart \
