@@ -269,9 +269,13 @@ class KickstartFileContent(object):
     def replaceHostname(self, hostname):
         """Replace hostname option in network option.
         
+        hostname
+            new hostname.
+        
         return
             self, for daisychaining."""
         # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
+        hostname = re.escape(hostname) # precaution
         commandSection = self.sectionByName("command")
         # change to hostname
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--hostname[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
@@ -355,12 +359,16 @@ xconfig --startxonboot
     def addUser(self, username, pwd=None):
         """Add user.
         
+        username
+            username to add.
+        
         pwd
             pwd will be encrypted.  If starting with $ it is assumed to be encrypted already.
         
         return
             self, for daisychaining."""
         # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
+        username = re.escape(username) # precaution
         if pwd:
             # if pwd starts with $ then assume encrypted
             isCrypted = re.match(r"\$", pwd)
