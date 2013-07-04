@@ -40,8 +40,11 @@ SystemRequirements.commandsRequiredByImplementations([IsoImage,
 VMwareHypervisor.localRequired()
 
 # BEGIN essential example code
-ipaddress = "192.168.4.171"
+ipaddress = "192.168.0.171"
 rootpw = "redwood"
+additionalUsers = []
+# some possible choices pointed out
+#additionalUsers [("jack","rainbow"),("jill","sunshine")]
 # TODO document this way of making new VM names and directories
 name = IPAddress.nameWithNumber("example", ipaddress, separator=None)
 exampleVm = VMwareMachine(ScriptUser.loggedIn.userHomeRelative("vmware/examples/%s/%s.vmx" % (name, name)))
@@ -93,7 +96,8 @@ if exists == False:
     # some other possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64MinimalDesktop)
     #kickstartFileContent.activateGraphicalLogin()
-    #kickstartFileContent.addUser("jack", pwd="monkey")
+    for additionalUser in additionalUsers:
+        kickstartFileContent.addUser(additionalUser[0], pwd=additionalUser[1])
     # pick right temporary directory, ideally same as VM
     modifiedElIsoImage = downloadedElIsoImage.cloneWithAutoBootingKickstart \
     (kickstartFileContent, os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
@@ -102,6 +106,8 @@ if exists == False:
     exampleVm.create(memsizeMegabytes=2000, guestOS="centos", ideDrives=[20000, 300, modifiedElIsoImage])
     exampleVm.portsFile.setSsh(ipaddress=ipaddress, user="root", pwd=rootpw)
     exampleVm.portsFile.setShutdown()
+    for additionalUser in additionalUsers:
+        exampleVm.portsFile.setSsh(ipaddress=ipaddress, user=additionalUser[0], pwd=additionalUser[1])
     # start up for operating system install
     VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True)
     VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)

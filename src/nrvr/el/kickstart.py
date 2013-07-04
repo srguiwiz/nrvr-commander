@@ -527,7 +527,7 @@ if __name__ == "__main__":
                                              "package-b-for-testing",
                                              "package-c-for-testing"])
     _kickstartFileContent.activateGraphicalLogin()
-    _kickstartFileContent.addUser("jack", pwd="monkey")
+    _kickstartFileContent.addUser("jack", pwd="rainbow")
     _kickstartFileContent.addUser("jill", "sunshine")
     _kickstartFileContent.addUser("pat")
     _kickstartFileContent.sectionByName("%post").string = "removed %post this time, weird, just for testing\n"
