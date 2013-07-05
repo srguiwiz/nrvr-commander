@@ -18,6 +18,7 @@ import tempfile
 import time
 
 from nrvr.diskimage.isoimage import IsoImage
+from nrvr.el.gnome import Gnome
 from nrvr.el.kickstart import ElIsoImage, KickstartFileContent
 from nrvr.el.kickstarttemplates import KickstartTemplates
 from nrvr.machine.ports import PortsFile
@@ -118,6 +119,10 @@ if exists == False:
 VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True) #, sleepSeconds=0)
 #exampleVm.acceptKnownHostKey()
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
+
+# some possible choices pointed out
+#if len(additionalUsers):
+#    exampleVm.sshCommand([Gnome.activateAutoLoginCommand(additionalUsers[0][0])])
 
 # a possible modification pointed out
 # copy over some custom installer
