@@ -18,6 +18,7 @@ Modified BSD License"""
 
 from io import BlockingIOError
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -137,6 +138,9 @@ class CommandCapture(object):
         
         args
             are passed on to subprocess.Popen().
+            
+            If given a string instead of a list then fixed by args=[args],
+            but that may only work as expected for a command without arguments.
         
         Example use::
         
@@ -144,6 +148,10 @@ class CommandCapture(object):
             print "returncode=" + str(example.returncode)
             print "stdout=" + example.stdout
             print >> sys.stderr, "stderr=" + example.stderr"""
+        if isinstance(args, basestring):
+            if re.search(r"\s", args):
+                raise CommandCaptureException("MUST pass command args as list rather than as string: {0}".format(args))
+            args = [args]
         self._args = args
         self._copyToStdio = copyToStdio
         self._forgoPty = forgoPty
@@ -261,15 +269,11 @@ class CommandCapture(object):
                 exceptionMessage += "\n"
             exceptionMessage += "returncode: " + str(self._returncode)
         if exceptionMessage:
-            if not isinstance(self._args, basestring):
-                commandDescription = "command:\n\t" + self._args[0]
-                if len(self._args) > 1:
-                    commandDescription += "\narguments:\n\t" + "\n\t".join(self._args[1:])
-                else:
-                    commandDescription += "\nno arguments"
+            commandDescription = "command:\n\t" + self._args[0]
+            if len(self._args) > 1:
+                commandDescription += "\narguments:\n\t" + "\n\t".join(self._args[1:])
             else:
-                commandDescription = "command:\n\t" + self._args
-                commandDescription += "\ngiven as string without an arguments list"
+                commandDescription += "\nno arguments"
             exceptionMessage = commandDescription + "\n" + exceptionMessage
             raise CommandCaptureException(exceptionMessage)
 

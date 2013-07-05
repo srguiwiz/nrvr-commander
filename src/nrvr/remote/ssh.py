@@ -69,6 +69,9 @@ class SshCommand(object):
         
         argv
             list of command and arguments passed to ssh.
+            
+            If given a string instead of a list then fixed by argv=[argv],
+            but that may only work as expected for a command without arguments.
         
         user
             a string.
@@ -102,6 +105,10 @@ class SshCommand(object):
             raise Exception("must have module pty available to use ssh command"
                             ", which is known to be available in Python 2.6 on Linux, but not on Windows")
         #
+        if isinstance(argv, basestring):
+            if re.search(r"\s", argv):
+                raise SshCommandException("MUST pass command argv as list rather than as string: {0}".format(argv))
+            argv = [argv]
         self._ipaddress = IPAddress.asString(ipaddress)
         self._argv = argv
         self._user = user
