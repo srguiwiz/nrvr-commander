@@ -261,11 +261,15 @@ class CommandCapture(object):
                 exceptionMessage += "\n"
             exceptionMessage += "returncode: " + str(self._returncode)
         if exceptionMessage:
-            commandDescription = "command:\n\t" + self._args[0]
-            if len(self._args) > 1:
-                commandDescription += "\narguments:\n\t" + "\n\t".join(self._args[1:])
+            if not isinstance(self._args, basestring):
+                commandDescription = "command:\n\t" + self._args[0]
+                if len(self._args) > 1:
+                    commandDescription += "\narguments:\n\t" + "\n\t".join(self._args[1:])
+                else:
+                    commandDescription += "\nno arguments"
             else:
-                commandDescription += "\nno arguments"
+                commandDescription = "command:\n\t" + self._args
+                commandDescription += "\ngiven as string without an arguments list"
             exceptionMessage = commandDescription + "\n" + exceptionMessage
             raise CommandCaptureException(exceptionMessage)
 
@@ -299,3 +303,34 @@ if __name__ == "__main__":
     print "returncode=" + str(_example3.returncode)
     print "stdout=" + _example3.stdout
     print >> sys.stderr, "stderr=" + _example3.stderr
+    #
+    _example4 = CommandCapture(["ls"])
+    print "returncode=" + str(_example4.returncode)
+    print "stdout=" + _example4.stdout
+    print >> sys.stderr, "stderr=" + _example4.stderr
+    #
+    try:
+        _example5 = CommandCapture(["ls", "filethatdoesntexist"])
+        print "returncode=" + str(_example5.returncode)
+        print "stdout=" + _example5.stdout
+        print >> sys.stderr, "stderr=" + _example5.stderr
+    except Exception as ex:
+        print "Exception ({0}):\n{1}".format(ex.__class__.__name__, str(ex))
+    #
+    _example6 = CommandCapture("ls")
+    print "returncode=" + str(_example6.returncode)
+    print "stdout=" + _example6.stdout
+    print >> sys.stderr, "stderr=" + _example6.stderr
+    #
+    _example7 = CommandCapture(["echo", "givenonestring"])
+    print "returncode=" + str(_example7.returncode)
+    print "stdout=" + _example7.stdout
+    print >> sys.stderr, "stderr=" + _example7.stderr
+    #
+    try:
+        _example8 = CommandCapture("echo givenasonestring")
+        print "returncode=" + str(_example8.returncode)
+        print "stdout=" + _example8.stdout
+        print >> sys.stderr, "stderr=" + _example6.stderr
+    except Exception as ex:
+        print "Exception ({0}):\n{1}".format(ex.__class__.__name__, str(ex))
