@@ -39,8 +39,8 @@ vm = VMwareMachine(vmx)
 
 if len(args) < 1:
     optionsParser.error("did not find command argument")
-command = args[0:]
+commandAndArguments = args[0:]
 
-sshCommand = vm.sshCommand(command, user=options.user)
+sshCommand = vm.sshCommand(commandAndArguments, user=options.user)
 
 print sshCommand.output
