@@ -41,7 +41,7 @@ SystemRequirements.commandsRequiredByImplementations([IsoImage,
 VMwareHypervisor.localRequired()
 
 # BEGIN essential example code
-ipaddress = "192.168.0.171"
+ipaddress = "192.168.11.171"
 rootpw = "redwood"
 additionalUsers = []
 # some possible choices pointed out
@@ -122,7 +122,8 @@ exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 
 # some possible choices pointed out
 #if len(additionalUsers):
-#    exampleVm.sshCommand([Gnome.activateAutoLoginCommand(additionalUsers[0][0])])
+#    exampleVm.sshCommand([Gnome.commandToEnableAutoLogin(additionalUsers[0][0])])
+#    exampleVm.sshCommand([Gnome.commandToDisableScreenSaver()], user=additionalUsers[0][0])
 
 # a possible modification pointed out
 # copy over some custom installer
