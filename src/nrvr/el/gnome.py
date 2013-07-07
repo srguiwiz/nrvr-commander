@@ -64,9 +64,25 @@ class Gnome():
         command = "gconftool-2 -s /apps/gnome-screensaver/idle_activation_enabled --type=bool true"
         return command
 
+    @classmethod
+    def commandToStartApplicationInGui(cls, application):
+        """Build command to start application in GNOME.
+        
+        Must be user to succeed.
+        
+        Puts application into background and returns.
+        
+        application
+            e.g. firefox.
+        
+        Return command to start application in GNOME."""
+        command = "export DISPLAY=:0.0 ; nohup " + application + " > /dev/null 2>&1 &"
+        return command
+
 if __name__ == "__main__":
     print Gnome.commandToEnableAutoLogin("joe")
     print Gnome.commandToDisableAutoLogin()
     print Gnome.commandToEnableAutoLogin()
     print Gnome.commandToDisableScreenSaver()
     print Gnome.commandToEnableScreenSaver()
+    print Gnome.commandToStartApplicationInGui("gedit")
