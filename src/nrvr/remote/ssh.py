@@ -2,6 +2,11 @@
 
 """nrvr.remote.ssh - Remote commands over ssh
 
+Classes provided by this module include
+* SshCommandException
+* SshParameters
+* SshCommand
+
 The main class provided by this module is SshCommand.
 
 On the downside, for now it
@@ -45,8 +50,36 @@ class SshCommandException(Exception):
     def message(self):
         return self._message
 
+class SshParameters(object):
+    """Parameters needed to connect to an ssh host.
+    
+    Implemented to avoid verbosity and complexity of passing same information
+    many times across several uses each time in separate arguments."""
+
+    def __init__(self, ipaddress, user, pwd):
+        """Create new SshParameters instance.
+        
+        ipaddress
+            IP address or domain name.
+        
+        user
+            a string.
+        
+        pwd
+            a string or None.
+        
+        Example use::
+        
+            exampleSshParameters = SshParameters("10.123.45.67", "joe", "redwood")"""
+        self.ipaddress = IPAddress.asString(ipaddress)
+        self.user = user
+        self.pwd = pwd
+
 class SshCommand(object):
     """Send a command over ssh."""
+
+    _pwdPromptRegex = re.compile(re.escape(r"password:"))
+    _acceptPromptRegex = re.compile(re.escape(r"(yes/no)?"))
 
     @classmethod
     def commandsUsedInImplementation(cls):
@@ -57,47 +90,25 @@ class SshCommand(object):
         This class can be passed to SystemRequirements.commandsRequiredByImplementations()."""
         return ["ssh"]
 
-    def __init__(self, ipaddress, argv, user, pwd,
-                 exceptionIfNotZero=True,
-                 pwdPrompt=r"password:", acceptPrompt=r"(yes/no)?"):
+    def __init__(self, sshParameters, argv,
+                 exceptionIfNotZero=True):
         """Create new SshCommand instance.
         
         Will wait until completed.
         
-        ipaddress
-            IP address or domain name.
+        sshParameters
+            an SshParameters instance.
         
         argv
             list of command and arguments passed to ssh.
             
-            If given a string instead of a list then fixed by argv=[argv],
-            but that may only work as expected for a command without arguments.
-        
-        user
-            a string.
-        
-        pwd
-            a string or None.
-        
-        pwdPrompt
-            a string or a regular expression object.
-            
-            If not a regular expression object already then does re.compile(re.escape(pwdPrompt)).
-            
-            Don't bother unless default doesn't work.
-        
-        acceptPrompt
-            a string or a regular expression object.
-            
-            If not a regular expression object already then does re.compile(re.escape(acceptPrompt)).
-            
-            Don't bother unless default doesn't work.
+            If given a string instead of a list then fixed by argv=[argv].
         
         Output may contain extraneous leading or trailing newlines and whitespace.
         
         Example use::
         
-            example = SshCommand("10.123.45.67", ["ls", "-al"], "joe", "redwood")
+            example = SshCommand(exampleSshParameters, ["ls", "-al"])
             print "returncode=" + str(example.returncode)
             print "output=" + example.output"""
         if not _gotPty:
@@ -109,22 +120,11 @@ class SshCommand(object):
             if re.search(r"\s", argv):
                 raise SshCommandException("MUST pass command argv as list rather than as string: {0}".format(argv))
             argv = [argv]
-        self._ipaddress = IPAddress.asString(ipaddress)
+        self._ipaddress = IPAddress.asString(sshParameters.ipaddress)
         self._argv = argv
-        self._user = user
-        self._pwd = pwd
+        self._user = sshParameters.user
+        self._pwd = sshParameters.pwd
         self._exceptionIfNotZero = exceptionIfNotZero
-        if self._pwd:
-            if type(pwdPrompt) != SshCommand._regexType:
-                self._pwdPromptRegex = re.compile(re.escape(pwdPrompt))
-            else:
-                # a regular expression object already
-                self._pwdPromptRegex = pwdPrompt
-            if type(acceptPrompt) != SshCommand._regexType:
-                self._acceptPromptRegex = re.compile(re.escape(acceptPrompt))
-            else:
-                # a regular expression object already
-                self._acceptPromptRegex = acceptPrompt
         self._output = ""
         self._returncode = None
         #
@@ -377,38 +377,28 @@ class SshCommand(object):
             os.write(fd, "bye\n")
 
     @classmethod
-    def isAvailable(cls, ipaddress, user, pwd,
-                    probingCommand="hostname",
-                    pwdPrompt=r"password:", acceptPrompt=r"(yes/no)?"):
+    def isAvailable(cls, sshParameters,
+                    probingCommand="hostname"):
         """Return whether probingCommand succeeds.
         
         Will wait until completed."""
         try:
-            sshCommand = SshCommand(ipaddress=ipaddress,
-                                    argv=[probingCommand],
-                                    user=user,
-                                    pwd=pwd,
-                                    pwdPrompt=pwdPrompt,
-                                    acceptPrompt=acceptPrompt)
+            sshCommand = SshCommand(sshParameters,
+                                    argv=probingCommand)
             return True
         except Exception as e:
             return False
 
     @classmethod
-    def sleepUntilIsAvailable(cls, ipaddress, user, pwd,
+    def sleepUntilIsAvailable(cls, sshParameters,
                               checkIntervalSeconds=5.0, ticker=False,
-                              probingCommand="hostname",
-                              pwdPrompt=r"password:", acceptPrompt=r"(yes/no)?"):
+                              probingCommand="hostname"):
         """If available return, else loop sleeping for checkIntervalSeconds."""
         printed = False
         ticked = False
         # check the essential condition, initially and then repeatedly
-        while not SshCommand.isAvailable(ipaddress=ipaddress,
-                                         user=user,
-                                         pwd=pwd,
-                                         probingCommand=probingCommand,
-                                         pwdPrompt=pwdPrompt,
-                                         acceptPrompt=acceptPrompt):
+        while not SshCommand.isAvailable(sshParameters,
+                                         probingCommand=probingCommand):
             if not printed:
                 # first time only printing
                 print "waiting for ssh to be available to connect to " + ipaddress
@@ -471,20 +461,21 @@ if __name__ == "__main__":
     #
     SshCommand.removeKnownHostKey("localhost")
     SshCommand.acceptKnownHostKey("localhost")
-    # fictional 10.123.45.67
-#    _sshExample1 = SshCommand("10.123.45.67", ["hostname"], "root", "redwood")
+    # fictional address
+    _exampleSshParameters = SshParameters("10.123.45.67", "root", "redwood")
+#    _sshExample1 = SshCommand(_exampleSshParameters, "hostname")
 #    print "returncode=" + str(_sshExample1.returncode)
 #    print "output=" + _sshExample1.output
-#    _sshExample2 = SshCommand("10.123.45.67", ["ls"], "root", "redwood")
+#    _sshExample2 = SshCommand(_exampleSshParameters, ["ls"])
 #    print "returncode=" + str(_sshExample2.returncode)
 #    print "output=" + _sshExample2.output
-#    _sshExample3 = SshCommand("10.123.45.67", ["ls", "-al"], "root", "redwood")
+#    _sshExample3 = SshCommand(_exampleSshParameters, ["ls", "-al"])
 #    print "returncode=" + str(_sshExample3.returncode)
 #    print "output=" + _sshExample3.output
-#    _sshExample4 = SshCommand("10.123.45.67", ["ls", "doesntexist"], "root", "redwood", exceptionIfNotZero=False)
+#    _sshExample4 = SshCommand(_exampleSshParameters, ["ls", "doesntexist"], exceptionIfNotZero=False)
 #    print "returncode=" + str(_sshExample4.returncode)
 #    print "output=" + _sshExample4.output
-#    _sshExample5 = SshCommand("10.123.45.67", ["ls", "doesntexist"], "root", "redwood")
+#    _sshExample5 = SshCommand(_exampleSshParameters, ["ls", "doesntexist"])
 #    print "returncode=" + str(_sshExample5.returncode)
 #    print "output=" + _sshExample5.output
 
@@ -505,11 +496,13 @@ class ScpCommand(object):
         This class can be passed to SystemRequirements.commandsRequiredByImplementations()."""
         return ["scp"]
 
+    _pwdPromptRegex = re.compile(re.escape(r"password:"))
+    _acceptPromptRegex = re.compile(re.escape(r"(yes/no)?"))
+
     def __init__(self,
                  fromPath, toPath, pwd,
                  fromUser=None, fromIpaddress=None,
-                 toUser=None, toIpaddress=None,
-                 pwdPrompt=r"password:", acceptPrompt=r"(yes/no)?"):
+                 toUser=None, toIpaddress=None):
         """Create new ScpCommand instance.
         
         Will wait until completed.
@@ -549,17 +542,6 @@ class ScpCommand(object):
         else:
             self._toSpecification = self._toPath
         self._pwd = pwd
-        if self._pwd:
-            if type(pwdPrompt) != SshCommand._regexType:
-                self._pwdPromptRegex = re.compile(re.escape(pwdPrompt))
-            else:
-                # a regular expression object already
-                self._pwdPromptRegex = pwdPrompt
-            if type(acceptPrompt) != SshCommand._regexType:
-                self._acceptPromptRegex = re.compile(re.escape(acceptPrompt))
-            else:
-                # a regular expression object already
-                self._acceptPromptRegex = acceptPrompt
         self._output = ""
         self._returncode = None
         #

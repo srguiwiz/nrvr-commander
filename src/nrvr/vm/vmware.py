@@ -47,7 +47,7 @@ import time
 from nrvr.diskimage.isoimage import IsoImage
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
-from nrvr.remote.ssh import SshCommand, ScpCommand
+from nrvr.remote.ssh import SshParameters, SshCommand, ScpCommand
 from nrvr.util.classproperty import classproperty
 from nrvr.util.requirements import SystemRequirements
 from nrvr.util.user import ScriptUser
@@ -831,6 +831,8 @@ class VMwareMachine(object):
         
         argv
             list of command and arguments passed to ssh.
+            
+            Can accept a string instead of a list.
         
         user
             a string.
@@ -842,10 +844,8 @@ class VMwareMachine(object):
             sshCommand1 = vmwareMachine.sshCommand(["ls", "-al"])
             print "output=" + sshCommand1.output"""
         port, ipaddress, pwd = self._sshPortIpaddressPwd(user)
-        sshCommand = SshCommand(ipaddress=ipaddress,
-                                argv=argv,
-                                user=user,
-                                pwd=pwd)
+        sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
+        sshCommand = SshCommand(sshParameters, argv)
         return sshCommand
 
     def shutdownCommand(self):
@@ -911,9 +911,8 @@ class VMwareMachine(object):
         
         Assumes .ports file to exist and to have an entry for ssh for the user."""
         port, ipaddress, pwd = self._sshPortIpaddressPwd(user)
-        isAvailable = SshCommand.isAvailable(ipaddress=ipaddress,
-                                             user=user,
-                                             pwd=pwd,
+        sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
+        isAvailable = SshCommand.isAvailable(sshParameters,
                                              probingCommand=probingCommand)
         return isAvailable
 
@@ -922,9 +921,8 @@ class VMwareMachine(object):
         
         Assumes .ports file to exist and to have an entry for ssh for the user."""
         port, ipaddress, pwd = self._sshPortIpaddressPwd(user)
-        SshCommand.sleepUntilIsAvailable(ipaddress=ipaddress,
-                                         user=user,
-                                         pwd=pwd,
+        sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
+        SshCommand.sleepUntilIsAvailable(sshParameters,
                                          checkIntervalSeconds=checkIntervalSeconds,
                                          ticker=ticker,
                                          probingCommand=probingCommand)
