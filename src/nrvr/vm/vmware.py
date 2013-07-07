@@ -820,6 +820,17 @@ class VMwareMachine(object):
                             (self.basenameStem, user))
         return port, ipaddress, pwd
 
+    def sshParameters(self, user="root"):
+        """Return SshParameters instance for user.
+        
+        user
+            a string.
+        
+        Assumes .ports file to exist and to have an entry for ssh for the user."""
+        port, ipaddress, pwd = self._sshPortIpaddressPwd(user)
+        sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
+        return sshParameters
+
     def sshCommand(self, argv, user="root"):
         """Return an SshCommand instance.
         
@@ -843,8 +854,7 @@ class VMwareMachine(object):
         
             sshCommand1 = vmwareMachine.sshCommand(["ls", "-al"])
             print "output=" + sshCommand1.output"""
-        port, ipaddress, pwd = self._sshPortIpaddressPwd(user)
-        sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
+        sshParameters = self.sshParameters(user=user)
         sshCommand = SshCommand(sshParameters, argv)
         return sshCommand
 
@@ -910,8 +920,7 @@ class VMwareMachine(object):
         Will wait until completed.
         
         Assumes .ports file to exist and to have an entry for ssh for the user."""
-        port, ipaddress, pwd = self._sshPortIpaddressPwd(user)
-        sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
+        sshParameters = self.sshParameters(user=user)
         isAvailable = SshCommand.isAvailable(sshParameters,
                                              probingCommand=probingCommand)
         return isAvailable
@@ -920,8 +929,7 @@ class VMwareMachine(object):
         """If available return, else loop sleeping for checkIntervalSeconds.
         
         Assumes .ports file to exist and to have an entry for ssh for the user."""
-        port, ipaddress, pwd = self._sshPortIpaddressPwd(user)
-        sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
+        sshParameters = self.sshParameters(user=user)
         SshCommand.sleepUntilIsAvailable(sshParameters,
                                          checkIntervalSeconds=checkIntervalSeconds,
                                          ticker=ticker,
