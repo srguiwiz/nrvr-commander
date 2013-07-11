@@ -21,6 +21,7 @@ from nrvr.diskimage.isoimage import IsoImage
 from nrvr.el.gnome import Gnome
 from nrvr.el.kickstart import ElIsoImage, KickstartFileContent
 from nrvr.el.kickstarttemplates import KickstartTemplates
+from nrvr.el.ssh import ElSshCommand
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.remote.ssh import SshCommand, ScpCommand
@@ -190,6 +191,12 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # start up again so it is running for use
 #VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, sleepSeconds=120)
 #exampleVm.sleepUntilSshIsAvailable(ticker=True)
+
+# a possible modification pointed out
+# start up for showing successful login into GUI
+#VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True) #, sleepSeconds=0)
+#exampleSshParameters = exampleVm.sshParameters(user=additionalUsers[0][0])
+#ElSshCommand.sleepUntilIsGuiAvailable(exampleSshParameters, ticker=True)
 
 #
 print "done with %s, it is ready for you to use at %s" % \

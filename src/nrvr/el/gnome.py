@@ -29,7 +29,7 @@ class Gnome():
             defaults to None, which effects commandToDisableAutoLogin.
         
         Return command to enable auto-login into GNOME."""
-        command = cls.commandToDisableAutoLogin()
+        command = Gnome.commandToDisableAutoLogin()
         if username:
             username = re.escape(username) # precaution
             command += r" ; sed -i -e '/^\[daemon\]/ a \AutomaticLoginEnable=true\nAutomaticLogin=" + username + r"' /etc/gdm/custom.conf"
@@ -65,6 +65,18 @@ class Gnome():
         return command
 
     @classmethod
+    def commandToTellWhetherGuiIsAvailable(cls):
+        """Build command to tell whether GUI of GNOME is available.
+        
+        Should be user to be meaningful.
+        
+        Command output first word is "available" or with "unavailable".
+        
+        Return command to tell whether GUI of GNOME is available."""
+        command = "if xset -d :0.0 q &> /dev/null ; then echo 'available' ; else echo 'unavailable' ; fi"
+        return command
+
+    @classmethod
     def commandToStartApplicationInGui(cls, application):
         """Build command to start application in GNOME.
         
@@ -76,7 +88,7 @@ class Gnome():
             e.g. firefox.
         
         Return command to start application in GNOME."""
-        command = "export DISPLAY=:0.0 ; nohup " + application + " > /dev/null 2>&1 &"
+        command = "export DISPLAY=:0.0 ; nohup " + application + " &> /dev/null &"
         return command
 
 if __name__ == "__main__":
@@ -85,4 +97,5 @@ if __name__ == "__main__":
     print Gnome.commandToEnableAutoLogin()
     print Gnome.commandToDisableScreenSaver()
     print Gnome.commandToEnableScreenSaver()
+    print Gnome.commandToTellWhetherGuiIsAvailable()
     print Gnome.commandToStartApplicationInGui("gedit")

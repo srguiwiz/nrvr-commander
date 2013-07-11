@@ -80,12 +80,11 @@ class SshCommand(object):
 
     _pwdPromptRegex = re.compile(re.escape(r"password:"))
     _acceptPromptRegex = re.compile(re.escape(r"(yes/no)?"))
+    _acceptAnswer="yes\n"
 
     @classmethod
     def commandsUsedInImplementation(cls):
         """Return a list to be passed to SystemRequirements.commandsRequired().
-        
-        This class captures returncode, and output.
         
         This class can be passed to SystemRequirements.commandsRequiredByImplementations()."""
         return ["ssh"]
@@ -151,12 +150,12 @@ class SshCommand(object):
                         # ssh has been observed returning "\r\n" for newline, but we want "\n"
                         newOutput = SshCommand._crLfRegex.sub("\n", newOutput)
                         outputTillPrompt += newOutput
-                        if self._acceptPromptRegex.search(outputTillPrompt):
+                        if SshCommand._acceptPromptRegex.search(outputTillPrompt):
                             # e.g. "Are you sure you want to continue connecting (yes/no)? "
                             raise Exception("cannot proceed unless having accepted host key\n" + 
                                             outputTillPrompt + 
                                             "\nE.g. invoke SshCommand.acceptKnownHostKey({0}).".format(self._ipaddress))
-                        if self._pwdPromptRegex.search(outputTillPrompt):
+                        if SshCommand._pwdPromptRegex.search(outputTillPrompt):
                             # e.g. "10.123.45.67's password: "
                             promptedForPassword = True
                     except EnvironmentError:
@@ -245,7 +244,7 @@ class SshCommand(object):
     @classmethod
     def removeKnownHostKey(cls, ipaddress):
         """Remove line from ~/.ssh/known_hosts file."""
-        knownHostsFile = cls._knownHostFilePath
+        knownHostsFile = SshCommand._knownHostFilePath
         ipaddress = IPAddress.asString(ipaddress)
         if not os.path.exists(knownHostsFile):
             # maybe file hasn't been created yet, nothing to do
@@ -267,39 +266,22 @@ class SshCommand(object):
                 outputFile.writelines(newKnownHostLines)
 
     @classmethod
-    def acceptKnownHostKey(cls, ipaddress, acceptPrompt=r"(yes/no)?", acceptAnswer="yes\n"):
+    def acceptKnownHostKey(cls, ipaddress):
         """Accept host's key.
         
         Will wait until completed.
         
         ipaddress
-            IP address or domain name.
-        
-        acceptPrompt
-            a string or a regular expression object.
-            
-            If not a regular expression object already then does re.compile(re.escape(acceptPrompt)).
-            
-            Don't bother unless default doesn't work.
-        
-        acceptAnswer
-            a string, explicitly containing any "\n" if needed.
-            
-            Don't bother unless default doesn't work."""
+            IP address or domain name."""
         if not _gotPty:
             # cannot use ssh if no pty
             raise Exception("must have module pty available to use ssh command"
                             ", which is known to be available in Python 2.6 on Linux, but not on Windows")
         #
         # remove any pre-existing key, if any
-        cls.removeKnownHostKey(ipaddress)
+        SshCommand.removeKnownHostKey(ipaddress)
         #
         ipaddress = IPAddress.asString(ipaddress)
-        if type(acceptPrompt) != SshCommand._regexType:
-            acceptPromptRegex = re.compile(re.escape(acceptPrompt))
-        else:
-            # a regular expression object already
-            acceptPromptRegex = acceptPrompt
         #
         # fork and connect child to a pseudo-terminal
         pid, fd = pty.fork()
@@ -324,7 +306,7 @@ class SshCommand(object):
                     # ssh has been observed returning "\r\n" for newline, but we want "\n"
                     newOutput = SshCommand._crLfRegex.sub("\n", newOutput)
                     outputTillPrompt += newOutput
-                    if acceptPromptRegex.search(outputTillPrompt):
+                    if SshCommand._acceptPromptRegex.search(outputTillPrompt):
                         # e.g. "Are you sure you want to continue connecting (yes/no)? "
                         promptedForAccept = True
                 except EnvironmentError:
@@ -336,7 +318,7 @@ class SshCommand(object):
             # which would cause only one of the ssh invocations to write known_hosts file,
             # which has been observed as a problem in bulk processing
             startTime = time.time()
-            knownHostsFile = cls._knownHostFilePath
+            knownHostsFile = SshCommand._knownHostFilePath
             if os.path.exists(knownHostsFile):
                 # normal case
                 originalModificationTime = os.path.getctime(knownHostsFile)
@@ -351,7 +333,7 @@ class SshCommand(object):
                 time.sleep(0.1)
                 startTime = time.time()
             # actually accept, one line in the middle of the special dance
-            os.write(fd, acceptAnswer)
+            os.write(fd, SshCommand._acceptAnswer)
             # continue special dance
             looksDone = False
             while not looksDone:
@@ -401,7 +383,7 @@ class SshCommand(object):
                                          probingCommand=probingCommand):
             if not printed:
                 # first time only printing
-                print "waiting for ssh to be available to connect to " + ipaddress
+                print "waiting for ssh to be available to connect to " + IPAddress.asString(sshParameters.ipaddress)
                 printed = True
             if ticker:
                 if not ticked:
@@ -416,29 +398,24 @@ class SshCommand(object):
             sys.stdout.write("]\n")
 
     @classmethod
-    def hasAcceptedKnownHostKey(cls, ipaddress, acceptPrompt=r"(yes/no)?", acceptAnswer="yes\n"):
+    def hasAcceptedKnownHostKey(cls, ipaddress):
         """Return whether acceptKnownHostKey() succeeds.
         
         Will wait until completed."""
         try:
-            SshCommand.acceptKnownHostKey(ipaddress=ipaddress,
-                                          acceptPrompt=acceptPrompt,
-                                          acceptAnswer=acceptAnswer)
+            SshCommand.acceptKnownHostKey(ipaddress=ipaddress)
             return True
         except Exception as e:
             return False
 
     @classmethod
     def sleepUntilHasAcceptedKnownHostKey(cls, ipaddress,
-                                          checkIntervalSeconds=5.0, ticker=False,
-                                          acceptPrompt=r"(yes/no)?", acceptAnswer="yes\n"):
+                                          checkIntervalSeconds=5.0, ticker=False):
         """If available return, else loop sleeping for checkIntervalSeconds."""
         printed = False
         ticked = False
         # check the essential condition, initially and then repeatedly
-        while not SshCommand.hasAcceptedKnownHostKey(ipaddress=ipaddress,
-                                                     acceptPrompt=acceptPrompt,
-                                                     acceptAnswer=acceptAnswer):
+        while not SshCommand.hasAcceptedKnownHostKey(ipaddress=ipaddress):
             if not printed:
                 # first time only printing
                 print "waiting for ssh to be available to get host key from " + ipaddress
@@ -568,12 +545,12 @@ class ScpCommand(object):
                         # ssh has been observed returning "\r\n" for newline, but we want "\n"
                         newOutput = SshCommand._crLfRegex.sub("\n", newOutput)
                         outputTillPrompt += newOutput
-                        if self._acceptPromptRegex.search(outputTillPrompt):
+                        if SshCommand._acceptPromptRegex.search(outputTillPrompt):
                             # e.g. "Are you sure you want to continue connecting (yes/no)? "
                             raise Exception("cannot proceed unless having accepted host key\n" + 
                                             outputTillPrompt + 
                                             "\nE.g. invoke SshCommand.acceptKnownHostKey({0}).".format(self._ipaddress))
-                        if self._pwdPromptRegex.search(outputTillPrompt):
+                        if SshCommand._pwdPromptRegex.search(outputTillPrompt):
                             # e.g. "10.123.45.67's password: "
                             promptedForPassword = True
                     except EnvironmentError:

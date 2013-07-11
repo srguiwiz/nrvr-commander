@@ -3,6 +3,7 @@ Modules provides by this package are
 * nrvr.el.gnome
 * nrvr.el.kickstart
 * nrvr.el.kickstarttemplates
+* nrvr.el.ssh
 * nrvr.machine.ports
 * nrvr.process.commandcapture
 * nrvr.remote.ssh
