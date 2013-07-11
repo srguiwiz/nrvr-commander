@@ -198,6 +198,11 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 #exampleSshParameters = exampleVm.sshParameters(user=additionalUsers[0][0])
 #ElSshCommand.sleepUntilIsGuiAvailable(exampleSshParameters, ticker=True)
 
+# a possible modification pointed out
+# just a demo
+#exampleSshParameters = exampleVm.sshParameters(user=additionalUsers[0][0])
+#SshCommand(exampleSshParameters, [Gnome.commandToStartApplicationInGui("firefox")])
+
 #
 print "done with %s, it is ready for you to use at %s" % \
 (exampleVm.basenameStem, exampleVm.portsFile.getPorts(protocol="ssh", user="root")[0]["ipaddress"])
