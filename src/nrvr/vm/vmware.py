@@ -724,6 +724,7 @@ class VMwareHypervisor(object):
         
         As implemented omits leading and trailing whitespace if any."""
         snapshot = snapshot.strip()
+        # TODO reject forward slash "/" in snapshot name
         if not tolerateRunning:
             if self.isRunning(vmxFilePath):
                 raise Exception("won't snapshot ({0}) while still running {1} because of default tolerateRunning=False".format(snapshot, vmxFilePath))
@@ -732,6 +733,27 @@ class VMwareHypervisor(object):
             if snapshot in snapshots:
                 raise Exception("won't snapshot with duplicate name ({0}) for {1}".format(snapshot, vmxFilePath))
         vmrun = CommandCapture(["vmrun", "-T", self._hostType, "snapshot", vmxFilePath, snapshot])
+
+    def revertToSnapshot(self, vmxFilePath, snapshot, tolerateRunning=False):
+        """Revert to snapshot of virtual machine.
+        
+        As implemented raises exception if running, unless asked to tolerate."""
+        snapshot = snapshot.strip()
+        if not tolerateRunning:
+            if self.isRunning(vmxFilePath):
+                raise Exception("won't revert to snapshot ({0}) while still running {1} because of default tolerateRunning=False".format(snapshot, vmxFilePath))
+        vmrun = CommandCapture(["vmrun", "-T", self._hostType, "revertToSnapshot", vmxFilePath, snapshot])
+
+    def deleteSnapshot(self, vmxFilePath, snapshot, andDeleteChildren=False, tolerateRunning=False):
+        """Delete snapshot of virtual machine.
+        
+        As implemented raises exception if running, unless asked to tolerate."""
+        snapshot = snapshot.strip()
+        if not tolerateRunning:
+            if self.isRunning(vmxFilePath):
+                raise Exception("won't delete snapshot ({0}) while still running {1} because of default tolerateRunning=False".format(snapshot, vmxFilePath))
+        vmrun = CommandCapture(["vmrun", "-T", self._hostType, "deleteSnapshot", vmxFilePath, snapshot] +
+                               (["andDeleteChildren"] if andDeleteChildren else []))
 
 if __name__ == "__main__":
     if VMwareHypervisor.local:
