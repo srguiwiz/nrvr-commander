@@ -695,10 +695,34 @@ class VMwareHypervisor(object):
             os.mkdir(suggestedDirectory, 0755)
         return suggestedDirectory
 
+    def listSnapshots(self, vmxFilePath):
+        """Return list of snapshots of virtual machine.
+        
+        As implemented omits leading and trailing whitespace if any."""
+        vmrun = CommandCapture(["vmrun", "-T", self._hostType, "listSnapshots", vmxFilePath],
+                               copyToStdio=False)
+        listWithHeading = vmrun.stdout
+        # first line tells number of snapshots, names are in subsequent lines
+        snapshots = []
+        numberMatch = re.search(r"^.*\:\s*([0-9]+)", listWithHeading)
+        if numberMatch:
+            numberOfSnapshots = int(numberMatch.group(1))
+            # (?m) effects MULTILINE, omit leading and trailing whitespace if any
+            snapshots = re.findall(r"(?m)^\s*(.*)\s*$", listWithHeading)
+            # omit first line, i.e. line with number of snapshots
+            snapshots.pop(0)
+            # omit empty lines, e.g. after trailing newline
+            snapshots = filter(None, snapshots)
+        # here an opportunity to see in debugger
+        return snapshots
+
 if __name__ == "__main__":
     if VMwareHypervisor.local:
         print VMwareHypervisor.local.hostType
-        print VMwareHypervisor.local.listRunning()
+        print "VMs:\n" + str(VMwareHypervisor.local.listRunning())
+        someVms = VMwareHypervisor.local.listRunning()
+        if someVms:
+            print "Snapshots:\n" + str(VMwareHypervisor.local.listSnapshots(someVms[0]))
     else:
         print "no supported VMware hypervisor available locally"
 
