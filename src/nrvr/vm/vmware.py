@@ -716,6 +716,23 @@ class VMwareHypervisor(object):
         # here an opportunity to see in debugger
         return snapshots
 
+    def createSnapshot(self, vmxFilePath, snapshot, tolerateRunning=False, tolerateDuplicate=False):
+        """Create new snapshot of virtual machine.
+        
+        As implemented raises exception if running or if duplicate name,
+        unless asked to tolerate.
+        
+        As implemented omits leading and trailing whitespace if any."""
+        snapshot = snapshot.strip()
+        if not tolerateRunning:
+            if self.isRunning(vmxFilePath):
+                raise Exception("won't snapshot ({0}) while still running {1} because of default tolerateRunning=False".format(snapshot, vmxFilePath))
+        if not tolerateDuplicate:
+            snapshots = self.listSnapshots(vmxFilePath)
+            if snapshot in snapshots:
+                raise Exception("won't snapshot with duplicate name ({0}) for {1}".format(snapshot, vmxFilePath))
+        vmrun = CommandCapture(["vmrun", "-T", self._hostType, "snapshot", vmxFilePath, snapshot])
+
 if __name__ == "__main__":
     if VMwareHypervisor.local:
         print VMwareHypervisor.local.hostType
