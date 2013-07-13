@@ -751,9 +751,24 @@ class VMwareHypervisor(object):
         snapshot = snapshot.strip()
         if not tolerateRunning:
             if self.isRunning(vmxFilePath):
-                raise Exception("won't delete snapshot ({0}) while still running {1} because of default tolerateRunning=False".format(snapshot, vmxFilePath))
+                raise Exception("won't delete snapshot while still running {0} because of default tolerateRunning=False".format(vmxFilePath))
         vmrun = CommandCapture(["vmrun", "-T", self._hostType, "deleteSnapshot", vmxFilePath, snapshot] +
                                (["andDeleteChildren"] if andDeleteChildren else []))
+
+    def cloneSnapshot(self, vmxFilePath, snapshot, clonedVmxFilePath, linked=True, tolerateRunning=False):
+        """Create clone of virtual machine at snapshot.
+        
+        As implemented raises exception if running, unless asked to tolerate.
+        
+        linked
+            whether to create a linked clone or a full clone."""
+        snapshot = snapshot.strip()
+        if not tolerateRunning:
+            if self.isRunning(vmxFilePath):
+                raise Exception("won't clone virtual machine while still running {0} because of default tolerateRunning=False".format(vmxFilePath))
+        vmrun = CommandCapture(["vmrun", "-T", self._hostType, "clone", vmxFilePath, clonedVmxFilePath] +
+                               (["linked"] if linked else ["full"]) +
+                               [snapshot])
 
 if __name__ == "__main__":
     if VMwareHypervisor.local:
