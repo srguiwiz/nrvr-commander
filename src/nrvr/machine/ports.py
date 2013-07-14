@@ -241,6 +241,26 @@ class PortsFile(object):
                 ports.append(ElementTreeUtil.simpledict(portElement))
         return ports
 
+    @classmethod
+    def _changeIPAddress(cls, portsFileContent, oldIpAddress, newIpAddress):
+        """Change all occurences of a specific IP address."""
+        # method made to be portsFileContentModifyingMethod parameter for method modify()
+        oldIpAddress = IPAddress.asString(oldIpAddress)
+        newIpAddress = IPAddress.asString(newIpAddress)
+        # feel the misery of not yet having better XPath from Python 2.7 and ElementTree 1.3
+        sshElements = portsFileContent.findall("ssh")
+        for sshElement in sshElements:
+            if oldIpAddress == sshElement.findtext("ipaddress"):
+                # found oldIpAddress
+                ipaddressElement = sshElement.find("ipaddress")
+                ipaddressElement.text = newIpAddress
+
+    def changeIPAddress(self, oldIpAddress, newIpAddress):
+        """Set .ports file entry for shutdown command for machine."""
+        # recommended safe  wrapper
+        self.modify(lambda portsFileContent: self._changeIPAddress(portsFileContent,
+                                                                   oldIpAddress=oldIpAddress, newIpAddress=newIpAddress))
+
 if __name__ == "__main__":
     import shutil
     import tempfile
@@ -253,7 +273,10 @@ if __name__ == "__main__":
         _portsFile1.setSsh("10.123.45.67", "root", "redwood")
         _portsFile1.setSsh("10.123.45.67", "joe", "dummy")
         _portsFile1.setSsh("10.123.45.67", "jane", "funny")
+        print _portsFile1.getPorts(protocol="ssh")
         _portsFile1.removeSsh("10.123.45.67", "joe")
         print _portsFile1.getPorts(protocol="ssh", user="root")
+        _portsFile1.changeIPAddress("10.123.45.67", "10.123.45.68")
+        print _portsFile1.getPorts(protocol="ssh")
     finally:
         shutil.rmtree(_testDir)
