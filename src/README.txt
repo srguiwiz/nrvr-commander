@@ -1,5 +1,6 @@
 Modules provides by this package are
 * nrvr.diskimage.isoimage
+* nrvr.el.clone
 * nrvr.el.gnome
 * nrvr.el.kickstart
 * nrvr.el.kickstarttemplates
