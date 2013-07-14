@@ -29,6 +29,16 @@ class Clone():
         
         As implemented works in Enterprise Linux versions 6.x.
         
+        Example use:
+        
+            vm = VMwareMachine("~/vmware/examples/example68/example68.vmx")
+            VMwareHypervisor.local.start(vm.vmxFilePath)
+            vm.sleepUntilSshIsAvailable(ticker=True)
+            vm.sshCommand([Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")])
+            vm.portsFile.changeIPAddress("10.123.45.67", "10.123.45.68")
+            vm.sleepUntilSshIsAvailable(ticker=True)
+            vm.acceptKnownHostKey()
+        
         interface
             a string, e.g. "eth0".
         
