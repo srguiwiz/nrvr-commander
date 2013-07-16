@@ -708,7 +708,7 @@ class VMwareHypervisor(object):
         if numberMatch:
             numberOfSnapshots = int(numberMatch.group(1))
             # (?m) effects MULTILINE, omit leading and trailing whitespace if any
-            snapshots = re.findall(r"(?m)^\s*(.*)\s*$", listWithHeading)
+            snapshots = re.findall(r"(?m)^\s*(.*?)\s*$", listWithHeading)
             # omit first line, i.e. line with number of snapshots
             snapshots.pop(0)
             # omit empty lines, e.g. after trailing newline
