@@ -97,7 +97,29 @@ class Clone():
         command = r"if [ `hostname` == " + re.escape(oldHostname) + r" ] ; then " + command + r" ; fi"
         return command
 
+    @classmethod
+    def commandToRecreateSshHostKeys(cls):
+        """Build command to recreate ssh host keys.
+        
+        Must be root to succeed.
+        
+        May have to consider timing for subsequent invocation of acceptKnownHostKey().
+        
+        As implemented works in Enterprise Linux versions 6.x.
+        Recreates SSHv1 RSA key, SSHv2 RSA and DSA key.
+        
+        Some machines may have further settings that may need changing too.
+        
+        Return command to recreate ssh host keys."""
+        command = r"rm -f /etc/ssh/ssh_host_*key*" + \
+                  r" ; ssh-keygen -t rsa1 -f /etc/ssh/ssh_host_key -N \"\"" + \
+                  r" ; ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N \"\"" + \
+                  r" ; ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -N \"\"" + \
+                  r" ; nohup sh -c 'service sshd restart' &> /dev/null &"
+        return command
+
 if __name__ == "__main__":
     print Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")
     print Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68", interface="eth0")
     print Clone.commandToChangeHostname("example67", "example68")
+    print Clone.commandToRecreateSshHostKeys()
