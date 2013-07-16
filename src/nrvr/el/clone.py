@@ -110,6 +110,20 @@ class Clone():
         
         Some machines may have further settings that may need changing too.
         
+        Example use:
+        
+            vm = VMwareMachine("~/vmware/examples/example68/example68.vmx")
+            VMwareHypervisor.local.start(vm.vmxFilePath)
+            vm.sleepUntilSshIsAvailable(ticker=True)
+            vm.sshCommand([Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")])
+            vm.portsFile.changeIPAddress("10.123.45.67", "10.123.45.68")
+            vm.sleepUntilSshIsAvailable(ticker=True)
+            vm.acceptKnownHostKey()
+            vm.sshCommand([Clone.commandToChangeHostname("example67", "example68")])
+            vm.sshCommand([Clone.commandToRecreateSshHostKeys()])
+            time.sleep(10.0)
+            vm.acceptKnownHostKey()
+        
         Return command to recreate ssh host keys."""
         command = r"rm -f /etc/ssh/ssh_host_*key*" + \
                   r" ; ssh-keygen -t rsa1 -f /etc/ssh/ssh_host_key -N \"\"" + \
