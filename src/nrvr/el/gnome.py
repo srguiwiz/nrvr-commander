@@ -51,7 +51,7 @@ class Gnome():
         Must be user to succeed.
         
         Return command to disable screen saver of GNOME."""
-        command = "gconftool-2 -s /apps/gnome-screensaver/idle_activation_enabled --type=bool false"
+        command = "gconftool-2 --set /apps/gnome-screensaver/idle_activation_enabled --type=bool false"
         return command
 
     @classmethod
@@ -61,7 +61,7 @@ class Gnome():
         Must be user to succeed.
         
         Return command to enable screen saver of GNOME."""
-        command = "gconftool-2 -s /apps/gnome-screensaver/idle_activation_enabled --type=bool true"
+        command = "gconftool-2 --set /apps/gnome-screensaver/idle_activation_enabled --type=bool true"
         return command
 
     @classmethod
@@ -91,6 +91,18 @@ class Gnome():
         command = "export DISPLAY=:0.0 ; nohup " + application + " &> /dev/null &"
         return command
 
+    @classmethod
+    def commandToSetSolidColorBackground(cls, color="#2f4f6f"):
+        """Build command to set solid color background of GNOME.
+        
+        Must be user to succeed.
+        
+        Return command to set solid color background of GNOME."""
+        command = r"gconftool-2 --set /desktop/gnome/background/picture_options --type=string none" + \
+                  r" && gconftool-2 --set /desktop/gnome/background/color_shading_type --type=string solid" + \
+                  r" && gconftool-2 --set /desktop/gnome/background/primary_color --type=string " + re.escape(color)
+        return command
+
 if __name__ == "__main__":
     print Gnome.commandToEnableAutoLogin("joe")
     print Gnome.commandToDisableAutoLogin()
@@ -99,3 +111,4 @@ if __name__ == "__main__":
     print Gnome.commandToEnableScreenSaver()
     print Gnome.commandToTellWhetherGuiIsAvailable()
     print Gnome.commandToStartApplicationInGui("gedit")
+    print Gnome.commandToSetSolidColorBackground("#4f6f8f")
