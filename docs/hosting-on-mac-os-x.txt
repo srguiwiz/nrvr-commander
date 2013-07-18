@@ -46,12 +46,13 @@ Error: Unable to execute port: Could not open file: ~/Downloads/libcdio-81-port/
 per various postings probably a permission problem, not same but
 similar to http://trac.macports.org/ticket/38472
 found workaround
-mkdir /shared
-chmod 755 /shared
-cp ~/Downloads/libcdio-81-port/Portfile /shared/
-sudo chown macports:macports /shared/
-cd /shared/
+sudo mkdir /tmp-make-port
+sudo cp ~/Downloads/libcdio-81-port/Portfile /tmp-make-port/
+sudo chown macports:macports /tmp-make-port
+cd /tmp-make-port
 sudo port install
+cd ~
+sudo rm -rf /tmp-make-port
 check with
 iso-read --version
 
