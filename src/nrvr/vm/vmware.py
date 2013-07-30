@@ -354,6 +354,43 @@ class VmxFileContent(object):
         for foundPrefix in foundPrefixes:
             self.removeSettingsStartingWith(foundPrefix + ".")
 
+    @classmethod
+    def ethernetSettingPrefix(cls, adapter=0):
+        """.vmx file parameters for Ethernet adapters have a naming convention.
+        
+        Return e.g. "ethernet0" for adapter=0."""
+        return "ethernet" + str(adapter)
+
+    def setEthernetAdapter(self, connectionType="bridged", adapter=0):
+        """Set .vmx file parameters for a virtual Ethernet adapter.
+        
+        connectionType
+            "bridged", "nat", or "hostonly".
+        
+        E.g.::
+        
+            ethernet0.present = "TRUE"
+            ethernet0.connectionType = "bridged"
+            ethernet0.virtualDev = "e1000"
+            ethernet0.startConnected = "TRUE"
+            ethernet0.wakeOnPcktRcv = "FALSE"
+            ethernet0.allowGuestConnectionControl = "FALSE"
+            ethernet0.disableMorphToVmxnet = "TRUE" """
+        validConnectionTypes = ["bridged", "nat", "hostonly"]
+        if not connectionType in validConnectionTypes:
+            raise Exception("Ethernet connectionType must be one of {0}, cannot be {1}".format(validConnectionTypes, connectionType))
+        adapter = int(adapter)
+        if adapter < 0 or adapter > 9:
+            raise Exception("Ethernet adapter must be a single digit, 0, 1, etc., cannot be {0}".format(adapter))
+        ethernetSettingPrefix = self.ethernetSettingPrefix(adapter)
+        self.setSettingValue(ethernetSettingPrefix + ".present", "TRUE", extraEmptyLine=True)
+        self.setSettingValue(ethernetSettingPrefix + ".connectionType", connectionType)
+        self.setSettingValue(ethernetSettingPrefix + ".virtualDev", "e1000")
+        self.setSettingValue(ethernetSettingPrefix + ".startConnected", "TRUE")
+        self.setSettingValue(ethernetSettingPrefix + ".wakeOnPcktRcv", "FALSE")
+        self.setSettingValue(ethernetSettingPrefix + ".allowGuestConnectionControl", "FALSE")
+        self.setSettingValue(ethernetSettingPrefix + ".disableMorphToVmxnet", "TRUE")
+
 if __name__ == "__main__":
     _vmxFileContent1 = VmxFileContent(VMwareTemplates.usableVMwareVmxTemplate001)
     _vmxFileContent1.setIdeDiskVmdkFile("test1-disk0.vmdk", 0, 0)
@@ -362,6 +399,8 @@ if __name__ == "__main__":
     _vmxFileContent1.removeSetting("svga.vramSize")
     _vmxFileContent1.removeSetting("usb.present")
     _vmxFileContent1.removeIdeDrive(0, 1)
+    _vmxFileContent1.setEthernetAdapter("nat", 1)
+    _vmxFileContent1.setEthernetAdapter("hostonly", 2)
     print _vmxFileContent1.string
 
 
@@ -506,17 +545,18 @@ class VmxFile(object):
         # keep up-to-date
         self._load()
 
-    @classmethod
-    def _removeAllIdeCdromImages(cls, vmxFileContent):
-        """Remove all .vmx file parameters for all virtual IDE CD-ROM drives served from image files."""
-        # method made to be vmxFileContentModifyingMethod parameter for method modify()
-        vmxFileContent.removeAllIdeCdromImages()
-
     def removeAllIdeCdromImages(self):
         """Remove all .vmx file parameters for all virtual IDE CD-ROM drives served from image files."""
-        # recommended safe  wrapper
-        # because no parameter, simpler could have been self.modify(self._removeAllIdeCdromImages)
-        self.modify(lambda vmxFileContent: self._removeAllIdeCdromImages(vmxFileContent))
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent: vmxFileContent.removeAllIdeCdromImages())
+
+    def setEthernetAdapter(self, connectionType="bridged", adapter=0):
+        """Set .vmx file parameters for a virtual Ethernet adapter.
+        
+        connectionType
+            "bridged", "nat", or "hostonly"."""
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent: vmxFileContent.setEthernetAdapter(connectionType, adapter))
 
 if __name__ == "__main__":
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
@@ -771,6 +811,8 @@ class VMwareHypervisor(object):
                                [snapshot])
 
 if __name__ == "__main__":
+    SystemRequirements.commandsRequiredByImplementations([VMwareHypervisor], verbose=True)
+    #
     if VMwareHypervisor.local:
         print VMwareHypervisor.local.hostType
         print "VMs:\n" + str(VMwareHypervisor.local.listRunning())
@@ -1054,8 +1096,10 @@ if __name__ == "__main__":
     try:
         _vmwareMachine1 = VMwareMachine(os.path.join(_testDir, "test1/test1.vmx"))
         _vmwareMachine1.create(memsizeMegabytes=640, ideDrives=[20000, 300])
+        _vmwareMachine1.vmxFile.setEthernetAdapter("nat", 1)
         VMwareHypervisor.local.start(_vmwareMachine1.vmxFilePath, gui=True)
         time.sleep(5)
         VMwareHypervisor.local.stop(_vmwareMachine1.vmxFilePath, hard=True)
+        _vmwareMachine1.vmxFile.removeAllIdeCdromImages()
     finally:
         shutil.rmtree(_testDir)
