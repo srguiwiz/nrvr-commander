@@ -365,7 +365,7 @@ class VmxFileContent(object):
         """Set .vmx file parameters for a virtual Ethernet adapter.
         
         connectionType
-            "bridged", "nat", or "hostonly".
+            "bridged", "hostonly", or "nat".
         
         E.g.::
         
@@ -376,7 +376,7 @@ class VmxFileContent(object):
             ethernet0.wakeOnPcktRcv = "FALSE"
             ethernet0.allowGuestConnectionControl = "FALSE"
             ethernet0.disableMorphToVmxnet = "TRUE" """
-        validConnectionTypes = ["bridged", "nat", "hostonly"]
+        validConnectionTypes = ["bridged", "hostonly", "nat"]
         if not connectionType in validConnectionTypes:
             raise Exception("Ethernet connectionType must be one of {0}, cannot be {1}".format(validConnectionTypes, connectionType))
         adapter = int(adapter)
@@ -399,8 +399,8 @@ if __name__ == "__main__":
     _vmxFileContent1.removeSetting("svga.vramSize")
     _vmxFileContent1.removeSetting("usb.present")
     _vmxFileContent1.removeIdeDrive(0, 1)
-    _vmxFileContent1.setEthernetAdapter("nat", 1)
-    _vmxFileContent1.setEthernetAdapter("hostonly", 2)
+    _vmxFileContent1.setEthernetAdapter("hostonly", 1)
+    _vmxFileContent1.setEthernetAdapter("nat", 2)
     print _vmxFileContent1.string
 
 
@@ -554,7 +554,7 @@ class VmxFile(object):
         """Set .vmx file parameters for a virtual Ethernet adapter.
         
         connectionType
-            "bridged", "nat", or "hostonly"."""
+            "bridged", "hostonly", or "nat"."""
         # recommended safe wrapper
         self.modify(lambda vmxFileContent: vmxFileContent.setEthernetAdapter(connectionType, adapter))
 
