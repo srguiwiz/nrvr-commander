@@ -361,11 +361,14 @@ class VmxFileContent(object):
         Return e.g. "ethernet0" for adapter=0."""
         return "ethernet" + str(adapter)
 
-    def setEthernetAdapter(self, connectionType="bridged", adapter=0):
+    def setEthernetAdapter(self, adapter=0, connectionType="bridged", change="enable"):
         """Set .vmx file parameters for a virtual Ethernet adapter.
         
         connectionType
             "bridged", "hostonly", or "nat".
+        
+        change
+            "enable", "disable", or "remove".
         
         E.g.::
         
@@ -376,20 +379,28 @@ class VmxFileContent(object):
             ethernet0.wakeOnPcktRcv = "FALSE"
             ethernet0.allowGuestConnectionControl = "FALSE"
             ethernet0.disableMorphToVmxnet = "TRUE" """
-        validConnectionTypes = ["bridged", "hostonly", "nat"]
-        if not connectionType in validConnectionTypes:
-            raise Exception("Ethernet connectionType must be one of {0}, cannot be {1}".format(validConnectionTypes, connectionType))
         adapter = int(adapter)
         if adapter < 0 or adapter > 9:
             raise Exception("Ethernet adapter must be a single digit, 0, 1, etc., cannot be {0}".format(adapter))
         ethernetSettingPrefix = self.ethernetSettingPrefix(adapter)
-        self.setSettingValue(ethernetSettingPrefix + ".present", "TRUE", extraEmptyLine=True)
-        self.setSettingValue(ethernetSettingPrefix + ".connectionType", connectionType)
-        self.setSettingValue(ethernetSettingPrefix + ".virtualDev", "e1000")
-        self.setSettingValue(ethernetSettingPrefix + ".startConnected", "TRUE")
-        self.setSettingValue(ethernetSettingPrefix + ".wakeOnPcktRcv", "FALSE")
-        self.setSettingValue(ethernetSettingPrefix + ".allowGuestConnectionControl", "FALSE")
-        self.setSettingValue(ethernetSettingPrefix + ".disableMorphToVmxnet", "TRUE")
+        validConnectionTypes = ["bridged", "hostonly", "nat"]
+        if not connectionType in validConnectionTypes:
+            raise Exception("Ethernet connectionType must be one of {0}, cannot be {1}".format(validConnectionTypes, connectionType))
+        validChanges = ["enable", "disable", "remove"]
+        if not change in validChanges:
+            raise Exception("Ethernet change must be one of {0}, cannot be {1}".format(validChanges, change))
+        if change == "enable":
+            self.setSettingValue(ethernetSettingPrefix + ".present", "TRUE", extraEmptyLine=True)
+            self.setSettingValue(ethernetSettingPrefix + ".connectionType", connectionType)
+            self.setSettingValue(ethernetSettingPrefix + ".virtualDev", "e1000")
+            self.setSettingValue(ethernetSettingPrefix + ".startConnected", "TRUE")
+            self.setSettingValue(ethernetSettingPrefix + ".wakeOnPcktRcv", "FALSE")
+            self.setSettingValue(ethernetSettingPrefix + ".allowGuestConnectionControl", "FALSE")
+            self.setSettingValue(ethernetSettingPrefix + ".disableMorphToVmxnet", "TRUE")
+        elif change == "disable":
+            self.setSettingValue(ethernetSettingPrefix + ".present", "FALSE", extraEmptyLine=True)
+        else: # change == "remove"
+            self.removeSettingsStartingWith(ethernetSettingPrefix + ".")
 
 if __name__ == "__main__":
     _vmxFileContent1 = VmxFileContent(VMwareTemplates.usableVMwareVmxTemplate001)
@@ -399,8 +410,10 @@ if __name__ == "__main__":
     _vmxFileContent1.removeSetting("svga.vramSize")
     _vmxFileContent1.removeSetting("usb.present")
     _vmxFileContent1.removeIdeDrive(0, 1)
-    _vmxFileContent1.setEthernetAdapter("hostonly", 1)
-    _vmxFileContent1.setEthernetAdapter("nat", 2)
+    _vmxFileContent1.setEthernetAdapter(1, "hostonly")
+    _vmxFileContent1.setEthernetAdapter(2, "nat")
+    _vmxFileContent1.setEthernetAdapter(3, "nat")
+    _vmxFileContent1.setEthernetAdapter(3, change="remove")
     print _vmxFileContent1.string
 
 
@@ -550,13 +563,17 @@ class VmxFile(object):
         # recommended safe wrapper
         self.modify(lambda vmxFileContent: vmxFileContent.removeAllIdeCdromImages())
 
-    def setEthernetAdapter(self, connectionType="bridged", adapter=0):
+    def setEthernetAdapter(self, adapter=0, connectionType="bridged", change="enable"):
         """Set .vmx file parameters for a virtual Ethernet adapter.
         
         connectionType
-            "bridged", "hostonly", or "nat"."""
+            "bridged", "hostonly", or "nat".
+        
+        change
+            "enable", "disable", or "remove"."""
         # recommended safe wrapper
-        self.modify(lambda vmxFileContent: vmxFileContent.setEthernetAdapter(connectionType, adapter))
+        self.modify(lambda vmxFileContent:
+            vmxFileContent.setEthernetAdapter(adapter=adapter, connectionType=connectionType, change=change))
 
 if __name__ == "__main__":
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
@@ -1096,7 +1113,7 @@ if __name__ == "__main__":
     try:
         _vmwareMachine1 = VMwareMachine(os.path.join(_testDir, "test1/test1.vmx"))
         _vmwareMachine1.create(memsizeMegabytes=640, ideDrives=[20000, 300])
-        _vmwareMachine1.vmxFile.setEthernetAdapter("nat", 1)
+        _vmwareMachine1.vmxFile.setEthernetAdapter(1, "nat")
         VMwareHypervisor.local.start(_vmwareMachine1.vmxFilePath, gui=True)
         time.sleep(5)
         VMwareHypervisor.local.stop(_vmwareMachine1.vmxFilePath, hard=True)
