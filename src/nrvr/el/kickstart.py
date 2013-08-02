@@ -302,6 +302,7 @@ class KickstartFileContent(object):
         nameserver
             one nameserver or a list of nameservers.
             If None then default to gateway.
+            If empty list then remove option.
         
         return
             self, for daisychaining."""
@@ -336,9 +337,15 @@ class KickstartFileContent(object):
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--gateway[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
                                        r"\g<1>" + gateway + r"\g<2>",
                                        commandSection.string)
-        commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--nameserver[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
-                                       r"\g<1>" + ",".join(nameserversStrings) + r"\g<2>",
-                                       commandSection.string)
+        if nameserversStrings:
+            commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--nameserver[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
+                                           r"\g<1>" + ",".join(nameserversStrings) + r"\g<2>",
+                                           commandSection.string)
+        else:
+            # remove option --nameserver
+            commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*)--nameserver[ \t]*(?:=|[ \t])[ \t]*[^\s]+(.*)$",
+                                           r"\g<1>" + r"\g<2>",
+                                           commandSection.string)
         return self
 
     def addNetworkDeviceWithDhcp(self, device="eth1"):
