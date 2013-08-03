@@ -113,8 +113,8 @@ if exists == False:
         exampleVm.portsFile.setSsh(ipaddress=ipaddress, user=additionalUser[0], pwd=additionalUser[1])
     # some possible modifications pointed out
     #exampleVm.vmxFile.setEthernetAdapter(0, "bridged")
+    #exampleVm.vmxFile.setEthernetAdapter(0, "nat")
     #exampleVm.vmxFile.setEthernetAdapter(1, "hostonly")
-    #exampleVm.vmxFile.setEthernetAdapter(2, "nat")
     # start up for operating system install
     VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True)
     VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
