@@ -348,21 +348,46 @@ class KickstartFileContent(object):
                                            commandSection.string)
         return self
 
-    def addNetworkDeviceWithDhcp(self, device="eth1"):
+    def addNetworkConfigurationWithDhcp(self, device="eth1"):
         """Add an additional network device with DHCP.
         
         device
-            would have to be increased past "eth1" if adding more than one additional device.
+            should be increased past "eth1" if adding more than one additional configuration.
+            
+            Pre-existing network configurations are moved up by one device each, if there would be a conflict.
+            E.g. adding for "eth0" when for "eth0" already exists causes the pre-existing for "eth0" to become for "eth1".
         
         return
             self, for daisychaining."""
-        # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
-        device = re.escape(device) # precaution
         commandSection = self.sectionByName("command")
-        commandSection.string = commandSection.string + "#\n" \
-                                                      + "network --device=" + device \
-                                                      + " --bootproto=dhcp --noipv6 --onboot=yes --activate" \
-                                                      + "\n"
+        # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
+        deviceMatch = re.match(r"([^0-9]+)([0-9])", device)
+        if deviceMatch:
+            # e.g. "eth0"
+            devicePrefix = deviceMatch.group(1)
+            deviceNumber = deviceMatch.group(2)
+            deviceNumber = int(deviceNumber)
+            for i in range(8, deviceNumber - 1, -1):
+                deviceI = devicePrefix + str(i)
+                deviceIPlus1 = devicePrefix + str(i + 1)
+                # move up by one device each network configuration
+                commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--device[ \t]*(?:=|[ \t])[ \t]*)" + re.escape(deviceI) + r"(.*)$",
+                                               r"\g<1>" + deviceIPlus1 + r"\g<2>",
+                                               commandSection.string)
+        # not --noipv6
+        networkConfiguration = "network --device=" + device + " --bootproto=dhcp --onboot=yes --activate"
+        if deviceMatch and deviceNumber == 0:
+            # having configuration of eth0 first appears to be more conducive to overall success,
+            # and also, per http://fedoraproject.org/wiki/Anaconda/Kickstart#network, supposedly
+            # "... in installer environment. Device of the first network command is activated if network is required,
+            # e.g. in case of network installation ...",
+            commandSection.string = networkConfiguration + "\n" \
+                                    + "#\n" \
+                                    + commandSection.string
+        else:
+            commandSection.string = commandSection.string \
+                                    + "#\n" \
+                                    + networkConfiguration + "\n"
 
     def activateGraphicalLogin(self):
         """Boot into graphical login on the installed system.
@@ -549,8 +574,9 @@ if __name__ == "__main__":
                                              "package-a-for-testing",
                                              "package-b-for-testing",
                                              "package-c-for-testing"])
-    _kickstartFileContent.addNetworkDeviceWithDhcp()
-    _kickstartFileContent.addNetworkDeviceWithDhcp("eth2")
+    _kickstartFileContent.addNetworkConfigurationWithDhcp()
+    _kickstartFileContent.addNetworkConfigurationWithDhcp("eth2")
+    _kickstartFileContent.addNetworkConfigurationWithDhcp("eth0")
     _kickstartFileContent.activateGraphicalLogin()
     _kickstartFileContent.addUser("jack", pwd="rainbow")
     _kickstartFileContent.addUser("jill", "sunshine")

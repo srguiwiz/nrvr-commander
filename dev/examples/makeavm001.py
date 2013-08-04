@@ -97,7 +97,7 @@ if exists == False:
     #kickstartFileContent.addPackage("httpd")
     # some other possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64MinimalDesktop)
-    #kickstartFileContent.addNetworkDeviceWithDhcp()
+    #kickstartFileContent.addNetworkConfigurationWithDhcp("eth0")
     #kickstartFileContent.activateGraphicalLogin()
     for additionalUser in additionalUsers:
         kickstartFileContent.addUser(additionalUser[0], pwd=additionalUser[1])
