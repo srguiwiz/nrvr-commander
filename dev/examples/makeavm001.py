@@ -28,7 +28,7 @@ from nrvr.remote.ssh import SshCommand, ScpCommand
 from nrvr.util.ipaddress import IPAddress
 from nrvr.util.nameserver import Nameserver
 from nrvr.util.requirements import SystemRequirements
-from nrvr.util.time import Timestamp
+from nrvr.util.times import Timestamp
 from nrvr.util.user import ScriptUser
 from nrvr.vm.vmware import VmdkFile, VmxFile, VMwareHypervisor, VMwareMachine
 from nrvr.vm.vmwaretemplates import VMwareTemplates

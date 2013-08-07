@@ -14,7 +14,7 @@ print exampleVm.sshCommand(["ls nonexistent ; echo `hostname`"]).output
 
 import shutil
 import tempfile
-from nrvr.util.time import Timestamp
+from nrvr.util.times import Timestamp
 
 _exampleDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
 os.mkdir(_exampleDir, 0755)

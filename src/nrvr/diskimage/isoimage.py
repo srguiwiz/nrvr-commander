@@ -29,7 +29,7 @@ import shutil
 
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.util.requirements import SystemRequirements
-from nrvr.util.time import Timestamp
+from nrvr.util.times import Timestamp
 
 class IsoImage(object):
     """An .iso ISO CD-ROM or DVD-ROM disk image."""

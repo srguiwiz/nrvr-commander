@@ -12,7 +12,7 @@ Modules provides by this package are
 * nrvr.util.ipaddress
 * nrvr.util.nameserver
 * nrvr.util.requirements
-* nrvr.util.time
+* nrvr.util.times
 * nrvr.util.user
 * nrvr.vm.vmware
 * nrvr.vm.vmwaretemplates

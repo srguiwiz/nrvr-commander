@@ -131,7 +131,7 @@ if __name__ == "__main__":
     #
     import tempfile
     import shutil
-    from nrvr.util.time import Timestamp
+    from nrvr.util.times import Timestamp
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
     os.mkdir(_testDir, 0755)
     try:

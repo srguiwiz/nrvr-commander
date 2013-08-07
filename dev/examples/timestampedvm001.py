@@ -10,7 +10,7 @@ Modified BSD License"""
 import os.path
 
 from nrvr.util.requirements import SystemRequirements
-from nrvr.util.time import Timestamp
+from nrvr.util.times import Timestamp
 from nrvr.vm.vmware import VMwareHypervisor
 
 # TODO document this is a good way to preflight check
