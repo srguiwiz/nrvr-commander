@@ -11,6 +11,7 @@ Modules provides by this package are
 * nrvr.util.classproperty
 * nrvr.util.ipaddress
 * nrvr.util.nameserver
+* nrvr.util.networkinterface
 * nrvr.util.requirements
 * nrvr.util.times
 * nrvr.util.user
