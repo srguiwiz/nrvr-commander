@@ -87,6 +87,15 @@ class IPAddress(object):
         return octets
 
     @classmethod
+    def bitNot(cls, one):
+        if not isinstance(one, (list, tuple)):
+            one = cls.asList(one)
+        octets = []
+        for oneOctet in one:
+            octets.append(~oneOctet & 255)
+        return octets
+
+    @classmethod
     def nameWithNumber(cls, stem, ipaddress, octets=1, separator="-"):
         """For stem="example" and ipaddress="10.123.45.67" return "example-067".
         
@@ -101,6 +110,33 @@ class IPAddress(object):
             name += separator + "%03d" % ipaddress[index]
         return name
 
+    @classmethod
+    def numberWithinSubnet(cls, subnet, number, netmask="255.255.255.0"):
+        """For subnet="10.123.45.67" and number="89" return [10, 123, 45, 89].
+        
+        For subnet="10.123.45.67" and number="89.34" and netmask="255.255.0.0" return [10, 123, 89, 34]."""
+        if not isinstance(subnet, (list, tuple)):
+            subnet = cls.asList(subnet)
+        # less than stellar decoding of number, but it works in actual use cases
+        if isinstance(number, int):
+            # in theory handling more than 16 bits' 65536 would be desirable,
+            # practically handling up to 16 bits' 65535 is enough
+            if number <= 255:
+                number = [number]
+            else:
+                number = [number >> 8, number & 255]
+        if not isinstance(number, (list, tuple)):
+            number = number.split(".")
+            number = map(int, number)
+        if not isinstance(netmask, (list, tuple)):
+            netmask = cls.asList(netmask)
+        subnet = cls.bitAnd(subnet, netmask)
+        number = [0] * (len(subnet) - len(number)) + number
+        complementOfNetmask = cls.bitNot(netmask)
+        number = cls.bitAnd(number, complementOfNetmask)
+        result = cls.bitOr(subnet, number)
+        return result
+
 if __name__ == "__main__":
     print IPAddress.asList("10.123.45.67")
     print IPAddress.asList((192, 168, 95, 17))
@@ -113,7 +149,12 @@ if __name__ == "__main__":
     print IPAddress.asString("10.123.45.67")
     print IPAddress.bitAnd("10.123.45.67", "255.255.255.0")
     print IPAddress.bitOr(IPAddress.bitAnd("10.123.45.67", "255.255.255.0"), "0.0.0.1")
+    print IPAddress.bitNot("1.2.3.4")
     print IPAddress.nameWithNumber("example", "10.123.45.67")
     print IPAddress.nameWithNumber("example", "10.123.45.67", octets=2)
     print IPAddress.nameWithNumber("example", "10.123.45.67", octets=3)
     print IPAddress.nameWithNumber("example", "10.123.45.67", octets=4)
+    print IPAddress.numberWithinSubnet("10.123.45.67", "89")
+    print IPAddress.numberWithinSubnet("10.123.45.67", 89)
+    print IPAddress.numberWithinSubnet("10.123.45.67", "89.34", netmask="255.255.0.0")
+    print IPAddress.numberWithinSubnet("10.123.45.67", 22818, netmask="255.255.0.0")
