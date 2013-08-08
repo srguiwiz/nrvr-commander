@@ -34,15 +34,15 @@ class NetworkInterface(object):
         return ["ifconfig"]
 
     @classmethod
-    def ipAddressOf(cls, name):
-        """For name="lo0" return "127.0.0.1".
+    def ipAddressOf(cls, networkInterfaceName):
+        """For networkInterfaceName="lo" return "127.0.0.1".
         
-        name
+        networkInterfaceName
             the name of the interface.
         
         Return the IP address of the interface, or None."""
         # as implemented does NOT require vmrun command, absence means not any
-        ifconfig = CommandCapture(["ifconfig", name],
+        ifconfig = CommandCapture(["ifconfig", networkInterfaceName],
                                   copyToStdio=False,
                                   exceptionIfNotZero=False, exceptionIfAnyStderr=False)
         if ifconfig.returncode != 0 or ifconfig.stderr:
@@ -57,5 +57,7 @@ if __name__ == "__main__":
     from nrvr.util.requirements import SystemRequirements
     SystemRequirements.commandsRequiredByImplementations([NetworkInterface], verbose=True)
     #
+    print NetworkInterface.ipAddressOf("lo")
     print NetworkInterface.ipAddressOf("lo0")
+    print NetworkInterface.ipAddressOf("vmnet1")
     print NetworkInterface.ipAddressOf("madesomethingup")

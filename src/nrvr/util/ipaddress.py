@@ -111,30 +111,30 @@ class IPAddress(object):
         return name
 
     @classmethod
-    def numberWithinSubnet(cls, subnet, number, netmask="255.255.255.0"):
-        """For subnet="10.123.45.67" and number="89" return [10, 123, 45, 89].
+    def numberWithinSubnet(cls, oneInSubnet, otherNumber, netmask="255.255.255.0"):
+        """For oneInSubnet="10.123.45.67" and otherNumber="89" return [10, 123, 45, 89].
         
-        For subnet="10.123.45.67" and number="89.34" and netmask="255.255.0.0" return [10, 123, 89, 34]."""
-        if not isinstance(subnet, (list, tuple)):
-            subnet = cls.asList(subnet)
-        # less than stellar decoding of number, but it works in actual use cases
-        if isinstance(number, int):
+        For oneInSubnet="10.123.45.67" and otherNumber="89.34" and netmask="255.255.0.0" return [10, 123, 89, 34]."""
+        if not isinstance(oneInSubnet, (list, tuple)):
+            oneInSubnet = cls.asList(oneInSubnet)
+        # less than stellar decoding of otherNumber, but it works in actual use cases
+        if isinstance(otherNumber, int):
             # in theory handling more than 16 bits' 65536 would be desirable,
             # practically handling up to 16 bits' 65535 is enough
-            if number <= 255:
-                number = [number]
+            if otherNumber <= 255:
+                otherNumber = [otherNumber]
             else:
-                number = [number >> 8, number & 255]
-        if not isinstance(number, (list, tuple)):
-            number = number.split(".")
-            number = map(int, number)
+                otherNumber = [otherNumber >> 8, otherNumber & 255]
+        if not isinstance(otherNumber, (list, tuple)):
+            otherNumber = otherNumber.split(".")
+            otherNumber = map(int, otherNumber)
         if not isinstance(netmask, (list, tuple)):
             netmask = cls.asList(netmask)
-        subnet = cls.bitAnd(subnet, netmask)
-        number = [0] * (len(subnet) - len(number)) + number
         complementOfNetmask = cls.bitNot(netmask)
-        number = cls.bitAnd(number, complementOfNetmask)
-        result = cls.bitOr(subnet, number)
+        contributedBySubnet = cls.bitAnd(oneInSubnet, netmask)
+        otherNumber = [0] * (len(contributedBySubnet) - len(otherNumber)) + otherNumber
+        contributedByNumber = cls.bitAnd(otherNumber, complementOfNetmask)
+        result = cls.bitOr(contributedBySubnet, contributedByNumber)
         return result
 
 if __name__ == "__main__":
