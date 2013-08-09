@@ -41,7 +41,9 @@ Modified BSD License"""
 import codecs
 import os.path
 import re
+import shutil
 import sys
+import tempfile
 import time
 
 from nrvr.diskimage.isoimage import IsoImage
@@ -49,7 +51,9 @@ from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.remote.ssh import SshParameters, SshCommand, ScpCommand
 from nrvr.util.classproperty import classproperty
+from nrvr.util.networkinterface import NetworkInterface
 from nrvr.util.requirements import SystemRequirements
+from nrvr.util.times import Timestamp
 from nrvr.util.user import ScriptUser
 from nrvr.vm.vmwaretemplates import VMwareTemplates
 
@@ -129,9 +133,6 @@ class VmdkFile(object):
 if __name__ == "__main__":
     SystemRequirements.commandsRequiredByImplementations([VmdkFile], verbose=True)
     #
-    import tempfile
-    import shutil
-    from nrvr.util.times import Timestamp
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
     os.mkdir(_testDir, 0755)
     try:
@@ -827,6 +828,55 @@ class VMwareHypervisor(object):
                                (["linked"] if linked else ["full"]) +
                                [snapshot])
 
+    _localHostOnlyNetworkInterfaceName = "vmnet1"
+    _localHostOnlyIPAddress = None
+
+    @classproperty
+    def localHostOnlyIPAddress(cls):
+        """IP address of network interface to hostonly network of VMware hypervisor available locally.
+        
+        May return None."""
+        if not VMwareHypervisor.local:
+            return None
+        if VMwareHypervisor._localHostOnlyIPAddress is None:
+            # determine
+            VMwareHypervisor._localHostOnlyIPAddress = \
+                NetworkInterface.ipAddressOf(VMwareHypervisor._localHostOnlyNetworkInterfaceName)
+            if VMwareHypervisor._localHostOnlyIPAddress is None:
+                # look closer
+                if sys.platform == "darwin": # Mac OS X
+                    # no vmnet if VMware Fusion is not running,
+                    # opening a virtual machine apparently reliably starts VMware Fusion
+                    tempDummyDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
+                    os.mkdir(tempDummyDir, 0755)
+                    try:
+                        tempDummyVm = VMwareMachine(os.path.join(tempDummyDir, "dummy.vmx"))
+                        # a minimal .vmx file
+                        with open(tempDummyVm.vmxFilePath, "w") as vmxFile:
+                            vmxFile.write("""
+config.version = "8"
+virtualHW.version = "7"
+guestOS = "linux"
+memsize = "32" # megabytes, must be multiple of 4
+sound.present = "FALSE"
+floppy0.present = "FALSE"
+serial0.present = "FALSE"
+vmci0.present = "FALSE"
+tools.upgrade.policy = "manual"
+tools.remindInstall = "FALSE"
+msg.autoAnswer = "TRUE"
+""")
+                        tempDummyVm.vmxFile.setEthernetAdapter(0, change="remove")
+                        VMwareHypervisor.local.start(tempDummyVm.vmxFilePath, gui=False, sleepSeconds=0.0)
+                        # now there should be a vmnet,
+                        # try determining now
+                        VMwareHypervisor._localHostOnlyIPAddress = \
+                            NetworkInterface.ipAddressOf(VMwareHypervisor._localHostOnlyNetworkInterfaceName)
+                        VMwareHypervisor.local.stop(tempDummyVm.vmxFilePath, hard=True)
+                    finally:
+                        shutil.rmtree(tempDummyDir)
+        return VMwareHypervisor._localHostOnlyIPAddress
+
 if __name__ == "__main__":
     SystemRequirements.commandsRequiredByImplementations([VMwareHypervisor], verbose=True)
     #
@@ -1120,3 +1170,7 @@ if __name__ == "__main__":
         _vmwareMachine1.vmxFile.removeAllIdeCdromImages()
     finally:
         shutil.rmtree(_testDir)
+
+if __name__ == "__main__":
+    # couldn't run further above after VMwareHypervisor because of dependency on VMwareMachine
+    print VMwareHypervisor.localHostOnlyIPAddress
