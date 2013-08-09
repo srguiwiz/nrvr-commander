@@ -33,12 +33,12 @@ from nrvr.util.user import ScriptUser
 from nrvr.vm.vmware import VmdkFile, VmxFile, VMwareHypervisor, VMwareMachine
 from nrvr.vm.vmwaretemplates import VMwareTemplates
 
-# TODO document this is a good way to preflight check
+# this is a good way to preflight check
 SystemRequirements.commandsRequiredByImplementations([IsoImage,
                                                       VmdkFile, VMwareHypervisor,
                                                       SshCommand, ScpCommand],
                                                      verbose=True)
-# TODO document this is a good way to preflight check
+# this is a good way to preflight check
 VMwareHypervisor.localRequired()
 
 # BEGIN essential example code
@@ -50,7 +50,7 @@ rootpw = "redwood"
 additionalUsers = []
 # some possible choices pointed out
 #additionalUsers [("jack","rainbow"),("jill","sunshine")]
-# TODO document this way of making new VM names and directories
+# one possible way of making new VM names and directories
 name = IPAddress.nameWithNumber("example", ipaddress, separator=None)
 exampleVm = VMwareMachine(ScriptUser.loggedIn.userHomeRelative("vmware/examples/%s/%s.vmx" % (name, name)))
 # make the virtual machine
@@ -213,6 +213,6 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 #SshCommand(exampleSshParameters, [Gnome.commandToStartApplicationInGui("firefox")])
 
 #
-print "done with %s, it is ready for you to use at %s" % \
-(exampleVm.basenameStem, exampleVm.portsFile.getPorts(protocol="ssh", user="root")[0]["ipaddress"])
+print "%s is done with %s, it is ready for you to use at %s" % \
+(__file__, exampleVm.basenameStem, exampleVm.portsFile.getPorts(protocol="ssh", user="root")[0]["ipaddress"])
 # END essential example code
