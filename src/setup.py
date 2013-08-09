@@ -14,6 +14,7 @@ setup(name="NrvrCommander",
       * nrvr.el.kickstart
       * nrvr.el.kickstarttemplates
       * nrvr.el.ssh
+      * nrvr.el.util
       * nrvr.machine.ports
       * nrvr.process.commandcapture
       * nrvr.remote.ssh
