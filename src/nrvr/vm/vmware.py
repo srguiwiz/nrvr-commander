@@ -594,7 +594,7 @@ class VMwareHypervisor(object):
         """Return a list to be passed to SystemRequirements.commandsRequired().
         
         This class can be passed to SystemRequirements.commandsRequiredByImplementations()."""
-        return ["vmrun"]
+        return ["vmrun"] + NetworkInterface.commandsUsedInImplementation()
 
     def __init__(self, hostType):
         """Create new VMware hypervisor descriptor."""
