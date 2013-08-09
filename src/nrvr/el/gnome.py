@@ -2,10 +2,7 @@
 
 """nrvr.el.gnome - Manipulate Enterprise Linux GNOME
 
-Classes provided by this module include
-* Gnome
-
-To be improved as needed.
+Class provided by this module is Gnome.
 
 Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
 
