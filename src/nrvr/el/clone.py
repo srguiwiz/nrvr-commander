@@ -2,8 +2,7 @@
 
 """nrvr.el.clone - Manipulate Enterprise Linux machines for cloning
 
-Classes provided by this module include
-* Clone
+Class provided by this module is ElClone.
 
 To be improved as needed.
 
@@ -18,7 +17,7 @@ import re
 
 from nrvr.util.ipaddress import IPAddress
 
-class Clone():
+class ElClone():
     """Utilities for manipulating a Enterprise Linux machines for cloning."""
 
     @classmethod
@@ -34,11 +33,11 @@ class Clone():
             vm = VMwareMachine("~/vmware/examples/example68/example68.vmx")
             VMwareHypervisor.local.start(vm.vmxFilePath)
             vm.sleepUntilSshIsAvailable(ticker=True)
-            vm.sshCommand([Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")])
+            vm.sshCommand([ElClone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")])
             vm.portsFile.changeIPAddress("10.123.45.67", "10.123.45.68")
             vm.sleepUntilSshIsAvailable(ticker=True)
             vm.acceptKnownHostKey()
-            vm.sshCommand([Clone.commandToChangeHostname("example67", "example68")])
+            vm.sshCommand([ElClone.commandToChangeHostname("example67", "example68")])
         
         interface
             a string, e.g. "eth0".
@@ -76,11 +75,11 @@ class Clone():
             vm = VMwareMachine("~/vmware/examples/example68/example68.vmx")
             VMwareHypervisor.local.start(vm.vmxFilePath)
             vm.sleepUntilSshIsAvailable(ticker=True)
-            vm.sshCommand([Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")])
+            vm.sshCommand([ElClone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")])
             vm.portsFile.changeIPAddress("10.123.45.67", "10.123.45.68")
             vm.sleepUntilSshIsAvailable(ticker=True)
             vm.acceptKnownHostKey()
-            vm.sshCommand([Clone.commandToChangeHostname("example67", "example68")])
+            vm.sshCommand([ElClone.commandToChangeHostname("example67", "example68")])
         
         Return command to change static hostname."""
         if re.search(r"\s", oldHostname):
@@ -115,12 +114,12 @@ class Clone():
             vm = VMwareMachine("~/vmware/examples/example68/example68.vmx")
             VMwareHypervisor.local.start(vm.vmxFilePath)
             vm.sleepUntilSshIsAvailable(ticker=True)
-            vm.sshCommand([Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")])
+            vm.sshCommand([ElClone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")])
             vm.portsFile.changeIPAddress("10.123.45.67", "10.123.45.68")
             vm.sleepUntilSshIsAvailable(ticker=True)
             vm.acceptKnownHostKey()
-            vm.sshCommand([Clone.commandToChangeHostname("example67", "example68")])
-            vm.sshCommand([Clone.commandToRecreateSshHostKeys()])
+            vm.sshCommand([ElClone.commandToChangeHostname("example67", "example68")])
+            vm.sshCommand([ElClone.commandToRecreateSshHostKeys()])
             time.sleep(10.0)
             vm.acceptKnownHostKey()
         
@@ -133,7 +132,7 @@ class Clone():
         return command
 
 if __name__ == "__main__":
-    print Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")
-    print Clone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68", interface="eth0")
-    print Clone.commandToChangeHostname("example67", "example68")
-    print Clone.commandToRecreateSshHostKeys()
+    print ElClone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68")
+    print ElClone.commandToChangeStaticIPAddress("10.123.45.67", "10.123.45.68", interface="eth0")
+    print ElClone.commandToChangeHostname("example67", "example68")
+    print ElClone.commandToRecreateSshHostKeys()
