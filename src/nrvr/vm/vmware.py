@@ -19,9 +19,9 @@ Files related to a machine are essentially expected to be in the same directory.
 
 The purpose is automation.
 The purpose isn't to support all features of the hypervisor.
-As implemented only known to support VMware Workstation 7.1 and VMware Player 3.1.
-As implemented requires vmrun, which is known to be available when installing VMware VIX 1.10.
-As implemented only tested with VMware Workstation 7.1.4, VMware Player 3.1.4, VIX 1.10.3.
+As implemented only known to support VMware Workstation 9, VMware Player 5, and VMware Fusion 5.
+As implemented requires vmrun, which is known to be available when installing VMware VIX 1.12.
+As implemented only tested with VMware Workstation 9.0.2, VMware Player 5.0.2, VIX 1.12.2, and VMware Fusion 5.0.3.
 Should work with newer versions VMware Workstation, VMware Player, and VIX.
 Other hypervisors may be added as needed.
 
@@ -644,10 +644,11 @@ class VMwareHypervisor(object):
         """Raises exception if no supported VMware hypervisor available locally."""
         if not VMwareHypervisor.local:
             raise Exception("must have supported VMware hypervisor available locally"
-                            ", which as implemented means VMware Workstation 7.1 or newer"
-                            " or VMware Player 3.1 or newer"
+                            ", which as implemented means VMware Workstation 9.0 or newer"
+                            " or VMware Player 5.0 or newer"
+                            " or VMware Fusion 5.0 or newer"
                             ", and requires vmrun"
-                            ", which is known to be available when installing VMware VIX 1.10")
+                            ", which is known to be available when installing VMware VIX 1.12")
 
     @property
     def hostType(self):
