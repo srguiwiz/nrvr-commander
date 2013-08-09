@@ -43,6 +43,9 @@ VMwareHypervisor.localRequired()
 
 # BEGIN essential example code
 ipaddress = "192.168.11.171"
+# a possible modification pointed out
+# makes sense e.g. if used together with whateverVm.vmxFile.setEthernetAdapter(adapter, "hostonly")
+#ipaddress = IPAddress.numberWithinSubnet(VMwareHypervisor.localHostOnlyIPAddress, 171)
 rootpw = "redwood"
 additionalUsers = []
 # some possible choices pointed out
