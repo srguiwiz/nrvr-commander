@@ -96,8 +96,20 @@ class Gnome():
         
         Return command to set solid color background of GNOME."""
         command = r"gconftool-2 --set /desktop/gnome/background/picture_options --type=string none" + \
-                  r" && gconftool-2 --set /desktop/gnome/background/color_shading_type --type=string solid" + \
-                  r" && gconftool-2 --set /desktop/gnome/background/primary_color --type=string " + re.escape(color)
+                  r" ; gconftool-2 --set /desktop/gnome/background/color_shading_type --type=string solid" + \
+                  r" ; gconftool-2 --set /desktop/gnome/background/primary_color --type=string " + re.escape(color)
+        return command
+
+    @classmethod
+    def commandToDisableUpdateNotifications(cls):
+        """Build command to disable software update notifications of GNOME.
+        
+        Must be user to succeed.
+        
+        Return command to disable software update notifications of GNOME."""
+        command = r"gconftool-2 --set /apps/gnome-packagekit/update-icon/notify_available --type=bool false" + \
+                  r" ; gconftool-2 --set /apps/gnome-packagekit/update-icon/notify_critical --type=bool false" + \
+                  r" ; gconftool-2 --set /apps/gnome-packagekit/update-icon/notify_distro_upgrades --type=bool false"
         return command
 
 if __name__ == "__main__":
@@ -109,3 +121,4 @@ if __name__ == "__main__":
     print Gnome.commandToTellWhetherGuiIsAvailable()
     print Gnome.commandToStartApplicationInGui("gedit")
     print Gnome.commandToSetSolidColorBackground("#4f6f8f")
+    print Gnome.commandToDisableUpdateNotifications()

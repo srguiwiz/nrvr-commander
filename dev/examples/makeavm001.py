@@ -134,6 +134,7 @@ exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 #    exampleVm.sshCommand([Gnome.commandToEnableAutoLogin(additionalUsers[0][0])])
 #    exampleVm.sshCommand([Gnome.commandToDisableScreenSaver()], user=additionalUsers[0][0])
 #    exampleVm.sshCommand([Gnome.commandToSetSolidColorBackground()], user=additionalUsers[0][0])
+#    exampleVm.sshCommand([Gnome.commandToDisableUpdateNotifications()], user=additionalUsers[0][0])
 
 # a possible modification pointed out
 # copy over some custom installer
