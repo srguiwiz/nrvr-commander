@@ -963,9 +963,10 @@ class VMwareMachine(object):
     def remove(self):
         """Remove (delete) VMware virtual machine from the host disk.
         
-        As implemented only yet completely deletes the directory containing the .vmx file,
+        As implemented completely deletes the directory containing the .vmx file,
         which often is correct but not necessarily always."""
-        os.remove(self.directory)
+        if self._vmxFile.exists(): # sanity check
+            shutil.rmtree(self.directory)
 
     def acceptKnownHostKey(self):
         """Accept host's key.
