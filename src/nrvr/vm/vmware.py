@@ -770,7 +770,7 @@ class VMwareHypervisor(object):
             snapshots = re.findall(r"(?m)^\s*(.*?)\s*$", listWithHeading)
             # omit first line, i.e. line with number of snapshots
             snapshots.pop(0)
-            # omit empty lines, e.g. after trailing newline
+            # omit empty lines, if any, e.g. after trailing newline
             snapshots = filter(None, snapshots)
         # here an opportunity to see in debugger
         return snapshots
@@ -797,7 +797,6 @@ class VMwareHypervisor(object):
         """Revert to snapshot of virtual machine.
         
         As implemented raises exception if running, unless asked to tolerate."""
-        snapshot = snapshot.strip()
         if not tolerateRunning:
             if self.isRunning(vmxFilePath):
                 raise Exception("won't revert to snapshot ({0}) while still running {1} because of default tolerateRunning=False".format(snapshot, vmxFilePath))
@@ -807,12 +806,69 @@ class VMwareHypervisor(object):
         """Delete snapshot of virtual machine.
         
         As implemented raises exception if running, unless asked to tolerate."""
-        snapshot = snapshot.strip()
         if not tolerateRunning:
             if self.isRunning(vmxFilePath):
                 raise Exception("won't delete snapshot while still running {0} because of default tolerateRunning=False".format(vmxFilePath))
         vmrun = CommandCapture(["vmrun", "-T", self._hostType, "deleteSnapshot", vmxFilePath, snapshot] +
                                (["andDeleteChildren"] if andDeleteChildren else []))
+
+    def deleteDescendantsOfSnapshot(self, vmxFilePath, snapshot):
+        """Delete descendants of snapshot of virtual machine.
+        
+        Keeps snapshot.
+        
+        As implemented raises exception if running."""
+        vmrun = CommandCapture(["vmrun", "-T", self._hostType, "listSnapshots", vmxFilePath, "showtree"],
+                               copyToStdio=False)
+        listWithHeading = vmrun.stdout
+        # first line tells number of snapshots, names are in subsequent lines,
+        # indented because of option showtree
+        snapshotLines = listWithHeading.splitlines()
+        # omit first line, i.e. line with number of snapshots
+        snapshotLines.pop(0)
+        # omit empty lines, if any, e.g. after trailing newline
+        snapshotLines = filter(None, snapshotLines)
+        snapshotLines = "\n".join(snapshotLines)
+        # first group is indentation string, second group is snapshot name
+        snapshotLines = re.findall(r"(?m)^(\s*)(\S.*?)\s*$", snapshotLines)
+        keeperIndentationLength = None
+        deleteIndentationLength = None
+        for i in range(0, len(snapshotLines)):
+            snapshotLine = snapshotLines[i]
+            indentationLength = len(snapshotLine[0])
+            name = snapshotLine[1]
+            if keeperIndentationLength is None:
+                if name == snapshot: # found snapshot
+                    keeperIndentationLength = indentationLength
+                    snapshotPath = [name]
+                    previousIndentationLengthForPath = indentationLength
+                    for j in range(i-1, -1, -1):
+                        snapshotLineForPath = snapshotLines[j]
+                        indentationLengthForPath = len(snapshotLineForPath[0])
+                        if indentationLengthForPath < previousIndentationLengthForPath:
+                            snapshotPath.append(snapshotLineForPath[1])
+                            previousIndentationLengthForPath = indentationLengthForPath
+                    snapshotPath.reverse()
+                    snapshotPath = "/".join(snapshotPath)
+                    continue
+                else: # above snapshot
+                    continue
+            else: # below snapshot
+                if indentationLength == keeperIndentationLength: # next sibling of snapshot
+                    break # done
+                if deleteIndentationLength is None: # first child of snapshot
+                    deleteIndentationLength = indentationLength
+                if indentationLength == deleteIndentationLength: # any child of snapshot
+                    snapshotToDelete = snapshotPath + "/" + name
+                    # more efficient here to delete children too, and too complex to tolerate running
+                    self.deleteSnapshot(vmxFilePath, snapshotToDelete, andDeleteChildren=True, tolerateRunning=False)
+
+    def revertToSnapshotAndDeleteDescendants(self, vmxFilePath, snapshot):
+        """Revert to snapshot of virtual machine and delete any and all descendants of snapshot.
+        
+        As implemented raises exception if running."""
+        self.revertToSnapshot(vmxFilePath, snapshot, tolerateRunning=False)
+        self.deleteDescendantsOfSnapshot(vmxFilePath, snapshot)
 
     def cloneSnapshot(self, vmxFilePath, snapshot, clonedVmxFilePath, linked=True, tolerateRunning=False):
         """Create clone of virtual machine at snapshot.
@@ -821,7 +877,6 @@ class VMwareHypervisor(object):
         
         linked
             whether to create a linked clone or a full clone."""
-        snapshot = snapshot.strip()
         if not tolerateRunning:
             if self.isRunning(vmxFilePath):
                 raise Exception("won't clone virtual machine while still running {0} because of default tolerateRunning=False".format(vmxFilePath))
@@ -1165,11 +1220,24 @@ if __name__ == "__main__":
     try:
         _vmwareMachine1 = VMwareMachine(os.path.join(_testDir, "test1/test1.vmx"))
         _vmwareMachine1.create(memsizeMegabytes=640, ideDrives=[20000, 300])
+        VMwareHypervisor.local.createSnapshot(_vmwareMachine1.vmxFilePath, "VM created")
         _vmwareMachine1.vmxFile.setEthernetAdapter(1, "nat")
+        VMwareHypervisor.local.createSnapshot(_vmwareMachine1.vmxFilePath, "set NAT")
         VMwareHypervisor.local.start(_vmwareMachine1.vmxFilePath, gui=True)
         time.sleep(5)
         VMwareHypervisor.local.stop(_vmwareMachine1.vmxFilePath, hard=True)
+        VMwareHypervisor.local.createSnapshot(_vmwareMachine1.vmxFilePath, "VM ran")
         _vmwareMachine1.vmxFile.removeAllIdeCdromImages()
+        _vmwareMachine1.vmxFile.setEthernetAdapter(2, "bridged")
+        VMwareHypervisor.local.createSnapshot(_vmwareMachine1.vmxFilePath, "set bridged too")
+        VMwareHypervisor.local.revertToSnapshot(_vmwareMachine1.vmxFilePath, "VM created")
+        _vmwareMachine1.vmxFile.setEthernetAdapter(1, "bridged")
+        VMwareHypervisor.local.createSnapshot(_vmwareMachine1.vmxFilePath, "set bridged")
+        # expect listSnapshots ['VM created', 'set NAT', 'VM ran', 'set bridged too', 'set bridged']
+        print VMwareHypervisor.local.listSnapshots(_vmwareMachine1.vmxFilePath)
+        VMwareHypervisor.local.revertToSnapshotAndDeleteDescendants(_vmwareMachine1.vmxFilePath, "set NAT")
+        # expect listSnapshots ['VM created', 'set NAT', 'set bridged']
+        print VMwareHypervisor.local.listSnapshots(_vmwareMachine1.vmxFilePath)
     finally:
         shutil.rmtree(_testDir)
 
