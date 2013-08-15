@@ -78,6 +78,7 @@ class Gnome():
         """Build command to start application in GNOME.
         
         Must be user to succeed.
+        Also, GUI must be available to succeed.
         
         Puts application into background and returns.
         
@@ -112,6 +113,34 @@ class Gnome():
                   r" ; gconftool-2 --set /apps/gnome-packagekit/update-icon/notify_distro_upgrades --type=bool false"
         return command
 
+    @classmethod
+    def commandToAddSystemMonitorPanel(cls):
+        """Build command to add System Monitor to Panel of GNOME.
+        
+        Must be user to succeed.
+        Also, GUI must be available to succeed.
+        
+        As implemented doesn't prevent multiple additions.
+        
+        Return command to add System Monitor to Panel of GNOME."""
+        # necessary is
+        #   export DISPLAY=:0.0 ; /usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet
+        # rest is optional to show all loads, possibly only after logout and login
+        command = r"export DISPLAY=:0.0 ; " + \
+                  r"/usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet" + \
+                  r" && dbuslaunch=`dbus-launch`" + \
+                  r" && export DBUS_SESSION_BUS_ADDRESS=`printf \"%s\" \"$dbuslaunch\" | sed -r -n -e 's/^DBUS_SESSION_BUS_ADDRESS=(.*)/\1/p'`" + \
+                  r" && export DBUS_SESSION_BUS_PID=`printf \"%s\" \"$dbuslaunch\" | sed -r -n -e 's/^DBUS_SESSION_BUS_PID=(.*)/\1/p'`" + \
+                  r" && gconftool-2 --spawn" + \
+                  r" && applet=`gconftool-2 --get /apps/panel/general/applet_id_list | sed -r -e 's/^.*,(.+)]$/\1/'`" + \
+                  r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_cpuload --type=bool true" + \
+                  r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_memload --type=bool true" + \
+                  r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_netload --type=bool true" + \
+                  r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_swapload --type=bool true" + \
+                  r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_loadavg --type=bool true" + \
+                  r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_diskload --type=bool true"
+        return command
+
 if __name__ == "__main__":
     print Gnome.commandToEnableAutoLogin("joe")
     print Gnome.commandToDisableAutoLogin()
@@ -122,3 +151,4 @@ if __name__ == "__main__":
     print Gnome.commandToStartApplicationInGui("gedit")
     print Gnome.commandToSetSolidColorBackground("#4f6f8f")
     print Gnome.commandToDisableUpdateNotifications()
+    print Gnome.commandToAddSystemMonitorPanel()

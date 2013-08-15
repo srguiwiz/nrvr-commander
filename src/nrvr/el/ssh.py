@@ -63,11 +63,11 @@ class ElSshCommand(SshCommand):
                 return False
         except Exception as e:
             return False
-        
+
     @classmethod
     def sleepUntilIsGuiAvailable(cls, sshParameters,
                                  checkIntervalSeconds=5.0, ticker=False):
-        """If available return, else loop sleeping for checkIntervalSeconds.
+        """If GUI available return, else loop sleeping for checkIntervalSeconds.
         
         Should be user to be meaningful.
         
