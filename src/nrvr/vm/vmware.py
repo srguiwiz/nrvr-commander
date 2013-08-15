@@ -675,7 +675,7 @@ class VMwareHypervisor(object):
         if sleepSeconds:
             time.sleep(sleepSeconds)
 
-    def stop(self, vmxFilePath, hard=False):
+    def stop(self, vmxFilePath, hard=False, tolerateNotRunning=True):
         """Stop virtual machine.
         
         Ideally virtual machines would stop from shutting down from within the virtual machine
@@ -691,8 +691,17 @@ class VMwareHypervisor(object):
         A hard stop appears to be the least desirable option, even though it has the highest
         probability of succeeding at stopping the virtual machine it also has the highest
         probability of leaving behind virtual disk content as if after a crash."""
-        CommandCapture(["vmrun", "-T", self._hostType, "stop", vmxFilePath] + 
-                       (["hard"] if hard else ["soft"]))
+        try:
+            CommandCapture(["vmrun", "-T", self._hostType, "stop", vmxFilePath] +
+                           (["hard"] if hard else ["soft"]))
+        except:
+            if tolerateNotRunning:
+                if not self.isRunning(vmxFilePath=vmxFilePath): # apparently .vmx file not listed as running
+                    pass # avoid exception due to "Error: The virtual machine is not powered on"
+                else: # apparently still running
+                    raise # don't tolerate still running
+            else: # behavior of stop command
+                raise # don't tolerate anything
 
     def isRunning(self, vmxFilePath):
         """Return whether .vmx file listed as running."""
