@@ -1214,6 +1214,13 @@ class VMwareMachine(object):
                                                          checkIntervalSeconds=checkIntervalSeconds,
                                                          ticker=ticker)
 
+    @property
+    def mainUser(self):
+        """The main user.
+        
+        Can be None."""
+        return self.portsFile.getMainUser()
+
 if __name__ == "__main__":
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
     os.mkdir(_testDir, 0755)
@@ -1238,6 +1245,8 @@ if __name__ == "__main__":
         VMwareHypervisor.local.revertToSnapshotAndDeleteDescendants(_vmwareMachine1.vmxFilePath, "set NAT")
         # expect listSnapshots ['VM created', 'set NAT', 'set bridged']
         print VMwareHypervisor.local.listSnapshots(_vmwareMachine1.vmxFilePath)
+        _vmwareMachine1.portsFile.setMainUser("joe")
+        print _vmwareMachine1.mainUser
     finally:
         shutil.rmtree(_testDir)
 

@@ -39,6 +39,12 @@ class PortsFile(object):
             <user>root</user>
             <protocol>ssh</protocol>
           </shutdown>
+          <ssh>
+            <ipaddress>10.123.45.67</ipaddress>
+            <user>joe</user>
+            <pwd>dummy</pwd>
+          </ssh>
+          <mainuser>joe</mainuser>
         </ports>"""
 
     def __init__(self, portsFilePath):
@@ -261,6 +267,54 @@ class PortsFile(object):
         self.modify(lambda portsFileContent: self._changeIPAddress(portsFileContent,
                                                                    oldIpAddress=oldIpAddress, newIpAddress=newIpAddress))
 
+    @classmethod
+    def _setMainUser(cls, portsFileContent, mainUser):
+        """Set .ports file entry for main user.
+        
+        mainUser
+            name of main user.
+            
+            If falsy then remove entry."""
+        # method made to be portsFileContentModifyingMethod parameter for method modify()
+        # feel the misery of not yet having better XPath from Python 2.7 and ElementTree 1.3
+        rootElement = portsFileContent.getroot()
+        mainuserElements = portsFileContent.findall("mainuser")
+        if len(mainuserElements) == 0: # no entry yet for main user
+            mainuserElement = SubElement(rootElement, "mainuser")
+        else:
+            mainuserElement = mainuserElements[0]
+        if mainUser:
+            mainuserElement.text = mainUser
+        else:
+            rootElement.remove(mainuserElement)
+
+    def setMainUser(self, mainUser):
+        """Set .ports file entry for main user.
+        
+        mainUser
+            name of main user.
+            
+            If falsy then remove entry."""
+        # recommended safe  wrapper
+        self.modify(lambda portsFileContent: self._setMainUser(portsFileContent,
+                                                               mainUser=mainUser))
+
+    def getMainUser(self):
+        """Return main user from .ports file entry.
+        
+        If none then return None."""
+        if self._portsFileContent is None:
+            # a good way to signal back to caller
+            return None
+        # feel the misery of not yet having better XPath from Python 2.7 and ElementTree 1.3
+        mainuserElements = self._portsFileContent.findall("mainuser")
+        if len(mainuserElements) > 0:
+            mainuserElement = mainuserElements[0]
+            mainUser = mainuserElement.text
+            return mainUser
+        else: # no entry yet for main user
+            return None
+
 if __name__ == "__main__":
     import shutil
     import tempfile
@@ -278,5 +332,9 @@ if __name__ == "__main__":
         print _portsFile1.getPorts(protocol="ssh", user="root")
         _portsFile1.changeIPAddress("10.123.45.67", "10.123.45.68")
         print _portsFile1.getPorts(protocol="ssh")
+        _portsFile1.setMainUser("joe")
+        print _portsFile1.getMainUser()
+        _portsFile1.setMainUser("")
+        print _portsFile1.getMainUser()
     finally:
         shutil.rmtree(_testDir)
