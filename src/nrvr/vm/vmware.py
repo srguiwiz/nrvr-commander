@@ -1138,10 +1138,9 @@ class VMwareMachine(object):
         Assumes .ports file to exist and to have an entry for ssh for the user.
         
         Needs virtual machine to be running already, ready to accept ssh connections, duh."""
-        port, ipaddress, pwd = self._sshPortIpaddressPwd(guestUser)
-        scpCommand = ScpCommand(fromPath=fromHostPath,
-                                toUser=guestUser, toIpaddress=ipaddress, toPath=toGuestPath,
-                                pwd=pwd)
+        toSshParameters = self.sshParameters(user=guestUser)
+        scpCommand = ScpCommand.put(fromLocalPath=fromHostPath,
+                                    toSshParameters=toSshParameters, toRemotePath=toGuestPath)
         return scpCommand
 
     def scpGetCommand(self, fromGuestPath, toHostPath, guestUser="root"):
@@ -1152,10 +1151,9 @@ class VMwareMachine(object):
         Assumes .ports file to exist and to have an entry for ssh for the user.
         
         Needs virtual machine to be running already, ready to accept ssh connections, duh."""
-        port, ipaddress, pwd = self._sshPortIpaddressPwd(guestUser)
-        scpCommand = ScpCommand(fromUser=guestUser, fromIpaddress=ipaddress, fromPath=fromGuestPath,
-                                toPath=toHostPath,
-                                pwd=pwd)
+        fromSshParameters = self.sshParameters(user=guestUser)
+        scpCommand = ScpCommand.put(fromSshParameters=fromSshParameters, fromRemotePath=fromGuestPath,
+                                    toLocalPath=toHostPath)
         return scpCommand
 
     def sshIsAvailable(self, user="root", probingCommand="hostname"):

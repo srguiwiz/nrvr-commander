@@ -477,48 +477,41 @@ class ScpCommand(object):
     _acceptPromptRegex = re.compile(re.escape(r"(yes/no)?"))
 
     def __init__(self,
-                 fromPath, toPath, pwd,
-                 fromUser=None, fromIpaddress=None,
-                 toUser=None, toIpaddress=None):
+                 fromPath, toPath,
+                 fromSshParameters=None, toSshParameters=None):
         """Create new ScpCommand instance.
         
         Will wait until completed.
         
-        Either fromPath or toPath is expected to be local, i.e. without user and without IP address."""
+        Either fromPath or toPath is expected to be local, i.e. without user and without IP address.
+        Correspondingly either fromSshParameters or toSshParameters must NOT be assigned an SshParameters
+        instance and remain default None.
+        
+        fromSshParameters
+            an SshParameters instance.
+        
+        toSshParameters
+            an SshParameters instance."""
         if not _gotPty:
             # cannot use scp if no pty
             raise Exception("must have module pty available to use scp command"
                             ", which is known to be available in Python 2.6 on Linux, but not on Windows")
         #
-        fromIpaddress = IPAddress.asString(fromIpaddress) if fromIpaddress is not None else None
-        toIpaddress = IPAddress.asString(toIpaddress) if toIpaddress is not None else None
+        if fromSshParameters and toSshParameters:
+            raise Exception("cannot copy if both fromSshParameters and toSshParameters, only one or other")
+        if not fromSshParameters and not toSshParameters:
+            raise Exception("cannot copy if neither fromSshParameters nor toSshParameters, require one or other")
         #
-        if fromUser is not None and fromIpaddress is None:
-            raise Exception("cannot handle if given user but not IP address")
-        if toUser is not None and toIpaddress is None:
-            raise Exception("cannot handle if given user but not IP address")
-        if fromIpaddress is not None and fromUser is None:
-            raise Exception("cannot handle if given IP address but not user")
-        if toIpaddress is not None and toUser is None:
-            raise Exception("cannot handle if given IP address but not user")
-        if fromIpaddress is not None and toIpaddress is not None:
-            raise Exception("cannot handle copying from IP address to IP address")
-        #
-        self._fromUser = fromUser
-        self._fromIpaddress = fromIpaddress
-        self._fromPath = fromPath
-        if self._fromIpaddress is not None:
-            self._fromSpecification = self._fromUser + "@" + self._fromIpaddress + ":" + self._fromPath
+        if fromSshParameters:
+            self._fromSpecification = \
+                fromSshParameters.user + "@" + IPAddress.asString(fromSshParameters.ipaddress) + ":" + fromPath
+            self._toSpecification = toPath
+            self._pwd = fromSshParameters.pwd
         else:
-            self._fromSpecification = self._fromPath
-        self._toUser = toUser
-        self._toIpaddress = toIpaddress
-        self._toPath = toPath
-        if self._toIpaddress is not None:
-            self._toSpecification = self._toUser + "@" + self._toIpaddress + ":" + self._toPath
-        else:
-            self._toSpecification = self._toPath
-        self._pwd = pwd
+            self._fromSpecification = fromPath
+            self._toSpecification = \
+                toSshParameters.user + "@" + IPAddress.asString(toSshParameters.ipaddress) + ":" + toPath
+            self._pwd = toSshParameters.pwd
         self._output = ""
         self._returncode = None
         #
@@ -622,6 +615,28 @@ class ScpCommand(object):
         Could be None."""
         return self._returncode
 
+    @classmethod
+    def put(cls, fromLocalPath, toSshParameters, toRemotePath):
+        """Return an ScpCommand instance.
+        
+        Will wait until completed.
+        
+        toSshParameters
+            an SshParameters instance for remote."""
+        scpCommand = ScpCommand(fromPath=fromLocalPath, toPath=toRemotePath, toSshParameters=toSshParameters)
+        return scpCommand
+
+    @classmethod
+    def get(cls, fromSshParameters, fromRemotePath, toLocalPath):
+        """Return an ScpCommand instance.
+        
+        Will wait until completed.
+        
+        fromSshParameters
+            an SshParameters instance for remote."""
+        scpCommand = ScpCommand(fromPath=fromRemotePath, toPath=toLocalPath, fromSshParameters=fromSshParameters)
+        return scpCommand
+
 if __name__ == "__main__":
     SystemRequirements.commandsRequiredByImplementations([ScpCommand], verbose=True)
     #
@@ -637,14 +652,15 @@ if __name__ == "__main__":
         with open(_exampleFile1, "w") as outputFile:
             outputFile.write("this is an example\n" * 1000000)
         # fictional 10.123.45.67
+        _exampleSshParameters = SshParameters("10.123.45.67", "root", "redwood")
 #        _scpExample1 = ScpCommand(fromPath=_exampleFile1,
-#                                  toUser="root", toIpaddress="10.123.45.67", toPath="~/example1.txt",
-#                                  pwd="redwood")
+#                                  toSshParameters=_exampleSshParameters,
+#                                  toPath="~/example1.txt")
 #        print "returncode=" + str(_scpExample1.returncode)
 #        print "output=" + _scpExample1.output
-#        _scpExample2 = ScpCommand(fromUser="root", fromIpaddress="10.123.45.67", fromPath="/etc/hosts",
-#                                  toPath=_exampleFile1,
-#                                  pwd="redwood")
+#        _scpExample2 = ScpCommand(fromSshParameters=_exampleSshParameters,
+#                                  fromPath="/etc/hosts",
+#                                  toPath=_exampleFile1)
 #        print "returncode=" + str(_scpExample2.returncode)
 #        print "output=" + _scpExample2.output
 #        with open(_exampleFile1, "r") as inputFile:
