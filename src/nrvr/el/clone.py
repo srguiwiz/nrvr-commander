@@ -93,7 +93,7 @@ class ElClone():
         command += r" ; for f in /etc/sysconfig/network-scripts/ifcfg-* ; do " + settingReplacementCommand + r" $f ; done"
         # immediate effect without restart
         command += r" ; hostname " + re.escape(newHostname)
-        command = r"if [ `hostname` == " + re.escape(oldHostname) + r" ] ; then " + command + r" ; fi"
+        command = r"if [ `hostname` = " + re.escape(oldHostname) + r" ] ; then " + command + r" ; fi"
         return command
 
     @classmethod
