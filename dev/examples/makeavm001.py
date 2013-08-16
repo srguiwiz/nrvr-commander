@@ -73,6 +73,7 @@ if exists == False:
     #   http://rwmj.wordpress.com/2010/05/05/tip-ways-to-extract-an-iso-without-needing-root/
     # then because problem is with > 4GB .iso file size
     #   http://lists.gnu.org/archive/html/libcdio-help/2011-12/msg00001.html
+    #   http://savannah.gnu.org/bugs/?39373
     # a solution is to make a smaller .iso file by removing large package which will not be used
     # find ~/Downloads/tmp-SL61-64bit-iso/ -name 'kdegames-*' -exec rm {} \;
     # find ~/Downloads/tmp-SL61-64bit-iso/ -name 'kdebase-workspace-wallpapers-*' -exec rm {} \;
