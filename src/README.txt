@@ -10,6 +10,7 @@ Modules provides by this package are
 * nrvr.process.commandcapture
 * nrvr.remote.ssh
 * nrvr.util.classproperty
+* nrvr.util.download
 * nrvr.util.ipaddress
 * nrvr.util.nameserver
 * nrvr.util.networkinterface

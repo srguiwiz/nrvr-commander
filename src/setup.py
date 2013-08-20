@@ -20,6 +20,7 @@ setup(name="NrvrCommander",
       * nrvr.remote.ssh
       * nrvr.script.util
       * nrvr.util.classproperty
+      * nrvr.util.download
       * nrvr.util.ipaddress
       * nrvr.util.nameserver
       * nrvr.util.networkinterface
