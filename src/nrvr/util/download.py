@@ -28,14 +28,23 @@ class Download(object):
     semaphoreExtenstion = ".wait"
 
     @classmethod
+    def basename(cls, url):
+        """Base name from a dowload URL.
+        
+        Implemented for the purpose of all code using and relying on this
+        one implementation only."""
+        urlParseResult = urlparse.urlparse(url)
+        baseName = posixpath.basename(urlParseResult.path)
+        return baseName
+
+    @classmethod
     def fromUrl(cls, url, ticker=True):
         """Download file or use previously downloaded file.
         
         As implemented uses urllib2.
         
         Return file path."""
-        urlParseResult = urlparse.urlparse(url)
-        urlFilename = posixpath.basename(urlParseResult.path)
+        urlFilename = cls.basename(url)
         downloadDir = ScriptUser.loggedIn.userHomeRelative("Downloads")
         downloadPath = os.path.join(downloadDir, urlFilename)
         semaphorePath = downloadPath + cls.semaphoreExtenstion
@@ -138,6 +147,7 @@ class Download(object):
 
 if __name__ == "__main__":
     _exampleUrl = "http://www.bbc.co.uk/historyofthebbc/img/logos_blocks.jpg"
+    print Download.basename(_exampleUrl)
     _exampleFile = Download.fromUrl(_exampleUrl, ticker=False)
     print _exampleFile
     os.remove(_exampleFile)
