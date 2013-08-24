@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.el.util - Utilities for manipulating Enterprise Linux
+"""nrvr.distros.el.util - Utilities for manipulating Enterprise Linux
 
 Class provided by this module is ElUtil.
 

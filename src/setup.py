@@ -3,18 +3,19 @@
 from distutils.core import setup
 
 setup(name="NrvrCommander",
-      version="1.3.1",
+      version="1.3.2",
       description="Tools for automation.",
       long_description="""Tools for automation.
       
       Modules provides by this package are
       * nrvr.diskimage.isoimage
-      * nrvr.el.clone
-      * nrvr.el.gnome
-      * nrvr.el.kickstart
-      * nrvr.el.kickstarttemplates
-      * nrvr.el.ssh
-      * nrvr.el.util
+      * nrvr.distros.el.clone
+      * nrvr.distros.el.gnome
+      * nrvr.distros.el.kickstart
+      * nrvr.distros.el.kickstarttemplates
+      * nrvr.distros.el.ssh
+      * nrvr.distros.el.util
+      * nrvr.distros.ub.kickstarttemplates
       * nrvr.machine.ports
       * nrvr.process.commandcapture
       * nrvr.remote.ssh
@@ -32,7 +33,9 @@ setup(name="NrvrCommander",
       * nrvr.xml.etree""",
       packages=["nrvr",
                 "nrvr.diskimage",
-                "nrvr.el",
+                "nrvr.distros",
+                "nrvr.distros.el",
+                "nrvr.distros.ub",
                 "nrvr.machine",
                 "nrvr.process",
                 "nrvr.remote",

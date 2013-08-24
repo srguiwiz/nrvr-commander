@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.el.kickstart - Create and manipulate Enterprise Linux kickstart files
+"""nrvr.distros.el.kickstart - Create and manipulate Enterprise Linux kickstart files
 
 Classes provided by this module include
 * ElIsoImage
@@ -21,7 +21,7 @@ Modified BSD License"""
 import re
 
 import nrvr.diskimage.isoimage
-from nrvr.el.kickstarttemplates import KickstartTemplates
+from nrvr.distros.el.kickstarttemplates import KickstartTemplates
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.util.ipaddress import IPAddress
 

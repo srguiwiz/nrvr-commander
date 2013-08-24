@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.el.ssh - Remote commands over ssh to Enterprise Linux
+"""nrvr.distros.el.ssh - Remote commands over ssh to Enterprise Linux
 
 The main class provided by this module is ElSshCommand.
 
@@ -19,7 +19,7 @@ import re
 import sys
 import time
 
-from nrvr.el.gnome import Gnome
+from nrvr.distros.el.gnome import Gnome
 from nrvr.remote.ssh import SshCommand
 from nrvr.util.classproperty import classproperty
 from nrvr.util.ipaddress import IPAddress

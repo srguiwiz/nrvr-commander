@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.el.clone - Manipulate Enterprise Linux machines for cloning
+"""nrvr.distros.el.clone - Manipulate Enterprise Linux machines for cloning
 
 Class provided by this module is ElClone.
 

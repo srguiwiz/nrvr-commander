@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.el.gnome - Manipulate Enterprise Linux GNOME
+"""nrvr.distros.el.gnome - Manipulate Enterprise Linux GNOME
 
 Class provided by this module is Gnome.
 

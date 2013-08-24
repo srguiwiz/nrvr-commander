@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.el.kickstarttemplates - Templates for creating Enterprise Linux kickstart files
+"""nrvr.distros.el.kickstarttemplates - Templates for creating Enterprise Linux kickstart files
 
 The main class provided by this module is KickstartTemplates.
 

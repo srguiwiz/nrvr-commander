@@ -1,11 +1,12 @@
 Modules provides by this package are
 * nrvr.diskimage.isoimage
-* nrvr.el.clone
-* nrvr.el.gnome
-* nrvr.el.kickstart
-* nrvr.el.kickstarttemplates
-* nrvr.el.ssh
-* nrvr.el.util
+* nrvr.distros.el.clone
+* nrvr.distros.el.gnome
+* nrvr.distros.el.kickstart
+* nrvr.distros.el.kickstarttemplates
+* nrvr.distros.el.ssh
+* nrvr.distros.el.util
+* nrvr.distros.ub.kickstarttemplates
 * nrvr.machine.ports
 * nrvr.process.commandcapture
 * nrvr.remote.ssh
@@ -22,6 +23,6 @@ Modules provides by this package are
 * nrvr.xml.etree
 
 To install do the usual:
-	tar xzf dist/NrvrCommander-1.3.1.tar.gz
-	cd NrvrCommander-1.3.1
+	tar xzf dist/NrvrCommander-1.3.2.tar.gz
+	cd NrvrCommander-1.3.2
 	sudo python ./setup.py install
