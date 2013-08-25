@@ -1161,7 +1161,7 @@ class VMwareMachine(object):
         
         Needs virtual machine to be running already, ready to accept ssh connections, duh."""
         fromSshParameters = self.sshParameters(user=guestUser)
-        scpCommand = ScpCommand.put(fromSshParameters=fromSshParameters, fromRemotePath=fromGuestPath,
+        scpCommand = ScpCommand.get(fromSshParameters=fromSshParameters, fromRemotePath=fromGuestPath,
                                     toLocalPath=toHostPath)
         return scpCommand
 
