@@ -18,8 +18,9 @@ import tempfile
 import time
 
 from nrvr.diskimage.isoimage import IsoImage
+from nrvr.distros.common.kickstart import KickstartFileContent
 from nrvr.distros.el.gnome import Gnome
-from nrvr.distros.el.kickstart import ElIsoImage, KickstartFileContent
+from nrvr.distros.el.kickstart import ElIsoImage
 from nrvr.distros.el.kickstarttemplates import KickstartTemplates
 from nrvr.distros.el.ssh import ElSshCommand
 from nrvr.machine.ports import PortsFile
@@ -87,8 +88,8 @@ if exists == False:
     # genisoimage -r -J -T -f -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat -V remastered -o ~/Downloads/SL-61-x86_64-2011-11-09-Install-DVD-less-some.iso ~/Downloads/tmp-SL61-64bit-iso/
     # and you might want to check it is smaller than 2^32 == 4294967296 bytes
     #
-    downloadedElIsoImage = ElIsoImage(ScriptUser.loggedIn.userHomeRelative \
-                                      ("Downloads/SL-64-i386-2013-03-18-Install-DVD.iso"))
+    downloadedDistroIsoImage = ElIsoImage(ScriptUser.loggedIn.userHomeRelative \
+                                          ("Downloads/SL-64-i386-2013-03-18-Install-DVD.iso"))
     # some possible choices pointed out
     # server w command line only
     kickstartFileContent = KickstartFileContent(KickstartTemplates.usableKickstartTemplate001)
@@ -106,11 +107,11 @@ if exists == False:
     for additionalUser in additionalUsers:
         kickstartFileContent.addUser(additionalUser[0], pwd=additionalUser[1])
     # pick right temporary directory, ideally same as VM
-    modifiedElIsoImage = downloadedElIsoImage.cloneWithAutoBootingKickstart \
+    modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
     (kickstartFileContent, os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
     # some necessary choices pointed out
     # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "centos" versus "centos-64"
-    exampleVm.create(memsizeMegabytes=2000, guestOS="centos", ideDrives=[20000, 300, modifiedElIsoImage])
+    exampleVm.create(memsizeMegabytes=2000, guestOS="centos", ideDrives=[20000, 300, modifiedDistroIsoImage])
     exampleVm.portsFile.setSsh(ipaddress=ipaddress, user="root", pwd=rootpw)
     exampleVm.portsFile.setShutdown()
     for additionalUser in additionalUsers:
@@ -123,7 +124,7 @@ if exists == False:
     VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, sleepSeconds=0)
     VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
     exampleVm.vmxFile.removeAllIdeCdromImages()
-    modifiedElIsoImage.remove()
+    modifiedDistroIsoImage.remove()
 
 # start up for accepting known host key
 VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, sleepSeconds=0)

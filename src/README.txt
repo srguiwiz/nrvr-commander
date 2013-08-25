@@ -1,5 +1,6 @@
 Modules provides by this package are
 * nrvr.diskimage.isoimage
+* nrvr.distros.common.kickstart
 * nrvr.distros.el.clone
 * nrvr.distros.el.gnome
 * nrvr.distros.el.kickstart

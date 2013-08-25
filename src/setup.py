@@ -9,6 +9,7 @@ setup(name="NrvrCommander",
       
       Modules provides by this package are
       * nrvr.diskimage.isoimage
+      * nrvr.distros.common.kickstart
       * nrvr.distros.el.clone
       * nrvr.distros.el.gnome
       * nrvr.distros.el.kickstart
@@ -34,6 +35,7 @@ setup(name="NrvrCommander",
       packages=["nrvr",
                 "nrvr.diskimage",
                 "nrvr.distros",
+                "nrvr.distros.common",
                 "nrvr.distros.el",
                 "nrvr.distros.ub",
                 "nrvr.machine",
