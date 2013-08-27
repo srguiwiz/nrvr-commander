@@ -5,7 +5,7 @@
 Classes provided by this module include
 * DistroIsoImage
 * KickstartFileSection
-* KickstartFileContent
+* DistroKickstartFileContent
 
 To be improved as needed.
 
@@ -21,7 +21,6 @@ Modified BSD License"""
 import re
 
 import nrvr.diskimage.isoimage
-from nrvr.distros.el.kickstarttemplates import KickstartTemplates
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.util.ipaddress import IPAddress
 
@@ -45,7 +44,7 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
         This class implementation only returns an empty list [].
         
         _kickstartFileContent
-            A KickstartFileContent object.
+            A DistroKickstartFileContent object.
         
         Return a list of modifications which will be passed to method cloneWithModifications."""
         modifications = []
@@ -60,7 +59,7 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
         which is expected to be different per distro specific subclass.
         
         _kickstartFileContent
-            A KickstartFileContent object."""
+            A DistroKickstartFileContent object."""
         # modifications, could be quite different per distro specific subclass
         modifications = self.modificationsIncludingKickstartFile(_kickstartFileContent)
         # clone with modifications
@@ -70,7 +69,7 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
 
 
 class KickstartFileSection(object):
-    """The name and text content of a section of an Anaconda kickstart file for Enterprise Linux."""
+    """The name and text content of a section of an Anaconda kickstart file for use with a Linux distribution."""
 
     def __init__(self, name, string):
         """Create new kickstart file content section container."""
@@ -92,8 +91,8 @@ class KickstartFileSection(object):
         self._string = newString
 
 
-class KickstartFileContent(object):
-    """The text content of an Anaconda kickstart file for Enterprise Linux."""
+class DistroKickstartFileContent(object):
+    """The text content of an Anaconda kickstart file for use with a Linux distribution."""
 
     def __init__(self, string):
         """Create new kickstart file content container.
@@ -104,7 +103,7 @@ class KickstartFileContent(object):
         
         Nevertheless, this constructor does unicode(string), as befits the 21st century.
         Just don't put anything into it that is not in the ASCII range."""
-        self._sections = KickstartFileContent.parseIntoSections(unicode(string))
+        self._sections = DistroKickstartFileContent.parseIntoSections(unicode(string))
 
     @classmethod
     def parseIntoSections(cls, whole):
@@ -192,7 +191,7 @@ class KickstartFileContent(object):
         
         Return a KickstartFileSection, or None.
         
-        Setting a returned KickstartFileSection's string modifies the KickstartFileContent.
+        Setting a returned KickstartFileSection's string modifies the DistroKickstartFileContent.
         
         If more than one section with same name returns first."""
         for section in self._sections:
@@ -205,7 +204,7 @@ class KickstartFileContent(object):
         
         Return a list of KickstartFileSection, or empty list [].
         
-        Setting a returned KickstartFileSection's string modifies the KickstartFileContent."""
+        Setting a returned KickstartFileSection's string modifies the DistroKickstartFileContent."""
         sections = []
         for section in self._sections:
             if name == section.name:
@@ -240,7 +239,7 @@ class KickstartFileContent(object):
         # if starts with $ then assume encrypted
         isCrypted = re.match(r"\$", pwd)
         if not isCrypted:
-            pwd = KickstartFileContent.cryptedPwd(pwd)
+            pwd = DistroKickstartFileContent.cryptedPwd(pwd)
             isCrypted = True
         commandSection = self.sectionByName("command")
         # change to known root pwd
@@ -404,7 +403,7 @@ xconfig --startxonboot
             # if pwd starts with $ then assume encrypted
             isCrypted = re.match(r"\$", pwd)
             if not isCrypted:
-                pwd = KickstartFileContent.cryptedPwd(pwd)
+                pwd = DistroKickstartFileContent.cryptedPwd(pwd)
                 isCrypted = True
         else:
             isCrypted = False
@@ -432,7 +431,7 @@ xconfig --startxonboot
         alreadyListed = False
         for line in linesSplit:
             # check whether first word matches, i.e. to whitespace or #
-            firstWordOfLine = KickstartFileContent.firstWordOfLineRegex.search(line).group(1)
+            firstWordOfLine = DistroKickstartFileContent.firstWordOfLineRegex.search(line).group(1)
             if not pastSectionName:
                 if firstWordOfLine.startswith("%"):
                     pastSectionName = True
@@ -463,7 +462,7 @@ xconfig --startxonboot
         filteredLines = []
         for line in linesSplit:
             # check whether first word matches, i.e. to whitespace or #
-            firstWordOfLine = KickstartFileContent.firstWordOfLineRegex.search(line).group(1)
+            firstWordOfLine = DistroKickstartFileContent.firstWordOfLineRegex.search(line).group(1)
             if not pastSectionName:
                 if firstWordOfLine.startswith("%"):
                     pastSectionName = True
@@ -491,7 +490,7 @@ xconfig --startxonboot
         filteredLines = []
         for line in linesSplit:
             # check whether first word matches, i.e. to whitespace or #
-            firstWordOfLine = KickstartFileContent.firstWordOfLineRegex.search(line).group(1)
+            firstWordOfLine = DistroKickstartFileContent.firstWordOfLineRegex.search(line).group(1)
             if not pastSectionName:
                 if firstWordOfLine.startswith("%"):
                     pastSectionName = True
@@ -523,7 +522,7 @@ xconfig --startxonboot
         filteredLines = []
         for line in linesSplit:
             # check whether first word matches, i.e. to whitespace or #
-            firstWordOfLine = KickstartFileContent.firstWordOfLineRegex.search(line).group(1)
+            firstWordOfLine = DistroKickstartFileContent.firstWordOfLineRegex.search(line).group(1)
             if not pastSectionName:
                 if firstWordOfLine.startswith("%"):
                     pastSectionName = True
@@ -541,7 +540,8 @@ xconfig --startxonboot
         return self
 
 if __name__ == "__main__":
-    _kickstartFileContent = KickstartFileContent(KickstartTemplates.usableKickstartTemplate001)
+    from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
+    _kickstartFileContent = DistroKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
     _kickstartFileContent.replaceRootpw("redwood")
     _kickstartFileContent.replaceHostname("test-hostname-101")
     _kickstartFileContent.replaceStaticIP("10.123.45.67")

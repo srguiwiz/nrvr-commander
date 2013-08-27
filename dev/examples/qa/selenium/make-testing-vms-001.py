@@ -23,10 +23,9 @@ import tempfile
 import time
 
 from nrvr.diskimage.isoimage import IsoImage
-from nrvr.distros.common.kickstart import KickstartFileContent
 from nrvr.distros.el.gnome import Gnome
-from nrvr.distros.el.kickstart import ElIsoImage
-from nrvr.distros.el.kickstarttemplates import KickstartTemplates
+from nrvr.distros.el.kickstart import ElIsoImage, ElKickstartFileContent
+from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
 from nrvr.distros.el.ssh import ElSshCommand
 from nrvr.distros.el.util import ElUtil
 from nrvr.machine.ports import PortsFile
@@ -105,12 +104,12 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         testVm.mkdir()
         downloadedDistroIsoImage = ElIsoImage(Download.fromUrl
                                               ("http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"))
-        kickstartFileContent = KickstartFileContent(KickstartTemplates.usableKickstartTemplate001)
+        kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
         kickstartFileContent.replaceRootpw(rootpw)
         kickstartFileContent.replaceHostname(testVm.basenameStem)
         #kickstartFileContent.replaceStaticIP(vmIdentifiers.ipaddress, nameserver=Nameserver.list)
         kickstartFileContent.replaceStaticIP(vmIdentifiers.ipaddress, nameserver=[])
-        kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64Desktop)
+        kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Desktop)
         kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
         kickstartFileContent.removePackage("@office-suite") # not used for now
         # put in DHCP at eth0, to be used with NAT, works well if before hostonly

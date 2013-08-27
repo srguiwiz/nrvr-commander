@@ -18,10 +18,9 @@ import tempfile
 import time
 
 from nrvr.diskimage.isoimage import IsoImage
-from nrvr.distros.common.kickstart import KickstartFileContent
 from nrvr.distros.el.gnome import Gnome
-from nrvr.distros.el.kickstart import ElIsoImage
-from nrvr.distros.el.kickstarttemplates import KickstartTemplates
+from nrvr.distros.el.kickstart import ElIsoImage, ElKickstartFileContent
+from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
 from nrvr.distros.el.ssh import ElSshCommand
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
@@ -92,16 +91,16 @@ if exists == False:
                                           ("Downloads/SL-64-i386-2013-03-18-Install-DVD.iso"))
     # some possible choices pointed out
     # server w command line only
-    kickstartFileContent = KickstartFileContent(KickstartTemplates.usableKickstartTemplate001)
+    kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
     kickstartFileContent.replaceRootpw(rootpw)
     kickstartFileContent.replaceHostname(exampleVm.basenameStem)
     kickstartFileContent.replaceStaticIP(ipaddress, nameserver=Nameserver.list)
     # some possible modifications pointed out
-    #kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64Minimal)
+    #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Minimal)
     #kickstartFileContent.removePackage("@office-suite")
     #kickstartFileContent.addPackage("httpd")
     # some other possible modifications pointed out
-    #kickstartFileContent.replaceAllPackages(KickstartTemplates.packagesOfSL64MinimalDesktop)
+    #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64MinimalDesktop)
     #kickstartFileContent.addNetworkConfigurationWithDhcp("eth0")
     #kickstartFileContent.activateGraphicalLogin()
     for additionalUser in additionalUsers:
