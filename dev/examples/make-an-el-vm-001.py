@@ -93,18 +93,18 @@ if exists == False:
     # server w command line only
     kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
     kickstartFileContent.replaceRootpw(rootpw)
-    kickstartFileContent.replaceHostname(exampleVm.basenameStem)
-    kickstartFileContent.replaceStaticIP(ipaddress, nameserver=Nameserver.list)
+    kickstartFileContent.elReplaceHostname(exampleVm.basenameStem)
+    kickstartFileContent.elReplaceStaticIP(ipaddress, nameserver=Nameserver.list)
     # some possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Minimal)
     #kickstartFileContent.removePackage("@office-suite")
     #kickstartFileContent.addPackage("httpd")
     # some other possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64MinimalDesktop)
-    #kickstartFileContent.addNetworkConfigurationWithDhcp("eth0")
+    #kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
     #kickstartFileContent.activateGraphicalLogin()
     for additionalUser in additionalUsers:
-        kickstartFileContent.addUser(additionalUser[0], pwd=additionalUser[1])
+        kickstartFileContent.elAddUser(additionalUser[0], pwd=additionalUser[1])
     # pick right temporary directory, ideally same as VM
     modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
     (kickstartFileContent, os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))

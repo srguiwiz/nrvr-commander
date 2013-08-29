@@ -106,17 +106,17 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                                               ("http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"))
         kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
         kickstartFileContent.replaceRootpw(rootpw)
-        kickstartFileContent.replaceHostname(testVm.basenameStem)
-        #kickstartFileContent.replaceStaticIP(vmIdentifiers.ipaddress, nameserver=Nameserver.list)
-        kickstartFileContent.replaceStaticIP(vmIdentifiers.ipaddress, nameserver=[])
+        kickstartFileContent.elReplaceHostname(testVm.basenameStem)
+        #kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameserver=Nameserver.list)
+        kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameserver=[])
         kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Desktop)
         kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
         kickstartFileContent.removePackage("@office-suite") # not used for now
         # put in DHCP at eth0, to be used with NAT, works well if before hostonly
-        kickstartFileContent.addNetworkConfigurationWithDhcp("eth0")
+        kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
         kickstartFileContent.activateGraphicalLogin()
         for additionalUser in additionalUsers:
-            kickstartFileContent.addUser(additionalUser[0], pwd=additionalUser[1])
+            kickstartFileContent.elAddUser(additionalUser[0], pwd=additionalUser[1])
         # pick right temporary directory, ideally same as VM
         modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
             (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
