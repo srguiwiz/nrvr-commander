@@ -18,6 +18,7 @@ Public repository - https://github.com/srguiwiz/nrvr-commander
 Copyright (c) Nirvana Research 2006-2013.
 Modified BSD License"""
 
+from collections import namedtuple
 import re
 
 import nrvr.diskimage.isoimage
@@ -89,6 +90,10 @@ class KickstartFileSection(object):
         if newString[-1] != "\n":
             newString = newString + "\n"
         self._string = newString
+
+
+NetworkConfigurationStaticParameters = namedtuple("NetworkConfigurationStaticParameters",
+                                                  ["ipaddress", "netmask", "gateway", "nameservers"])
 
 
 class DistroKickstartFileContent(object):
@@ -247,6 +252,57 @@ class DistroKickstartFileContent(object):
                                        r"\g<1>" + ("--iscrypted " if isCrypted else "") + pwd,
                                        commandSection.string)
         return self
+
+    def normalizeStaticIp(self, ipaddress, netmask="255.255.255.0", gateway=None, nameservers=None):
+        """Normalize static IP options for network configuration.
+        
+        For use in methods in this class DistroKickstartFileContent and in its subclasses.
+        
+        As implemented only supports IPv4.
+        
+        ipaddress
+            IP address.
+        
+        netmask
+            netmask.
+            Defaults to 255.255.255.0.
+        
+        gateway
+            gateway.
+            If None then default to ip.1.
+        
+        nameservers
+            one nameserver or a list of nameservers.
+            If None then default to gateway.
+            If empty list then remove option.
+        
+        return
+            a NetworkConfigurationStaticParameters instance."""
+        # also see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
+        # sanity check
+        ipaddress = IPAddress.asString(ipaddress)
+        if not re.match(r"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$", ipaddress):
+            raise Exception("won't accept apparently impossible IP address {0}".format(ipaddress))
+        netmask = IPAddress.asString(netmask)
+        if gateway is None:
+            # default to ip.1
+            gateway = IPAddress.bitOr(IPAddress.bitAnd(ipaddress, netmask), "0.0.0.1")
+        gateway = IPAddress.asString(gateway)
+        if nameservers is None:
+            # default to gateway
+            nameservers = [gateway]
+        elif not isinstance(nameservers, list):
+            # process one as a list of one
+            nameservers = [nameservers]
+        else:
+            # given a list already
+            nameservers = nameservers
+        nameserversStrings = [IPAddress.asString(oneNameserver) for oneNameserver in nameservers]
+        normalized = NetworkConfigurationStaticParameters(ipaddress=ipaddress,
+                                                          netmask=netmask,
+                                                          gateway=gateway,
+                                                          nameservers=nameserversStrings)
+        return normalized
 
     def activateGraphicalLogin(self):
         """Boot into graphical login on the installed system.

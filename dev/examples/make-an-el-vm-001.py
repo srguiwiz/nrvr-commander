@@ -94,7 +94,7 @@ if exists == False:
     kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
     kickstartFileContent.replaceRootpw(rootpw)
     kickstartFileContent.elReplaceHostname(exampleVm.basenameStem)
-    kickstartFileContent.elReplaceStaticIP(ipaddress, nameserver=Nameserver.list)
+    kickstartFileContent.elReplaceStaticIP(ipaddress, nameservers=Nameserver.list)
     # some possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Minimal)
     #kickstartFileContent.removePackage("@office-suite")

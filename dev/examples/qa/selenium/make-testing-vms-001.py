@@ -107,8 +107,8 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
         kickstartFileContent.replaceRootpw(rootpw)
         kickstartFileContent.elReplaceHostname(testVm.basenameStem)
-        #kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameserver=Nameserver.list)
-        kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameserver=[])
+        #kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameservers=Nameserver.list)
+        kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameservers=[])
         kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Desktop)
         kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
         kickstartFileContent.removePackage("@office-suite") # not used for now

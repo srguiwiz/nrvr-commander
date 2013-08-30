@@ -112,12 +112,12 @@ class ElKickstartFileContent(nrvr.distros.common.kickstart.DistroKickstartFileCo
                                        commandSection.string)
         return self
 
-    def elReplaceStaticIP(self, ip, netmask="255.255.255.0", gateway=None, nameserver=None):
+    def elReplaceStaticIP(self, ipaddress, netmask="255.255.255.0", gateway=None, nameservers=None):
         """Replace static IP options in network option.
         
         As implemented only supports IPv4.
         
-        ip
+        ipaddress
             IP address.
         
         netmask
@@ -128,7 +128,7 @@ class ElKickstartFileContent(nrvr.distros.common.kickstart.DistroKickstartFileCo
             gateway.
             If None then default to ip.1.
         
-        nameserver
+        nameservers
             one nameserver or a list of nameservers.
             If None then default to gateway.
             If empty list then remove option.
@@ -138,37 +138,20 @@ class ElKickstartFileContent(nrvr.distros.common.kickstart.DistroKickstartFileCo
         # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
         commandSection = self.sectionByName("command")
         # sanity check
-        ip = IPAddress.asString(ip)
-        if not re.match(r"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$", ip):
-            raise Exception("won't accept apparently impossible IP address {0}".format(ip))
-        netmask = IPAddress.asString(netmask)
-        if gateway is None:
-            # default to ip.1
-            gateway = IPAddress.bitOr(IPAddress.bitAnd(ip, netmask), "0.0.0.1")
-        gateway = IPAddress.asString(gateway)
-        if nameserver is None:
-            # default to gateway
-            nameservers = [gateway]
-        elif not isinstance(nameserver, list):
-            # process one as a list of one
-            nameservers = [nameserver]
-        else:
-            # given a list already
-            nameservers = nameserver
-        nameserversStrings = [IPAddress.asString(oneNameserver) for oneNameserver in nameservers]
+        normalizedStaticIp = self.normalizeStaticIp(ipaddress, netmask, gateway, nameservers)
         # several set
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--ip[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
-                                       r"\g<1>" + ip + r"\g<2>",
+                                       r"\g<1>" + normalizedStaticIp.ipaddress + r"\g<2>",
                                        commandSection.string)
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--netmask[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
-                                       r"\g<1>" + netmask + r"\g<2>",
+                                       r"\g<1>" + normalizedStaticIp.netmask + r"\g<2>",
                                        commandSection.string)
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--gateway[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
-                                       r"\g<1>" + gateway + r"\g<2>",
+                                       r"\g<1>" + normalizedStaticIp.gateway + r"\g<2>",
                                        commandSection.string)
-        if nameserversStrings:
+        if normalizedStaticIp.nameservers:
             commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--nameserver[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
-                                           r"\g<1>" + ",".join(nameserversStrings) + r"\g<2>",
+                                           r"\g<1>" + ",".join(normalizedStaticIp.nameservers) + r"\g<2>",
                                            commandSection.string)
         else:
             # remove option --nameserver
