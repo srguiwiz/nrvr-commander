@@ -256,5 +256,6 @@ if __name__ == "__main__":
     _kickstartFileContent.elAddUser("jack", pwd="rainbow")
     _kickstartFileContent.elAddUser("jill", "sunshine")
     _kickstartFileContent.elAddUser("pat")
-    _kickstartFileContent.sectionByName("%post").string = "replaced all of %post this time, just for testing\n"
+    _kickstartFileContent.sectionByName("%post").string = "\n#\n%post\n# replaced all of %post this time, just for testing\n"
+    _kickstartFileContent.setSwappiness(30)
     print _kickstartFileContent.string

@@ -444,6 +444,39 @@ xconfig --startxonboot
         packagesSection.string = "\n".join(filteredLines) + "\n"
         return self
 
+    def setSwappiness(self, swappiness):
+        """Set swappiness.
+        
+        swappiness
+            an int between 0 and 100.
+        
+        return
+            self, for daisychaining."""
+        # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
+        postSection = self.sectionByName("%post")
+        swappiness = int(swappiness) # precaution
+        if not 0 <= swappiness <= 100:
+            raise Exception("swappiness must be between 0 and 100, cannot be {0}".format(swappiness))
+        swappiness = str(swappiness)
+        # will have effect from next booting onwards,
+        # then verifiable by looking at cat /proc/sys/vm/swappiness
+        settingSwappiness = "".join(
+            "\n#"
+            "\n# Set swappiness"
+            "\nif ( grep -q '^vm.swappiness=' /etc/sysctl.conf ) ; then"
+            "\n  # replace"
+            "\n  sed -i -e 's/^vm.swappiness=.*/vm.swappiness=" + swappiness + "/' /etc/sysctl.conf"
+            "\nelse"
+            "\n  # append"
+            "\n  echo '' >> /etc/sysctl.conf"
+            "\n  echo '#' >> /etc/sysctl.conf"
+            "\n  echo 'vm.swappiness=" + swappiness + "' >> /etc/sysctl.conf"
+            "\nfi"
+            )
+        # simply append
+        # in case of multiple invocations last one would be effective
+        postSection.string = postSection.string + settingSwappiness + "\n"
+
 if __name__ == "__main__":
     from nrvr.distros.el.kickstart import ElKickstartFileContent
     from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
@@ -469,5 +502,6 @@ if __name__ == "__main__":
     _kickstartFileContent.elAddUser("jack", pwd="rainbow")
     _kickstartFileContent.elAddUser("jill", "sunshine")
     _kickstartFileContent.elAddUser("pat")
-    _kickstartFileContent.sectionByName("%post").string = "replaced all of %post this time, just for testing\n"
+    _kickstartFileContent.sectionByName("%post").string = "\n#\n%post\n# replaced all of %post this time, just for testing\n"
+    _kickstartFileContent.setSwappiness(30)
     print _kickstartFileContent.string

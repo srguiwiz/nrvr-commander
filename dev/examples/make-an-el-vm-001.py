@@ -105,6 +105,8 @@ if exists == False:
     #kickstartFileContent.activateGraphicalLogin()
     for additionalUser in additionalUsers:
         kickstartFileContent.elAddUser(additionalUser[0], pwd=additionalUser[1])
+    # some possible modifications pointed out
+    #kickstartFileContent.setSwappiness(40)
     # pick right temporary directory, ideally same as VM
     modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
     (kickstartFileContent, os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
