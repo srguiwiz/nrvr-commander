@@ -95,30 +95,32 @@ if exists == False:
     kickstartFileContent.replaceRootpw(rootpw)
     kickstartFileContent.elReplaceHostname(exampleVm.basenameStem)
     kickstartFileContent.elReplaceStaticIP(ipaddress, nameservers=Nameserver.list)
+    # put in DHCP at eth0, to be used with NAT, works well if before hostonly
+    #kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
     # some possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Minimal)
     #kickstartFileContent.removePackage("@office-suite")
     #kickstartFileContent.addPackage("httpd")
     # some other possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64MinimalDesktop)
-    #kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
     #kickstartFileContent.activateGraphicalLogin()
     for additionalUser in additionalUsers:
         kickstartFileContent.elAddUser(additionalUser[0], pwd=additionalUser[1])
     # some possible modifications pointed out
-    #kickstartFileContent.setSwappiness(40)
+    kickstartFileContent.setSwappiness(10)
     # pick right temporary directory, ideally same as VM
     modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
     (kickstartFileContent, os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
     # some necessary choices pointed out
     # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "centos" versus "centos-64"
-    exampleVm.create(memsizeMegabytes=2000, guestOS="centos", ideDrives=[20000, 300, modifiedDistroIsoImage])
+    exampleVm.create(memsizeMegabytes=1200, guestOS="centos", ideDrives=[20000, 300, modifiedDistroIsoImage])
     exampleVm.portsFile.setSsh(ipaddress=ipaddress, user="root", pwd=rootpw)
     exampleVm.portsFile.setShutdown()
     for additionalUser in additionalUsers:
         exampleVm.portsFile.setSsh(ipaddress=ipaddress, user=additionalUser[0], pwd=additionalUser[1])
     # some possible modifications pointed out
     #exampleVm.vmxFile.setEthernetAdapter(0, "bridged")
+    # NAT works well if before hostonly
     #exampleVm.vmxFile.setEthernetAdapter(0, "nat")
     #exampleVm.vmxFile.setEthernetAdapter(1, "hostonly")
     # start up for operating system install
@@ -140,15 +142,6 @@ exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 #    exampleVm.sshCommand([Gnome.commandToDisableUpdateNotifications()], user=additionalUsers[0][0])
 
 # a possible modification pointed out
-# copy over some custom installer
-#customInstaller = "custom-1.2.3-installer-linux.bin"
-#downloadedCustomInstaller = ScriptUser.loggedIn.userHomeRelative(os.path.join("Downloads", customInstaller))
-#guestDownloadsDirectory = "/root/Downloads"
-#exampleVm.sshCommand(["mkdir -p " + guestDownloadsDirectory])
-#guestDownloadedCustomInstaller = os.path.join(guestDownloadsDirectory, customInstaller)
-#exampleVm.scpPutCommand(downloadedCustomInstaller, guestDownloadedCustomInstaller)
-
-# a possible modification pointed out
 # append an ipaddress hostname line to /etc/hosts for a smooth automated install of something
 # only if no line yet
 #print exampleVm.sshCommand(["fgrep -q -e '" + name + "' /etc/hosts || " + 
@@ -161,6 +154,15 @@ exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 #                       "sed -i -e '/--dport 22 / p' -e 's/--dport 22 /--dport 80 /' /etc/sysconfig/iptables"]).output
 # restart firewall
 #print exampleVm.sshCommand(["service iptables restart"]).output
+
+# a possible modification pointed out
+# copy over some custom installer
+#customInstaller = "custom-1.2.3-installer-linux.bin"
+#downloadedCustomInstaller = ScriptUser.loggedIn.userHomeRelative(os.path.join("Downloads", customInstaller))
+#guestDownloadsDirectory = "/root/Downloads"
+#exampleVm.sshCommand(["mkdir -p " + guestDownloadsDirectory])
+#guestDownloadedCustomInstaller = os.path.join(guestDownloadsDirectory, customInstaller)
+#exampleVm.scpPutCommand(downloadedCustomInstaller, guestDownloadedCustomInstaller)
 
 # a possible modification pointed out
 #customInstallPwd = "oakwood"
