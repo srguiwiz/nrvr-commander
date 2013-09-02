@@ -463,12 +463,11 @@ if __name__ == "__main__":
                                              "package-a-for-testing",
                                              "package-b-for-testing",
                                              "package-c-for-testing"])
-    _kickstartFileContent.elAddNetworkConfigurationWithDhcp()
-    _kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth2")
+    _kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth1")
     _kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
     _kickstartFileContent.activateGraphicalLogin()
     _kickstartFileContent.elAddUser("jack", pwd="rainbow")
     _kickstartFileContent.elAddUser("jill", "sunshine")
     _kickstartFileContent.elAddUser("pat")
-    _kickstartFileContent.sectionByName("%post").string = "removed %post this time, weird, just for testing\n"
+    _kickstartFileContent.sectionByName("%post").string = "replaced all of %post this time, just for testing\n"
     print _kickstartFileContent.string

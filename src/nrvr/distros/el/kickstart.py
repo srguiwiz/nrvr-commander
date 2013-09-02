@@ -136,9 +136,9 @@ class ElKickstartFileContent(nrvr.distros.common.kickstart.DistroKickstartFileCo
         return
             self, for daisychaining."""
         # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
-        commandSection = self.sectionByName("command")
         # sanity check
         normalizedStaticIp = self.normalizeStaticIp(ipaddress, netmask, gateway, nameservers)
+        commandSection = self.sectionByName("command")
         # several set
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--ip[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",
                                        r"\g<1>" + normalizedStaticIp.ipaddress + r"\g<2>",
@@ -160,11 +160,13 @@ class ElKickstartFileContent(nrvr.distros.common.kickstart.DistroKickstartFileCo
                                            commandSection.string)
         return self
 
-    def elAddNetworkConfigurationWithDhcp(self, device="eth1"):
+    def elAddNetworkConfigurationWithDhcp(self, device):
         """Add an additional network device with DHCP.
         
         device
-            should be increased past "eth1" if adding more than one additional configuration.
+            a string, e.g. "eth1".
+            
+            Should be increased past "eth1" if adding more than one additional configuration.
             
             Pre-existing network configurations are moved up by one device each, if there would be a conflict.
             E.g. adding for "eth0" when for "eth0" already exists causes the pre-existing for "eth0" to become for "eth1".
@@ -229,3 +231,30 @@ class ElKickstartFileContent(nrvr.distros.common.kickstart.DistroKickstartFileCo
                                 + (" --password=" + pwd if pwd else "") \
                                 + (" --iscrypted" if isCrypted else "") \
                                 + "\n"
+
+if __name__ == "__main__":
+    from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
+    _kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
+    _kickstartFileContent.replaceRootpw("redwood")
+    _kickstartFileContent.elReplaceHostname("test-hostname-101")
+    _kickstartFileContent.elReplaceStaticIP("10.123.45.67")
+    _kickstartFileContent.addPackage("another-package-for-testing")
+    _kickstartFileContent.addPackage("@another-package-group-for-testing")
+    _kickstartFileContent.addPackage("@base")
+    _kickstartFileContent.removePackage("@client-mgmt-tools")
+    _kickstartFileContent.removeAllPackages()
+    _kickstartFileContent.addPackage("made-something-up-for-testing")
+    _kickstartFileContent.replaceAllPackages(["@package-group-1-for-testing",
+                                             "@package-group-2-for-testing",
+                                             "@package-group-3-for-testing",
+                                             "package-a-for-testing",
+                                             "package-b-for-testing",
+                                             "package-c-for-testing"])
+    _kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth1")
+    _kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
+    _kickstartFileContent.activateGraphicalLogin()
+    _kickstartFileContent.elAddUser("jack", pwd="rainbow")
+    _kickstartFileContent.elAddUser("jill", "sunshine")
+    _kickstartFileContent.elAddUser("pat")
+    _kickstartFileContent.sectionByName("%post").string = "replaced all of %post this time, just for testing\n"
+    print _kickstartFileContent.string
