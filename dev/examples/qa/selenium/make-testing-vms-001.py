@@ -114,7 +114,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         kickstartFileContent.removePackage("@office-suite") # not used for now
         # put in DHCP at eth0, to be used with NAT, works well if before hostonly
         kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
-        kickstartFileContent.activateGraphicalLogin()
+        kickstartFileContent.elActivateGraphicalLogin()
         for additionalUser in additionalUsers:
             kickstartFileContent.elAddUser(additionalUser[0], pwd=additionalUser[1])
         # pick right temporary directory, ideally same as VM

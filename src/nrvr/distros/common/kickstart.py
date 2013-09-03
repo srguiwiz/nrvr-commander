@@ -304,21 +304,6 @@ class DistroKickstartFileContent(object):
                                                           nameservers=nameserversStrings)
         return normalized
 
-    def activateGraphicalLogin(self):
-        """Boot into graphical login on the installed system.
-        
-        Do not use in a kickstart that does not install the X Window System.
-        
-        return
-            self, for daisychaining."""
-        # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
-        commandSection = self.sectionByName("command")
-        commandSection.string = commandSection.string + """#
-# XWindows configuration information.
-xconfig --startxonboot
-"""
-        return self
-
     # .group(1) to be first word to whitespace or #
     firstWordOfLineRegex = re.compile(r"^[ \t]*([^\s#]*).*$")
 
@@ -498,7 +483,7 @@ if __name__ == "__main__":
                                              "package-c-for-testing"])
     _kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth1")
     _kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
-    _kickstartFileContent.activateGraphicalLogin()
+    _kickstartFileContent.elActivateGraphicalLogin()
     _kickstartFileContent.elAddUser("jack", pwd="rainbow")
     _kickstartFileContent.elAddUser("jill", "sunshine")
     _kickstartFileContent.elAddUser("pat")

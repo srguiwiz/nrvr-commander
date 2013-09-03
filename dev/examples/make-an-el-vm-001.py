@@ -103,7 +103,7 @@ if exists == False:
     #kickstartFileContent.addPackage("httpd")
     # some other possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64MinimalDesktop)
-    #kickstartFileContent.activateGraphicalLogin()
+    #kickstartFileContent.elActivateGraphicalLogin()
     for additionalUser in additionalUsers:
         kickstartFileContent.elAddUser(additionalUser[0], pwd=additionalUser[1])
     # some possible modifications pointed out
