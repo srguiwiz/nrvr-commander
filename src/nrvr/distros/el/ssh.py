@@ -66,7 +66,8 @@ class ElSshCommand(SshCommand):
 
     @classmethod
     def sleepUntilIsGuiAvailable(cls, sshParameters,
-                                 checkIntervalSeconds=5.0, ticker=False):
+                                 checkIntervalSeconds=5.0, ticker=False,
+                                 extraSleepSeconds=10.0):
         """If GUI available return, else loop sleeping for checkIntervalSeconds.
         
         Should be user to be meaningful.
@@ -96,6 +97,8 @@ class ElSshCommand(SshCommand):
         if ticked:
             # final printing
             sys.stdout.write("]\n")
+        if extraSleepSeconds:
+            time.sleep(extraSleepSeconds)
 
 if __name__ == "__main__":
     from nrvr.util.requirements import SystemRequirements

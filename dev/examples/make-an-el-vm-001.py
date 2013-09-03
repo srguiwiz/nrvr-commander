@@ -124,14 +124,13 @@ if exists == False:
     #exampleVm.vmxFile.setEthernetAdapter(0, "nat")
     #exampleVm.vmxFile.setEthernetAdapter(1, "hostonly")
     # start up for operating system install
-    VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, sleepSeconds=0)
+    VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
     VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
     exampleVm.vmxFile.removeAllIdeCdromImages()
     modifiedDistroIsoImage.remove()
 
 # start up for accepting known host key
-VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, sleepSeconds=0)
-#exampleVm.acceptKnownHostKey()
+VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 
 # some possible choices pointed out
@@ -204,12 +203,12 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 
 # a possible modification pointed out
 # start up again so it is running for use
-#VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, sleepSeconds=0)
+#VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
 #exampleVm.sleepUntilSshIsAvailable(ticker=True)
 
 # a possible modification pointed out
 # start up for showing successful login into GUI
-#VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, sleepSeconds=0)
+#VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
 #exampleSshParameters = exampleVm.sshParameters(user=additionalUsers[0][0])
 #ElSshCommand.sleepUntilIsGuiAvailable(exampleSshParameters, ticker=True)
 

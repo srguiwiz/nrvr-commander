@@ -136,13 +136,13 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         testVm.vmxFile.setEthernetAdapter(0, "nat")
         testVm.vmxFile.setEthernetAdapter(1, "hostonly")
         # start up for operating system install
-        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, sleepSeconds=0)
+        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         testVm.vmxFile.removeAllIdeCdromImages()
         modifiedDistroIsoImage.remove()
         #
         # start up for accepting known host key
-        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, sleepSeconds=0)
+        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
         #
         if mainUser:
@@ -157,7 +157,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         testVm.shutdownCommand()
         VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         # start up until successful login into GUI
-        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, sleepSeconds=0)
+        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=mainUser)
         ElSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
@@ -180,7 +180,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
     if not snapshotExists:
         testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
         # start up until successful login into GUI
-        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, sleepSeconds=0)
+        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.mainUser)
         ElSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
@@ -216,7 +216,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
     if not snapshotExists:
         testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
         # start up until successful login into GUI
-        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, sleepSeconds=0)
+        VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.mainUser)
         ElSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #

@@ -410,7 +410,8 @@ class SshCommand(object):
 
     @classmethod
     def sleepUntilHasAcceptedKnownHostKey(cls, ipaddress,
-                                          checkIntervalSeconds=5.0, ticker=False):
+                                          checkIntervalSeconds=5.0, ticker=False,
+                                          extraSleepSeconds=10.0):
         """If available return, else loop sleeping for checkIntervalSeconds."""
         printed = False
         ticked = False
@@ -431,6 +432,8 @@ class SshCommand(object):
         if ticked:
             # final printing
             sys.stdout.write("]\n")
+        if extraSleepSeconds:
+            time.sleep(extraSleepSeconds)
 
 if __name__ == "__main__":
     from nrvr.util.requirements import SystemRequirements

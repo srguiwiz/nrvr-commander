@@ -664,18 +664,18 @@ class VMwareHypervisor(object):
         # here an opportunity to see in debugger
         return paths
 
-    def start(self, vmxFilePath, gui=False, sleepSeconds=30.0):
+    def start(self, vmxFilePath, gui=False, extraSleepSeconds=30.0):
         """Start virtual machine.
         
-        sleepSeconds
-            time for this process to sleep while virtual machine is starting up,
+        extraSleepSeconds
+            extra time for this process to sleep while virtual machine is starting up,
             unless None."""
         CommandCapture(["vmrun", "-T", self._hostType, "start", vmxFilePath] + 
                        (["gui"] if gui else ["nogui"]))
-        if sleepSeconds:
-            time.sleep(sleepSeconds)
+        if extraSleepSeconds:
+            time.sleep(extraSleepSeconds)
 
-    def stop(self, vmxFilePath, hard=False, tolerateNotRunning=True):
+    def stop(self, vmxFilePath, hard=False, tolerateNotRunning=True, extraSleepSeconds=10.0):
         """Stop virtual machine.
         
         Ideally virtual machines would stop from shutting down from within the virtual machine
@@ -690,7 +690,13 @@ class VMwareHypervisor(object):
         
         A hard stop appears to be the least desirable option, even though it has the highest
         probability of succeeding at stopping the virtual machine it also has the highest
-        probability of leaving behind virtual disk content as if after a crash."""
+        probability of leaving behind virtual disk content as if after a crash.
+        
+        extraSleepSeconds
+            extra time for this process to sleep before stopping virtual machine,
+            unless None."""
+        if extraSleepSeconds:
+            time.sleep(extraSleepSeconds)
         try:
             CommandCapture(["vmrun", "-T", self._hostType, "stop", vmxFilePath] +
                            (["hard"] if hard else ["soft"]))
@@ -932,12 +938,12 @@ tools.remindInstall = "FALSE"
 msg.autoAnswer = "TRUE"
 """)
                         tempDummyVm.vmxFile.setEthernetAdapter(0, change="remove")
-                        VMwareHypervisor.local.start(tempDummyVm.vmxFilePath, gui=False, sleepSeconds=0.0)
+                        VMwareHypervisor.local.start(tempDummyVm.vmxFilePath, gui=False, extraSleepSeconds=0.0)
                         # now there should be a vmnet,
                         # try determining now
                         VMwareHypervisor._localHostOnlyIPAddress = \
                             NetworkInterface.ipAddressOf(VMwareHypervisor._localHostOnlyNetworkInterfaceName)
-                        VMwareHypervisor.local.stop(tempDummyVm.vmxFilePath, hard=True)
+                        VMwareHypervisor.local.stop(tempDummyVm.vmxFilePath, hard=True, extraSleepSeconds=0.0)
                     finally:
                         shutil.rmtree(tempDummyDir)
         return VMwareHypervisor._localHostOnlyIPAddress
@@ -1111,7 +1117,7 @@ class VMwareMachine(object):
         sshCommand = SshCommand(sshParameters, argv)
         return sshCommand
 
-    def shutdownCommand(self):
+    def shutdownCommand(self, extraSleepSeconds=10.0):
         """Send shutdown command.
         
         Assumes .ports file to exist and to have an entry for shutdown.
@@ -1121,7 +1127,11 @@ class VMwareMachine(object):
         Example use::
         
             vmwareMachine1.shutdownCommand()
-            VMwareHypervisor.local.sleepUntilNotRunning(vmwareMachine1.vmxFilePath, ticker=True)"""
+            VMwareHypervisor.local.sleepUntilNotRunning(vmwareMachine1.vmxFilePath, ticker=True)
+        
+        extraSleepSeconds
+            extra time for this process to sleep before shutting down virtual machine,
+            unless None."""
         ports = self.portsFile.getPorts(protocol="shutdown", user=None)
         if ports == [] or ports is None:
             # .ports file has no entry for shutdown or .ports file does not exist
@@ -1137,6 +1147,8 @@ class VMwareMachine(object):
         if command is None or user is None:
             raise Exception("incomplete information to send shutdown command to machine {0}".format
                             (self.basenameStem))
+        if extraSleepSeconds:
+            time.sleep(extraSleepSeconds)
         self.sshCommand([command], user)
 
     def scpPutCommand(self, fromHostPath, toGuestPath, guestUser="root"):
@@ -1176,7 +1188,7 @@ class VMwareMachine(object):
                                              probingCommand=probingCommand)
         return isAvailable
 
-    def sleepUntilSshIsAvailable(self, checkIntervalSeconds=5.0, ticker=False, user="root", probingCommand="hostname"):
+    def sleepUntilSshIsAvailable(self, checkIntervalSeconds=5.0, ticker=False, user="root", probingCommand="hostname", extraSleepSeconds=10.0):
         """If available return, else loop sleeping for checkIntervalSeconds.
         
         Assumes .ports file to exist and to have an entry for ssh for the user."""
@@ -1185,6 +1197,8 @@ class VMwareMachine(object):
                                          checkIntervalSeconds=checkIntervalSeconds,
                                          ticker=ticker,
                                          probingCommand=probingCommand)
+        if extraSleepSeconds:
+            time.sleep(extraSleepSeconds)
 
     def hasAcceptedKnownHostKey(self):
         """Return whether acceptKnownHostKey succeeds.
@@ -1205,7 +1219,7 @@ class VMwareMachine(object):
                 return False
         return True
 
-    def sleepUntilHasAcceptedKnownHostKey(self, checkIntervalSeconds=5.0, ticker=False):
+    def sleepUntilHasAcceptedKnownHostKey(self, checkIntervalSeconds=5.0, ticker=False, extraSleepSeconds=10.0):
         """If available return, else loop sleeping for checkIntervalSeconds.
         
         Assumes .ports file to exist and to have an entry for ssh."""
@@ -1219,7 +1233,10 @@ class VMwareMachine(object):
         for ipaddress in ipaddresses:
             SshCommand.sleepUntilHasAcceptedKnownHostKey(ipaddress=ipaddress,
                                                          checkIntervalSeconds=checkIntervalSeconds,
-                                                         ticker=ticker)
+                                                         ticker=ticker,
+                                                         extraSleepSeconds=0)
+        if extraSleepSeconds:
+            time.sleep(extraSleepSeconds)
 
     @property
     def mainUser(self):
