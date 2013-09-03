@@ -35,7 +35,7 @@ class PortsFile(object):
             <pwd>redwood</pwd>
           </ssh>
           <shutdown>
-            <command>shutdown -h now</command>
+            <command>shutdown -P now</command>
             <user>root</user>
             <protocol>ssh</protocol>
           </shutdown>
@@ -186,7 +186,7 @@ class PortsFile(object):
                                                              ipaddress=ipaddress, user=user))
 
     @classmethod
-    def _setShutdown(cls, portsFileContent, command="shutdown -h now", user="root", protocol="ssh"):
+    def _setShutdown(cls, portsFileContent, command="shutdown -P now", user="root", protocol="ssh"):
         """Set .ports file entry for shutdown command for machine."""
         # method made to be portsFileContentModifyingMethod parameter for method modify()
         # feel the misery of not yet having better XPath from Python 2.7 and ElementTree 1.3
@@ -208,7 +208,7 @@ class PortsFile(object):
         protocolElement = SubElement(shutdownElement, "protocol")
         protocolElement.text = protocol
 
-    def setShutdown(self, command="shutdown -h now", user="root", protocol="ssh"):
+    def setShutdown(self, command="shutdown -P now", user="root", protocol="ssh"):
         """Set .ports file entry for shutdown command for machine."""
         # recommended safe  wrapper
         self.modify(lambda portsFileContent: self._setShutdown(portsFileContent,
