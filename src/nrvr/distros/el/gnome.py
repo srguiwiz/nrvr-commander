@@ -13,27 +13,29 @@ Modified BSD License"""
 
 import re
 
-class Gnome():
+import nrvr.distros.common.gnome
+
+class ElGnome(nrvr.distros.common.gnome.Gnome):
     """Utilities for manipulating a Gnome installation."""
 
     @classmethod
-    def commandToEnableAutoLogin(cls, username=None):
+    def elCommandToEnableAutoLogin(cls, username=None):
         """Build command to enable auto-login into GNOME.
         
         Must be root to succeed.
         
         username
-            defaults to None, which effects commandToDisableAutoLogin.
+            defaults to None, which effects disabling auto-login.
         
         Return command to enable auto-login into GNOME."""
-        command = Gnome.commandToDisableAutoLogin()
+        command = ElGnome.elCommandToDisableAutoLogin()
         if username:
             username = re.escape(username) # precaution
             command += r" ; sed -i -e '/^\[daemon\]/ a \AutomaticLoginEnable=true\nAutomaticLogin=" + username + r"' /etc/gdm/custom.conf"
         return command
 
     @classmethod
-    def commandToDisableAutoLogin(cls):
+    def elCommandToDisableAutoLogin(cls):
         """Build command to disable auto-login into GNOME.
         
         Must be root to succeed.
@@ -42,7 +44,7 @@ class Gnome():
         return r"sed -i -e '/^\s*AutomaticLoginEnable\s*=/ d' -e '/^\s*AutomaticLogin\s*=/ d' /etc/gdm/custom.conf"
 
     @classmethod
-    def commandToDisableScreenSaver(cls):
+    def elCommandToDisableScreenSaver(cls):
         """Build command to disable screen saver of GNOME.
         
         Must be user to succeed.
@@ -52,7 +54,7 @@ class Gnome():
         return command
 
     @classmethod
-    def commandToEnableScreenSaver(cls):
+    def elCommandToEnableScreenSaver(cls):
         """Build command to enable screen saver of GNOME.
         
         Must be user to succeed.
@@ -62,35 +64,7 @@ class Gnome():
         return command
 
     @classmethod
-    def commandToTellWhetherGuiIsAvailable(cls):
-        """Build command to tell whether GUI of GNOME is available.
-        
-        Should be user to be meaningful.
-        
-        Command output first word is "available" or with "unavailable".
-        
-        Return command to tell whether GUI of GNOME is available."""
-        command = "if xset -d :0.0 q &> /dev/null ; then echo 'available' ; else echo 'unavailable' ; fi"
-        return command
-
-    @classmethod
-    def commandToStartApplicationInGui(cls, application):
-        """Build command to start application in GNOME.
-        
-        Must be user to succeed.
-        Also, GUI must be available to succeed.
-        
-        Puts application into background and returns.
-        
-        application
-            e.g. firefox.
-        
-        Return command to start application in GNOME."""
-        command = "export DISPLAY=:0.0 ; nohup " + application + " &> /dev/null &"
-        return command
-
-    @classmethod
-    def commandToSetSolidColorBackground(cls, color="#2f4f6f"):
+    def elCommandToSetSolidColorBackground(cls, color="#2f4f6f"):
         """Build command to set solid color background of GNOME.
         
         Must be user to succeed.
@@ -102,7 +76,7 @@ class Gnome():
         return command
 
     @classmethod
-    def commandToDisableUpdateNotifications(cls):
+    def elCommandToDisableUpdateNotifications(cls):
         """Build command to disable software update notifications of GNOME.
         
         Must be user to succeed.
@@ -114,7 +88,7 @@ class Gnome():
         return command
 
     @classmethod
-    def commandToAddSystemMonitorPanel(cls):
+    def elCommandToAddSystemMonitorPanel(cls):
         """Build command to add System Monitor to Panel of GNOME.
         
         Must be user to succeed.
@@ -142,13 +116,12 @@ class Gnome():
         return command
 
 if __name__ == "__main__":
-    print Gnome.commandToEnableAutoLogin("joe")
-    print Gnome.commandToDisableAutoLogin()
-    print Gnome.commandToEnableAutoLogin()
-    print Gnome.commandToDisableScreenSaver()
-    print Gnome.commandToEnableScreenSaver()
-    print Gnome.commandToTellWhetherGuiIsAvailable()
-    print Gnome.commandToStartApplicationInGui("gedit")
-    print Gnome.commandToSetSolidColorBackground("#4f6f8f")
-    print Gnome.commandToDisableUpdateNotifications()
-    print Gnome.commandToAddSystemMonitorPanel()
+    print ElGnome.elCommandToEnableAutoLogin("joe")
+    print ElGnome.elCommandToDisableAutoLogin()
+    print ElGnome.elCommandToEnableAutoLogin()
+    print ElGnome.elCommandToDisableScreenSaver()
+    print ElGnome.elCommandToEnableScreenSaver()
+    print ElGnome.elCommandToSetSolidColorBackground("#4f6f8f")
+    print ElGnome.commandToTellWhetherGuiIsAvailable()
+    print ElGnome.elCommandToDisableUpdateNotifications()
+    print ElGnome.elCommandToAddSystemMonitorPanel()

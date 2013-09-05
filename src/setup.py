@@ -9,18 +9,18 @@ setup(name="NrvrCommander",
       
       Modules provides by this package are
       * nrvr.diskimage.isoimage
+      * nrvr.distros.common.gnome
       * nrvr.distros.common.kickstart
+      * nrvr.distros.common.ssh
       * nrvr.distros.el.clone
       * nrvr.distros.el.gnome
       * nrvr.distros.el.kickstart
       * nrvr.distros.el.kickstarttemplates
-      * nrvr.distros.el.ssh
       * nrvr.distros.el.util
       * nrvr.distros.ub.kickstarttemplates
       * nrvr.machine.ports
       * nrvr.process.commandcapture
       * nrvr.remote.ssh
-      * nrvr.script.util
       * nrvr.util.classproperty
       * nrvr.util.download
       * nrvr.util.ipaddress

@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-"""nrvr.distros.el.ssh - Remote commands over ssh to Enterprise Linux
+"""nrvr.distros.common.ssh - Remote commands over ssh to Linux
 
-The main class provided by this module is ElSshCommand.
+The main class provided by this module is LinuxSshCommand.
 
-ElSshCommand inherits from nrvr.remote.ssh.SshCommand,
+LinuxSshCommand inherits from nrvr.remote.ssh.SshCommand,
 including limitations documented there.
 
 Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
@@ -19,13 +19,13 @@ import re
 import sys
 import time
 
-from nrvr.distros.el.gnome import Gnome
+from nrvr.distros.common.gnome import Gnome
 from nrvr.remote.ssh import SshCommand
 from nrvr.util.classproperty import classproperty
 from nrvr.util.ipaddress import IPAddress
 
-class ElSshCommand(SshCommand):
-    """Send a command over ssh to Enterprise Linux."""
+class LinuxSshCommand(SshCommand):
+    """Send a command over ssh to Linux."""
 
     @classmethod
     def commandsUsedInImplementation(cls):
@@ -36,10 +36,10 @@ class ElSshCommand(SshCommand):
 
     def __init__(self, sshParameters, argv,
                  exceptionIfNotZero=True):
-        """Create new ElSshCommand instance.
+        """Create new LinuxSshCommand instance.
         
         See nrvr.remote.ssh.SshCommand."""
-        super(ElSshCommand, self).__init__(sshParameters, argv, exceptionIfNotZero)
+        super(LinuxSshCommand, self).__init__(sshParameters, argv, exceptionIfNotZero)
 
     _isGuiAvailableRegex = re.compile(r"^\s*available")
 
@@ -55,9 +55,9 @@ class ElSshCommand(SshCommand):
             an SshParameters instance."""
         try:
             probingCommand = Gnome.commandToTellWhetherGuiIsAvailable()
-            sshCommand = ElSshCommand(sshParameters,
-                                      argv=[probingCommand])
-            if ElSshCommand._isGuiAvailableRegex.search(sshCommand.output):
+            sshCommand = LinuxSshCommand(sshParameters,
+                                         argv=[probingCommand])
+            if cls._isGuiAvailableRegex.search(sshCommand.output):
                 return True
             else:
                 return False
@@ -76,12 +76,12 @@ class ElSshCommand(SshCommand):
         
         sshParameters
             an SshParameters instance."""
-        SshCommand.sleepUntilIsAvailable(sshParameters,
-                                         checkIntervalSeconds=checkIntervalSeconds, ticker=ticker)
+        cls.sleepUntilIsAvailable(sshParameters,
+                                  checkIntervalSeconds=checkIntervalSeconds, ticker=ticker)
         printed = False
         ticked = False
         # check the essential condition, initially and then repeatedly
-        while not ElSshCommand.isGuiAvailable(sshParameters):
+        while not cls.isGuiAvailable(sshParameters):
             if not printed:
                 # first time only printing
                 print "waiting for GUI to be available to connect to " + IPAddress.asString(sshParameters.ipaddress)
@@ -102,4 +102,4 @@ class ElSshCommand(SshCommand):
 
 if __name__ == "__main__":
     from nrvr.util.requirements import SystemRequirements
-    SystemRequirements.commandsRequiredByImplementations([ElSshCommand], verbose=True)
+    SystemRequirements.commandsRequiredByImplementations([LinuxSshCommand], verbose=True)

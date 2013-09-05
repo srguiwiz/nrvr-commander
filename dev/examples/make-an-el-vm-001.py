@@ -18,10 +18,10 @@ import tempfile
 import time
 
 from nrvr.diskimage.isoimage import IsoImage
-from nrvr.distros.el.gnome import Gnome
+from nrvr.distros.common.ssh import LinuxSshCommand
+from nrvr.distros.el.gnome import ElGnome
 from nrvr.distros.el.kickstart import ElIsoImage, ElKickstartFileContent
 from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
-from nrvr.distros.el.ssh import ElSshCommand
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.remote.ssh import SshCommand, ScpCommand
@@ -135,10 +135,10 @@ exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 
 # some possible choices pointed out
 #if len(additionalUsers):
-#    exampleVm.sshCommand([Gnome.commandToEnableAutoLogin(additionalUsers[0][0])])
-#    exampleVm.sshCommand([Gnome.commandToDisableScreenSaver()], user=additionalUsers[0][0])
-#    exampleVm.sshCommand([Gnome.commandToSetSolidColorBackground()], user=additionalUsers[0][0])
-#    exampleVm.sshCommand([Gnome.commandToDisableUpdateNotifications()], user=additionalUsers[0][0])
+#    exampleVm.sshCommand([ElGnome.elCommandToEnableAutoLogin(additionalUsers[0][0])])
+#    exampleVm.sshCommand([ElGnome.elCommandToDisableScreenSaver()], user=additionalUsers[0][0])
+#    exampleVm.sshCommand([ElGnome.elCommandToSetSolidColorBackground()], user=additionalUsers[0][0])
+#    exampleVm.sshCommand([ElGnome.elCommandToDisableUpdateNotifications()], user=additionalUsers[0][0])
 
 # a possible modification pointed out
 # append an ipaddress hostname line to /etc/hosts for a smooth automated install of something
@@ -210,12 +210,12 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # start up for showing successful login into GUI
 #VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
 #exampleSshParameters = exampleVm.sshParameters(user=additionalUsers[0][0])
-#ElSshCommand.sleepUntilIsGuiAvailable(exampleSshParameters, ticker=True)
+#LinuxSshCommand.sleepUntilIsGuiAvailable(exampleSshParameters, ticker=True)
 
 # a possible modification pointed out
 # just a demo
 #exampleSshParameters = exampleVm.sshParameters(user=additionalUsers[0][0])
-#SshCommand(exampleSshParameters, [Gnome.commandToStartApplicationInGui("firefox")])
+#SshCommand(exampleSshParameters, [ElGnome.commandToStartApplicationInGui("firefox")])
 
 #
 print "%s is done with %s, it is ready for you to use at %s" % \

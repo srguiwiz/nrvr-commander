@@ -23,10 +23,10 @@ import tempfile
 import time
 
 from nrvr.diskimage.isoimage import IsoImage
-from nrvr.distros.el.gnome import Gnome
+from nrvr.distros.common.ssh import LinuxSshCommand
+from nrvr.distros.el.gnome import ElGnome
 from nrvr.distros.el.kickstart import ElIsoImage, ElKickstartFileContent
 from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
-from nrvr.distros.el.ssh import ElSshCommand
 from nrvr.distros.el.util import ElUtil
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
@@ -147,11 +147,11 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         #
         if mainUser:
             # a test machine needs to come up ready to run tests, no manual login
-            testVm.sshCommand([Gnome.commandToEnableAutoLogin(mainUser)])
-            testVm.sshCommand([Gnome.commandToDisableScreenSaver()], user=mainUser)
+            testVm.sshCommand([ElGnome.elCommandToEnableAutoLogin(mainUser)])
+            testVm.sshCommand([ElGnome.elCommandToDisableScreenSaver()], user=mainUser)
             # avoid distracting backgrounds, picks unique color to be clear this is a test machine
-            testVm.sshCommand([Gnome.commandToSetSolidColorBackground("#dddd66")], user=mainUser)
-            testVm.sshCommand([Gnome.commandToDisableUpdateNotifications()], user=mainUser)
+            testVm.sshCommand([ElGnome.elCommandToSetSolidColorBackground("#dddd66")], user=mainUser)
+            testVm.sshCommand([ElGnome.elCommandToDisableUpdateNotifications()], user=mainUser)
         #
         # shut down
         testVm.shutdownCommand()
@@ -159,10 +159,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=mainUser)
-        ElSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+        LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         if mainUser:
-            testVm.sshCommand([Gnome.commandToAddSystemMonitorPanel()], user=mainUser)
+            testVm.sshCommand([ElGnome.commandToAddSystemMonitorPanel()], user=mainUser)
         #
         # shut down for snapshot
         testVm.shutdownCommand()
@@ -182,7 +182,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.mainUser)
-        ElSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+        LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         # install tools
         scriptDir = os.path.dirname(os.path.abspath(__file__))
@@ -218,7 +218,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.mainUser)
-        ElSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+        LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         # copy tests
         scriptDir = os.path.dirname(os.path.abspath(__file__))
