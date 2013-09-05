@@ -57,7 +57,7 @@ seleniumPythonBindingsTarUrl = "https://pypi.python.org/packages/source/s/seleni
 seleniumTestsScript = "selenium-tests.py"
 
 # customize as needed
-testVmsRange = range(172, 174)
+testVmsRange = range(181, 183)
 
 # trying to approximate the order in which identifiers are used from this tuple
 VmIdentifiers = namedtuple("VmIdentifiers", ["vmxFilePath", "name", "number", "ipaddress"])

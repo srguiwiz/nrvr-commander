@@ -25,6 +25,7 @@ from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.remote.ssh import SshCommand, ScpCommand
+from nrvr.util.download import Download
 from nrvr.util.ipaddress import IPAddress
 from nrvr.util.nameserver import Nameserver
 from nrvr.util.requirements import SystemRequirements
@@ -42,10 +43,10 @@ SystemRequirements.commandsRequiredByImplementations([IsoImage,
 VMwareHypervisor.localRequired()
 
 # BEGIN essential example code
-ipaddress = "192.168.11.171"
+ipaddress = "192.168.0.161"
 # a possible modification pointed out
 # makes sense e.g. if used together with whateverVm.vmxFile.setEthernetAdapter(adapter, "hostonly")
-#ipaddress = IPAddress.numberWithinSubnet(VMwareHypervisor.localHostOnlyIPAddress, 171)
+#ipaddress = IPAddress.numberWithinSubnet(VMwareHypervisor.localHostOnlyIPAddress, 161)
 rootpw = "redwood"
 additionalUsers = []
 # some possible choices pointed out
@@ -87,8 +88,10 @@ if exists == False:
     # genisoimage -r -J -T -f -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat -V remastered -o ~/Downloads/SL-61-x86_64-2011-11-09-Install-DVD-less-some.iso ~/Downloads/tmp-SL61-64bit-iso/
     # and you might want to check it is smaller than 2^32 == 4294967296 bytes
     #
-    downloadedDistroIsoImage = ElIsoImage(ScriptUser.loggedIn.userHomeRelative \
-                                          ("Downloads/SL-64-i386-2013-03-18-Install-DVD.iso"))
+    #downloadedDistroIsoImage = ElIsoImage(ScriptUser.loggedIn.userHomeRelative \
+    #                                      ("Downloads/SL-64-i386-2013-03-18-Install-DVD.iso"))
+    downloadedDistroIsoImage = ElIsoImage(Download.fromUrl
+                                          ("http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"))
     # some possible choices pointed out
     # server w command line only
     kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
@@ -107,7 +110,7 @@ if exists == False:
     for additionalUser in additionalUsers:
         kickstartFileContent.elAddUser(additionalUser[0], pwd=additionalUser[1])
     # some possible modifications pointed out
-    kickstartFileContent.setSwappiness(10)
+    #kickstartFileContent.setSwappiness(10)
     # pick right temporary directory, ideally same as VM
     modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
     (kickstartFileContent, os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
