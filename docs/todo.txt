@@ -1,8 +1,9 @@
 TODOs:
 
+This to-do list may be outdated and less relevant.
+
 src/nrvr/process/commandcapture.py could use more testing
 (automated and semi-manual) with the help of sleeper.py,
 similar to what has been coded in subprocessexperiment.py.
 Be aware of the unpredictable order of lines from different streams:
 E.g. stdout and stderr could come with different interleaving.
-

@@ -29,7 +29,10 @@ used in some examples.  Solution provided here.
 
 As discussed http://savannah.gnu.org/bugs/?39354 there is a problem with libcdio 0.90.
 
-Hence install older version libcdio 0.81 per
+That problem in libcdio 0.90 has been fixed since and the next version libcdio
+should be working fine again.
+
+Hence, for now, install older version libcdio 0.81 per
 http://trac.macports.org/wiki/howto/InstallingOlderPort
 sudo port uninstall libcdio
 then using
