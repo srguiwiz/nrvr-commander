@@ -18,11 +18,11 @@ Good example uses showing off utility are
 **dev/examples/make-an-ub-vm-002.py** (guest command line Ubuntu), and
 **dev/examples/qa/selenium/make-testing-vms-001.py**
 (guest GUI Linux running Selenium, although this example as implemented
-uses VM snapshots hence needs VMware Workstation or Fusion, but
+uses VM snapshots and hence needs VMware Workstation or Fusion, but
 one could use most of its techniques without snapshots in VMware Player).
 
-At first made and maybe most useful with some brands Linux,
-and a specific brand machine virtualization,
+Initially made with certain brand Linux distributions,
+and with VMware "personal desktop" machine virtualization,
 this code is useful for automation with other operating systems,
 physical machines, etc.
 
