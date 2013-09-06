@@ -149,10 +149,11 @@ fi
 #
 # Set Grub's menu timeout.
 # see https://help.ubuntu.com/community/Grub2
+# see http://askubuntu.com/a/106706
 # replace
 sed -i -e 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=3/' /etc/default/grub
-sed -i -e 's/^GRUB_HIDDEN_TIMEOUT=.*/GRUB_HIDDEN_TIMEOUT=3/' /etc/default/grub
-sed -i -e 's/^GRUB_HIDDEN_TIMEOUT_QUIET=.*/GRUB_HIDDEN_TIMEOUT_QUIET=false/' /etc/default/grub
+sed -i -e 's/^GRUB_HIDDEN_TIMEOUT=.*/#GRUB_HIDDEN_TIMEOUT=3/' /etc/default/grub
+sed -i -e 's/^GRUB_HIDDEN_TIMEOUT_QUIET=.*/#GRUB_HIDDEN_TIMEOUT_QUIET=false/' /etc/default/grub
 # necessary
 update-grub
 """
