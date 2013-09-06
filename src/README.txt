@@ -8,6 +8,8 @@ Modules provides by this package are
 * nrvr.distros.el.kickstart
 * nrvr.distros.el.kickstarttemplates
 * nrvr.distros.el.util
+* nrvr.distros.ub.gnome
+* nrvr.distros.ub.kickstart
 * nrvr.distros.ub.kickstarttemplates
 * nrvr.machine.ports
 * nrvr.process.commandcapture
