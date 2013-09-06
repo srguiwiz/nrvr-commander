@@ -13,7 +13,7 @@ Other than src/, files in dev/ are NOT going into the Python package.
 
 Details for hosting on different operating systems are kept in docs/.
 
-Good example uses showing off utility are
+Good example uses (demonstrating utility) are
 **dev/examples/make-an-el-vm-001.py** (guest command line Enterprise Linux),
 **dev/examples/make-an-ub-vm-002.py** (guest command line Ubuntu), and
 **dev/examples/qa/selenium/make-testing-vms-001.py**
