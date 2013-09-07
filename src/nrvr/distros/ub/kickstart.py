@@ -272,7 +272,7 @@ skeldir=/etc/skel
 cdir=$skeldir/.config
 mxfile=$cdir/monitors.xml
 echo "writing $mxfile"
-mkdir $cdir
+mkdir -p $cdir
 echo '<monitors version="1">
 <configuration>
   <clone>no</clone>
