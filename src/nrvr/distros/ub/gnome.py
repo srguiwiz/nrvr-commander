@@ -82,6 +82,40 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
                   r" ; gsettings set org.gnome.desktop.background primary-color " + re.escape(color)
         return command
 
+    @classmethod
+    def ubCommandToAddSystemMonitorPanel(cls):
+        """Build command to add System Load Indicator to Panel of GNOME.
+        
+        Must be user to succeed.
+        Also, GUI must be available to succeed.
+        
+        As implemented doesn't prevent multiple additions.
+        
+        Return command to add System Load Indicator to Panel of GNOME."""
+        # see https://bugs.launchpad.net/indicator-multiload/+bug/836893
+        # see https://bugs.launchpad.net/indicator-multiload/+bug/942859
+        # see https://bugs.launchpad.net/indicator-multiload/+bug/962646
+        # essential is
+        #   nohup indicator-multiload &> /dev/null &
+        # export and mkdir are necessities,
+        # gsettings- view are optional to show all loads, possibly only after logout and login
+        command = cls.exportDD + \
+                  r" ; export XDG_DATA_DIRS='/usr/share/gnome:/usr/local/share/:/usr/share/' ; " + \
+                  r"mkdir -p ~/.config/autostart ; " + \
+                  r"gsettings set de.mh21.indicator.multiload autostart true ; " + \
+                  r"( nohup indicator-multiload &> /dev/null & ) ; " + \
+                  r"while [ ! -f ~/.config/autostart/indicator-multiload* ] ; do sleep 1 ; done ; " + \
+                  r"( if pidofim=`pidof indicator-multiload` ; then /bin/kill $pidofim ; fi ) ; " + \
+                  r"( while pidof indicator-multiload ; do sleep 1 ; done ) ; " + \
+                  r"gsettings set de.mh21.indicator.multiload autostart true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload view-cpuload true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload view-memload true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload view-netload true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload view-swapload true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload view-loadavg true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload view-diskload true"
+        return command
+
 if __name__ == "__main__":
     print UbGnome.ubCommandToEnableAutoLogin("joe")
     print UbGnome.ubCommandToDisableAutoLogin()
@@ -90,3 +124,4 @@ if __name__ == "__main__":
     print UbGnome.ubCommandToEnableScreenSaver()
     print UbGnome.ubCommandToSetSolidColorBackground("#4f6f8f")
     print UbGnome.commandToTellWhetherGuiIsAvailable()
+    print UbGnome.ubCommandToAddSystemMonitorPanel()

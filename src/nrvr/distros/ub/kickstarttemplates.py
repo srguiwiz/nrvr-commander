@@ -164,4 +164,5 @@ update-grub
 @ubuntu-desktop
 openssh-server
 build-essential
+indicator-multiload
 """.splitlines())
