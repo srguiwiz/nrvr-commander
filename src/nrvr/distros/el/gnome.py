@@ -50,7 +50,7 @@ class ElGnome(nrvr.distros.common.gnome.Gnome):
         Must be user to succeed.
         
         Return command to disable screen saver of GNOME."""
-        command = "gconftool-2 --set /apps/gnome-screensaver/idle_activation_enabled --type=bool false"
+        command = r"gconftool-2 --set /apps/gnome-screensaver/idle_activation_enabled --type=bool false"
         return command
 
     @classmethod
@@ -60,7 +60,7 @@ class ElGnome(nrvr.distros.common.gnome.Gnome):
         Must be user to succeed.
         
         Return command to enable screen saver of GNOME."""
-        command = "gconftool-2 --set /apps/gnome-screensaver/idle_activation_enabled --type=bool true"
+        command = r"gconftool-2 --set /apps/gnome-screensaver/idle_activation_enabled --type=bool true"
         return command
 
     @classmethod
@@ -100,11 +100,9 @@ class ElGnome(nrvr.distros.common.gnome.Gnome):
         # necessary is
         #   export DISPLAY=:0.0 ; /usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet
         # rest is optional to show all loads, possibly only after logout and login
-        command = r"export DISPLAY=:0.0 ; " + \
-                  r"/usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet" + \
-                  r" && dbuslaunch=`dbus-launch`" + \
-                  r" && export DBUS_SESSION_BUS_ADDRESS=`printf \"%s\" \"$dbuslaunch\" | sed -r -n -e 's/^DBUS_SESSION_BUS_ADDRESS=(.*)/\1/p'`" + \
-                  r" && export DBUS_SESSION_BUS_PID=`printf \"%s\" \"$dbuslaunch\" | sed -r -n -e 's/^DBUS_SESSION_BUS_PID=(.*)/\1/p'`" + \
+        command = cls.exportDisplay + \
+                  r" ; /usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet" + \
+                  r" && " + cls.exportDbus + \
                   r" && gconftool-2 --spawn" + \
                   r" && applet=`gconftool-2 --get /apps/panel/general/applet_id_list | sed -r -e 's/^.*,(.+)]$/\1/'`" + \
                   r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_cpuload --type=bool true" + \

@@ -52,9 +52,9 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
         Return command to disable screen saver of GNOME."""
         # see http://askubuntu.com/questions/109120/how-do-i-turn-off-the-screen-saver-using-the-command-line
         # maybe also see http://www.lucidelectricdreams.com/2011/06/disabling-screensaverlock-screen-on.html
-        command = "export DISPLAY=:0.0 ; " + \
-                  "gsettings set org.gnome.desktop.screensaver lock-enabled false" + \
-                  " ; gsettings set org.gnome.desktop.screensaver idle-activation-enabled false"
+        command = cls.exportDisplay + \
+                  r" ; gsettings set org.gnome.desktop.screensaver lock-enabled false" + \
+                  r" ; gsettings set org.gnome.desktop.screensaver idle-activation-enabled false"
         return command
 
     @classmethod
@@ -64,9 +64,9 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
         Must be user to succeed.
         
         Return command to enable screen saver of GNOME."""
-        command = "export DISPLAY=:0.0 ; " + \
-                  "gsettings set org.gnome.desktop.screensaver lock-enabled true" + \
-                  " ; gsettings set org.gnome.desktop.screensaver idle-activation-enabled true"
+        command = cls.exportDisplay + \
+                  r" ; gsettings set org.gnome.desktop.screensaver lock-enabled true" + \
+                  r" ; gsettings set org.gnome.desktop.screensaver idle-activation-enabled true"
         return command
 
     @classmethod
@@ -76,10 +76,10 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
         Must be user to succeed.
         
         Return command to set solid color background of GNOME."""
-        command = "export DISPLAY=:0.0 ; " + \
-                  "gsettings set org.gnome.desktop.background picture-options none" + \
-                  " ; gsettings set org.gnome.desktop.background color-shading-type solid" + \
-                  " ; gsettings set org.gnome.desktop.background primary-color " + re.escape(color)
+        command = cls.exportDisplay + \
+                  r" ; gsettings set org.gnome.desktop.background picture-options none" + \
+                  r" ; gsettings set org.gnome.desktop.background color-shading-type solid" + \
+                  r" ; gsettings set org.gnome.desktop.background primary-color " + re.escape(color)
         return command
 
 if __name__ == "__main__":
