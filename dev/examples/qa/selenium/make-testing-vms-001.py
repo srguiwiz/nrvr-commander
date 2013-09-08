@@ -162,7 +162,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         if mainUser:
-            testVm.sshCommand([ElGnome.commandToAddSystemMonitorPanel()], user=mainUser)
+            testVm.sshCommand([ElGnome.elCommandToAddSystemMonitorPanel()], user=mainUser)
         #
         # shut down for snapshot
         testVm.shutdownCommand()
