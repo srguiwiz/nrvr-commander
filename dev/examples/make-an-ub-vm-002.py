@@ -89,6 +89,7 @@ if exists == False:
     exampleVm.portsFile.setSsh(ipaddress=ipaddress, user="root", pwd=rootpw)
     exampleVm.portsFile.setShutdown()
     exampleVm.portsFile.setSsh(ipaddress=ipaddress, user=normalUser[0], pwd=normalUser[1])
+    exampleVm.portsFile.setMainUser(normalUser[0])
     # some possible modifications pointed out
     #exampleVm.vmxFile.setEthernetAdapter(0, "bridged")
     # NAT works well if before hostonly
@@ -106,9 +107,9 @@ VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True)
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 
 # some possible choices pointed out
-#exampleVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(normalUser[0])])
-#exampleVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=normalUser[0])
-#exampleVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground()], user=normalUser[0])
+#exampleVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(exampleVm.mainUser)])
+#exampleVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=exampleVm.mainUser)
+#exampleVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground()], user=exampleVm.mainUser)
 
 # these ssh commands here are just a demo
 print "------"
@@ -151,13 +152,13 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # a possible modification pointed out
 # start up for showing successful login into GUI
 #VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
-#exampleSshParameters = exampleVm.sshParameters(user=normalUser[0])
-#LinuxSshCommand.sleepUntilIsGuiAvailable(exampleSshParameters, ticker=True)
+#mainUserSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
+#LinuxSshCommand.sleepUntilIsGuiAvailable(mainUserSshParameters, ticker=True)
 
 # a possible modification pointed out
 # just a demo
-#exampleSshParameters = exampleVm.sshParameters(user=normalUser[0])
-#SshCommand(exampleSshParameters, [UbGnome.commandToStartApplicationInGui("firefox")])
+#mainUserSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
+#SshCommand(mainUserSshParameters, [UbGnome.commandToStartApplicationInGui("firefox")])
 
 #
 print "%s is done with %s, it is ready for you to use at %s" % \

@@ -121,6 +121,8 @@ if exists == False:
     exampleVm.portsFile.setShutdown()
     for additionalUser in additionalUsers:
         exampleVm.portsFile.setSsh(ipaddress=ipaddress, user=additionalUser[0], pwd=additionalUser[1])
+    if additionalUsers:
+        exampleVm.portsFile.setMainUser(additionalUsers[0][0])
     # some possible modifications pointed out
     #exampleVm.vmxFile.setEthernetAdapter(0, "bridged")
     # NAT works well if before hostonly
@@ -137,11 +139,11 @@ VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 
 # some possible choices pointed out
-#if len(additionalUsers):
-#    exampleVm.sshCommand([ElGnome.elCommandToEnableAutoLogin(additionalUsers[0][0])])
-#    exampleVm.sshCommand([ElGnome.elCommandToDisableScreenSaver()], user=additionalUsers[0][0])
-#    exampleVm.sshCommand([ElGnome.elCommandToSetSolidColorBackground()], user=additionalUsers[0][0])
-#    exampleVm.sshCommand([ElGnome.elCommandToDisableUpdateNotifications()], user=additionalUsers[0][0])
+#if exampleVm.mainUser:
+#    exampleVm.sshCommand([ElGnome.elCommandToEnableAutoLogin(exampleVm.mainUser)])
+#    exampleVm.sshCommand([ElGnome.elCommandToDisableScreenSaver()], user=exampleVm.mainUser)
+#    exampleVm.sshCommand([ElGnome.elCommandToSetSolidColorBackground()], user=exampleVm.mainUser)
+#    exampleVm.sshCommand([ElGnome.elCommandToDisableUpdateNotifications()], user=exampleVm.mainUser)
 
 # a possible modification pointed out
 # append an ipaddress hostname line to /etc/hosts for a smooth automated install of something
@@ -212,12 +214,12 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # a possible modification pointed out
 # start up for showing successful login into GUI
 #VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
-#exampleSshParameters = exampleVm.sshParameters(user=additionalUsers[0][0])
+#exampleSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
 #LinuxSshCommand.sleepUntilIsGuiAvailable(exampleSshParameters, ticker=True)
 
 # a possible modification pointed out
 # just a demo
-#exampleSshParameters = exampleVm.sshParameters(user=additionalUsers[0][0])
+#exampleSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
 #SshCommand(exampleSshParameters, [ElGnome.commandToStartApplicationInGui("firefox")])
 
 #
