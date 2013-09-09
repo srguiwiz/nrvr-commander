@@ -99,6 +99,7 @@ if exists == False:
     kickstartFileContent.elReplaceHostname(exampleVm.basenameStem)
     kickstartFileContent.elReplaceStaticIP(ipaddress, nameservers=Nameserver.list)
     # put in DHCP at eth0, to be used with NAT, works well if before hostonly
+    #kickstartFileContent.elReplaceStaticIP(ipaddress, nameservers=[])
     #kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
     # some possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Minimal)
