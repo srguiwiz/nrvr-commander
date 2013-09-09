@@ -48,6 +48,7 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
         """Build command to disable screen saver of GNOME.
         
         Must be user to succeed.
+        Also, GUI must be available to succeed.
         
         Return command to disable screen saver of GNOME."""
         # see http://askubuntu.com/questions/109120/how-do-i-turn-off-the-screen-saver-using-the-command-line
@@ -62,6 +63,7 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
         """Build command to enable screen saver of GNOME.
         
         Must be user to succeed.
+        Also, GUI must be available to succeed.
         
         Return command to enable screen saver of GNOME."""
         command = cls.exportDisplay + \
@@ -74,6 +76,7 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
         """Build command to set solid color background of GNOME.
         
         Must be user to succeed.
+        Also, GUI must be available to succeed.
         
         Return command to set solid color background of GNOME."""
         command = cls.exportDisplay + \

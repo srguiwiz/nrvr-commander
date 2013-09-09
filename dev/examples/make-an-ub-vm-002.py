@@ -106,10 +106,8 @@ if exists == False:
 VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True)
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 
-# some possible choices pointed out
+# a possible choice pointed out
 #exampleVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(exampleVm.mainUser)])
-#exampleVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=exampleVm.mainUser)
-#exampleVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground()], user=exampleVm.mainUser)
 
 # these ssh commands here are just a demo
 print "------"
@@ -159,6 +157,18 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # just a demo
 #mainUserSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
 #SshCommand(mainUserSshParameters, [UbGnome.commandToStartApplicationInGui("firefox")])
+
+# possible modifications pointed out
+# start up until successful login into GUI
+#VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
+#mainUserSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
+#LinuxSshCommand.sleepUntilIsGuiAvailable(mainUserSshParameters, ticker=True)
+# some possible choices pointed out
+#exampleVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=exampleVm.mainUser)
+#exampleVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground()], user=exampleVm.mainUser)
+#exampleVm.sshCommand([UbGnome.ubCommandToAddSystemMonitorPanel()], user=exampleVm.mainUser)
+#exampleVm.shutdownCommand()
+#VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 
 #
 print "%s is done with %s, it is ready for you to use at %s" % \
