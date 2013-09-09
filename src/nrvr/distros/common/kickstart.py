@@ -465,7 +465,7 @@ class DistroKickstartFileContent(object):
 if __name__ == "__main__":
     from nrvr.distros.el.kickstart import ElKickstartFileContent
     from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
-    _kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
+    _kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableElKickstartTemplate001)
     _kickstartFileContent.replaceRootpw("redwood")
     _kickstartFileContent.elReplaceHostname("test-hostname-101")
     _kickstartFileContent.elReplaceStaticIP("10.123.45.67")

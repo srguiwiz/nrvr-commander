@@ -60,7 +60,7 @@ if exists == False:
                                           ("http://releases.ubuntu.com/precise/ubuntu-12.04.2-alternate-i386.iso"))
     # some possible choices pointed out
     # server w command line only
-    kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableKickstartTemplate001)
+    kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
     kickstartFileContent.replaceRootpw(rootpw)
     kickstartFileContent.ubReplaceHostname(exampleVm.basenameStem)
     kickstartFileContent.ubCreateNetworkConfigurationSection()

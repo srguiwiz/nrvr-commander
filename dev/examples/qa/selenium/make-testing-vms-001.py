@@ -104,7 +104,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         testVm.mkdir()
         downloadedDistroIsoImage = ElIsoImage(Download.fromUrl
                                               ("http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"))
-        kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableKickstartTemplate001)
+        kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableElKickstartTemplate001)
         kickstartFileContent.replaceRootpw(rootpw)
         kickstartFileContent.elReplaceHostname(testVm.basenameStem)
         #kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameservers=Nameserver.list)

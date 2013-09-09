@@ -387,7 +387,7 @@ echo '<monitors version="1">
 if __name__ == "__main__":
     from nrvr.distros.ub.kickstarttemplates import UbKickstartTemplates
     from nrvr.util.nameserver import Nameserver
-    _kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableKickstartTemplate001)
+    _kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
     _kickstartFileContent.replaceRootpw("redwood")
     _kickstartFileContent.addPackage("another-package-for-testing")
     _kickstartFileContent.removeAllPackages()

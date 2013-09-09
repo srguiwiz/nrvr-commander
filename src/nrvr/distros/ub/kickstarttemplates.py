@@ -25,7 +25,7 @@ class UbKickstartTemplates(object):
     # and https://help.ubuntu.com/community/KickstartCompatibility
     # and http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
     # and http://fedoraproject.org/wiki/Anaconda/Kickstart
-    usableKickstartTemplate001 = r"""# A kickstart file made for Ubuntu 12.04 LTS,
+    usableUbKickstartTemplate001 = r"""# A kickstart file made for Ubuntu 12.04 LTS,
 # http://releases.ubuntu.com/precise/ubuntu-12.04.2-alternate-i386.iso .
 #
 # As implemented inlines Ubuntu preseed commands into an Enterprise Linux kind of
