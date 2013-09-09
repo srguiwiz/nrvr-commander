@@ -48,7 +48,8 @@ ipaddress = "192.168.0.166"
 # makes sense e.g. if used together with whateverVm.vmxFile.setEthernetAdapter(adapter, "hostonly")
 #ipaddress = IPAddress.numberWithinSubnet(VMwareHypervisor.localHostOnlyIPAddress, 166)
 rootpw = "redwood"
-normalUser = ("jack","rainbow")
+# Ubuntu kickstart supports only one regular user
+regularUser = ("jack","rainbow")
 # one possible way of making new VM names and directories
 name = IPAddress.nameWithNumber("example", ipaddress, separator=None)
 exampleVm = VMwareMachine(ScriptUser.loggedIn.userHomeRelative("vmware/examples/%s/%s.vmx" % (name, name)))
@@ -77,7 +78,7 @@ if exists == False:
     # some other possible modifications pointed out
     #kickstartFileContent.replaceAllPackages(UbKickstartTemplates.packagesForUbuntuDesktop)
     #kickstartFileContent.ubActivateGraphicalLogin()
-    kickstartFileContent.ubSetUser(normalUser[0], pwd=normalUser[1])
+    kickstartFileContent.ubSetUser(regularUser[0], pwd=regularUser[1])
     # some possible modifications pointed out
     #kickstartFileContent.setSwappiness(10)
     # pick right temporary directory, ideally same as VM
@@ -88,8 +89,8 @@ if exists == False:
     exampleVm.create(memsizeMegabytes=1200, guestOS="ubuntu", ideDrives=[20000, 300, modifiedDistroIsoImage])
     exampleVm.portsFile.setSsh(ipaddress=ipaddress, user="root", pwd=rootpw)
     exampleVm.portsFile.setShutdown()
-    exampleVm.portsFile.setSsh(ipaddress=ipaddress, user=normalUser[0], pwd=normalUser[1])
-    exampleVm.portsFile.setMainUser(normalUser[0])
+    exampleVm.portsFile.setSsh(ipaddress=ipaddress, user=regularUser[0], pwd=regularUser[1])
+    exampleVm.portsFile.setRegularUser(regularUser[0])
     # some possible modifications pointed out
     #exampleVm.vmxFile.setEthernetAdapter(0, "bridged")
     # NAT works well if before hostonly
@@ -107,7 +108,7 @@ VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True)
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 
 # a possible choice pointed out
-#exampleVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(exampleVm.mainUser)])
+#exampleVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(exampleVm.regularUser)])
 
 # these ssh commands here are just a demo
 print "------"
@@ -150,23 +151,23 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # a possible modification pointed out
 # start up for showing successful login into GUI
 #VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
-#mainUserSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
-#LinuxSshCommand.sleepUntilIsGuiAvailable(mainUserSshParameters, ticker=True)
+#regularUserSshParameters = exampleVm.sshParameters(user=exampleVm.regularUser)
+#LinuxSshCommand.sleepUntilIsGuiAvailable(regularUserSshParameters, ticker=True)
 
 # a possible modification pointed out
 # just a demo
-#mainUserSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
-#SshCommand(mainUserSshParameters, [UbGnome.commandToStartApplicationInGui("firefox")])
+#regularUserSshParameters = exampleVm.sshParameters(user=exampleVm.regularUser)
+#SshCommand(regularUserSshParameters, [UbGnome.commandToStartApplicationInGui("firefox")])
 
 # possible modifications pointed out
 # start up until successful login into GUI
 #VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
-#mainUserSshParameters = exampleVm.sshParameters(user=exampleVm.mainUser)
-#LinuxSshCommand.sleepUntilIsGuiAvailable(mainUserSshParameters, ticker=True)
+#regularUserSshParameters = exampleVm.sshParameters(user=exampleVm.regularUser)
+#LinuxSshCommand.sleepUntilIsGuiAvailable(regularUserSshParameters, ticker=True)
 # some possible choices pointed out
-#exampleVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=exampleVm.mainUser)
-#exampleVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground()], user=exampleVm.mainUser)
-#exampleVm.sshCommand([UbGnome.ubCommandToAddSystemMonitorPanel()], user=exampleVm.mainUser)
+#exampleVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=exampleVm.regularUser)
+#exampleVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground()], user=exampleVm.regularUser)
+#exampleVm.sshCommand([UbGnome.ubCommandToAddSystemMonitorPanel()], user=exampleVm.regularUser)
 #exampleVm.shutdownCommand()
 #VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 
