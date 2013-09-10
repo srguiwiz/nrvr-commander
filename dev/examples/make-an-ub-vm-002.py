@@ -157,7 +157,7 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # a possible modification pointed out
 # just a demo
 #regularUserSshParameters = exampleVm.sshParameters(user=exampleVm.regularUser)
-#SshCommand(regularUserSshParameters, [UbGnome.commandToStartApplicationInGui("firefox")])
+#SshCommand(regularUserSshParameters, [UbGnome.commandToStartApplicationInGui("firefox about:blank")])
 
 # possible modifications pointed out
 # start up until successful login into GUI

@@ -221,7 +221,7 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # a possible modification pointed out
 # just a demo
 #exampleSshParameters = exampleVm.sshParameters(user=exampleVm.regularUser)
-#SshCommand(exampleSshParameters, [ElGnome.commandToStartApplicationInGui("firefox")])
+#SshCommand(exampleSshParameters, [ElGnome.commandToStartApplicationInGui("firefox about:blank")])
 
 #
 print "%s is done with %s, it is ready for you to use at %s" % \

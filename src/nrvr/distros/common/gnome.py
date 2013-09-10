@@ -57,7 +57,7 @@ class Gnome():
         Puts application into background and returns.
         
         application
-            e.g. firefox.
+            e.g. "firefox about:blank".
         
         Return command to start application in GNOME."""
         command = cls.exportDisplay + r" ; nohup " + application + r" &> /dev/null &"
