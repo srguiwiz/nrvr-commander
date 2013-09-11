@@ -64,5 +64,8 @@ class Gnome():
         return command
 
 if __name__ == "__main__":
+    print Gnome.exportDisplay
+    print Gnome.exportDbus
+    print Gnome.exportDD
     print Gnome.commandToTellWhetherGuiIsAvailable()
     print Gnome.commandToStartApplicationInGui("gedit")

@@ -100,10 +100,10 @@ class ElGnome(nrvr.distros.common.gnome.Gnome):
         # necessary is
         #   export DISPLAY=:0.0 ; /usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet
         # rest is optional to show all loads, possibly only after logout and login
-        command = cls.exportDisplay + \
-                  r" ; /usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet" + \
-                  r" && " + cls.exportDbus + \
-                  r" && gconftool-2 --spawn" + \
+        command = cls.exportDD + \
+                  r" && applets=`gconftool-2 --get /apps/panel/general/applet_id_list`" + \
+                  r" && /usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet" + \
+                  r" && while [ 'is'`gconftool-2 --get /apps/panel/general/applet_id_list` = 'is'$applets ] ; do sleep 1 ; done" + \
                   r" && applet=`gconftool-2 --get /apps/panel/general/applet_id_list | sed -r -e 's/^.*,(.+)]$/\1/'`" + \
                   r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_cpuload --type=bool true" + \
                   r" && gconftool-2 --set /apps/panel/applets/$applet/prefs/view_memload --type=bool true" + \
