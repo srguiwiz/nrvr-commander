@@ -100,7 +100,7 @@ class ElGnome(nrvr.distros.common.gnome.Gnome):
         # necessary is
         #   export DISPLAY=:0.0 ; /usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet
         # rest is optional to show all loads, possibly only after logout and login
-        command = cls.exportDD + \
+        command = cls.exportDisplay + \
                   r" && applets=`gconftool-2 --get /apps/panel/general/applet_id_list`" + \
                   r" && /usr/libexec/gnome-panel-add --applet=OAFIID:GNOME_MultiLoadApplet" + \
                   r" && while [ 'is'`gconftool-2 --get /apps/panel/general/applet_id_list` = 'is'$applets ] ; do sleep 1 ; done" + \
