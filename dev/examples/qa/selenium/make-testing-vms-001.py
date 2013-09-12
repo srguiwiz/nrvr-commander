@@ -279,12 +279,11 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
     distro = vmIdentifiers.mapas.distro
     browser = vmIdentifiers.mapas.browser
     #
-    if forceThisStep:
-        VMwareHypervisor.local.revertToSnapshotAndDeleteDescendants(vmIdentifiers.vmxFilePath, "OS installed")
-    #
     snapshots = VMwareHypervisor.local.listSnapshots(vmIdentifiers.vmxFilePath)
     snapshotExists = "tools installed" in snapshots
-    if not snapshotExists:
+    if not snapshotExists or forceThisStep:
+        VMwareHypervisor.local.revertToSnapshotAndDeleteDescendants(vmIdentifiers.vmxFilePath, "OS installed")
+        #
         testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
@@ -355,12 +354,11 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
     distro = vmIdentifiers.mapas.distro
     browser = vmIdentifiers.mapas.browser
     #
-    if forceThisStep:
-        VMwareHypervisor.local.revertToSnapshotAndDeleteDescendants(vmIdentifiers.vmxFilePath, "tools installed")
-    #
     snapshots = VMwareHypervisor.local.listSnapshots(vmIdentifiers.vmxFilePath)
     snapshotExists = "ran tests" in snapshots
-    if not snapshotExists:
+    if not snapshotExists or forceThisStep:
+        VMwareHypervisor.local.revertToSnapshotAndDeleteDescendants(vmIdentifiers.vmxFilePath, "tools installed")
+        #
         testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
