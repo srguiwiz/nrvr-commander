@@ -60,7 +60,7 @@ class Gnome():
             e.g. "firefox about:blank".
         
         Return command to start application in GNOME."""
-        command = cls.exportDisplay + r" ; nohup " + application + r" &> /dev/null &"
+        command = cls.exportDisplay + r" ; ( nohup " + application + r" &> /dev/null & )"
         return command
 
 if __name__ == "__main__":

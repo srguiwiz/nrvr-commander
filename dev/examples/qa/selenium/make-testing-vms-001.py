@@ -303,8 +303,8 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                                + " && dpkg -i " + chromeInstallerOnGuestPath],
                               user="root")
             # run once, wait, terminate
-            testVm.sshCommand(["( export DISPLAY=:0.0"
-                               + " ; nohup"
+            testVm.sshCommand(["export DISPLAY=:0.0 ; "
+                               + "( nohup"
                                + " google-chrome --cancel-first-run --no-default-browser-check about:blank"
                                + " &> /dev/null & )"
                                + " && sleep 5"
@@ -396,7 +396,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         testVm.sshCommand(["export DISPLAY=:0.0 ; "
                            + "cd ~/Downloads/"
                            + " && chmod +x " + seleniumTestsScript
-                           + " && nohup ./" + seleniumTestsScript + " &> ./" + seleniumTestsScript + ".log &"],
+                           + " && ( nohup ./" + seleniumTestsScript + " &> ./" + seleniumTestsScript + ".log & )"],
                           user=testVm.regularUser)
         #time.sleep(60)
         #

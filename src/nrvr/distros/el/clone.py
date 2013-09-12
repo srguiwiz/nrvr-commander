@@ -57,7 +57,7 @@ class ElClone():
             # quite sensitive to quoting and not quoting
             command = r"for f in /etc/sysconfig/network-scripts/ifcfg-* ; do " + command + r" $f ; done"
         # oddly has been observed to require two times service network restart
-        command += r" ; nohup sh -c 'service network restart ; service network restart' &> /dev/null &"
+        command += r" ; ( nohup sh -c 'service network restart ; service network restart' &> /dev/null & )"
         return command
 
     @classmethod
@@ -128,7 +128,7 @@ class ElClone():
                   r" ; ssh-keygen -t rsa1 -f /etc/ssh/ssh_host_key -N \"\"" + \
                   r" ; ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N \"\"" + \
                   r" ; ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -N \"\"" + \
-                  r" ; nohup sh -c 'service sshd restart' &> /dev/null &"
+                  r" ; ( nohup sh -c 'service sshd restart' &> /dev/null & )"
         return command
 
 if __name__ == "__main__":
