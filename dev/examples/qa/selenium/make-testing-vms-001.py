@@ -422,4 +422,4 @@ for vmIdentifiers in testVmsIdentifiers:
 for testVm in testVms:
     pass
 
-print "DONE for now, processed %s" % ", ".join(map(lambda vmdentifier: vmdentifier.name, testVmsIdentifiers))
+print "DONE for now, processed %s" % (", ".join(map(lambda vmdentifier: vmdentifier.name, testVmsIdentifiers)))
