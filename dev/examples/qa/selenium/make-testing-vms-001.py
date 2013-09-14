@@ -120,15 +120,15 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
     distro = vmIdentifiers.mapas.distro
     browser = vmIdentifiers.mapas.browser
     if not distro in ["el", "ub"]:
-        raise Exception("unknown distro %s" % distro)
-    if distro is "el" and browser is "chrome":
-        raise Exception("cannot run browser %s in distro %s" % browser, distro)
+        raise Exception("unknown distro %s" % (distro))
+    if distro == "el" and browser == "chrome":
+        raise Exception("cannot run browser %s in distro %s" % (browser, distro))
     #
     rootpw = "redwood"
-    if distro is "el":
+    if distro == "el":
         additionalUsersProperties = testUsersProperties
         regularUserProperties = testUsersProperties[0]
-    elif distro is "ub":
+    elif distro == "ub":
         # Ubuntu kickstart supports only one regular user
         regularUserProperties = testUsersProperties[0]
     #
@@ -142,7 +142,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         # make virtual machine
         testVm.mkdir()
         #
-        if distro is "el":
+        if distro == "el":
             downloadedDistroIsoImage = ElIsoImage(Download.fromUrl
                                                   ("http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"))
             kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableElKickstartTemplate001)
@@ -205,7 +205,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             # shut down for snapshot
             testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
-        elif distro is "ub":
+        elif distro == "ub":
             downloadedDistroIsoImage = UbIsoImage(Download.fromUrl
                                                   ("http://releases.ubuntu.com/precise/ubuntu-12.04.2-alternate-i386.iso"))
             kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
@@ -291,7 +291,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         # install Google Chrome
-        if browser is "chrome" and distro is "ub":
+        if browser == "chrome" and distro == "ub":
             chromeInstallerOnHostPath = Download.fromUrl(googleChromeUbuntu32InstallerUrl)
             chromeInstallerOnGuestPath = "~/" + Download.basename(googleChromeUbuntu32InstallerUrl)
             testVm.scpPutCommand(fromHostPath=chromeInstallerOnHostPath,
@@ -316,7 +316,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                              toGuestPath="~/Downloads/" + Download.basename(seleniumServerStandaloneJarUrl),
                              guestUser=testVm.regularUser)
         #
-        if browser is "chrome":
+        if browser == "chrome":
             # install ChromeDriver
             # see http://code.google.com/p/selenium/wiki/ChromeDriver
             chromeDriverInstallerZipPath = Download.fromUrl(chromeDriverLinux32InstallerZipUrl)
@@ -372,7 +372,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
                              toGuestPath="~/Downloads/" + seleniumTestsScript,
                              guestUser=testVm.regularUser)
         # fix up tests, if necessary
-        if browser is "chrome":
+        if browser == "chrome":
             # switch from webdriver.Firefox() to webdriver.Chrome()
             testVm.sshCommand(["sed -i -e 's/webdriver\.Firefox/webdriver.Chrome/'"
                                + " ~/Downloads/" + seleniumTestsScript],
