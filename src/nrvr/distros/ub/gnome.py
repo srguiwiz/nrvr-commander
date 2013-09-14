@@ -28,10 +28,12 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
             defaults to None, which effects disabling auto-login.
         
         Return command to enable auto-login into GNOME."""
+        # see http://www.tuxgarage.com/2011/09/setting-lightdm-to-auto-login-oneiric.html
         command = UbGnome.ubCommandToDisableAutoLogin()
         if username:
             username = re.escape(username) # precaution
-            command += r" ; sed -i -e '/^\[SeatDefaults\]/ a \autologin-user=" + username + r"\nautologin-user-timeout=3' /etc/lightdm/lightdm.conf"
+            # autologin-user-timeout=0 to avoid https://bugs.launchpad.net/ubuntu/+source/lightdm/+bug/902852
+            command += r" ; sed -i -e '/^\[SeatDefaults\]/ a \autologin-user=" + username + r"\nautologin-user-timeout=0' /etc/lightdm/lightdm.conf"
         return command
 
     @classmethod
