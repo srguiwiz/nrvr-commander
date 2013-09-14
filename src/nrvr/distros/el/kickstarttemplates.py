@@ -50,8 +50,10 @@ network --device=eth0 --bootproto=static --ip=10.123.45.67 --netmask=255.255.255
 # Should be set.
 rootpw --iscrypted $1$sodiumch$UqZCYecJ/y5M5pp1x.7C4/
 #
-firewall --enabled --service=ssh
 authconfig --enableshadow --enablemd5
+#
+firewall --enabled --service=ssh
+#
 selinux --enforcing
 #
 # Consider whether it needs to be timezone --utc Etc/UTC
