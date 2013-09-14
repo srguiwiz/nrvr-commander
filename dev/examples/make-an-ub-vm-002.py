@@ -69,6 +69,10 @@ if exists == False:
     # put in DHCP at eth0, to be used with NAT, works well if before hostonly
     #kickstartFileContent.ubAddNetworkConfigurationDhcp("eth0")
     #kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth1", ipaddress=ipaddress, nameservers=Nameserver.list)
+    # some possible modifications pointed out
+    #kickstartFileContent.ubSetUpgradeNone()
+    #kickstartFileContent.ubSetUpgradeSafe()
+    #kickstartFileContent.ubSetUpgradeFull()
     kickstartFileContent.ubSetUpdatePolicyNone()
     # some possible modifications pointed out
     #kickstartFileContent.ubSetUpdatePolicyUnattended()

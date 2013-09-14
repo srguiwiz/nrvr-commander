@@ -344,7 +344,63 @@ echo '<monitors version="1">
             # append
             commandSection.string = commandSection.string + "#\n" + commandString + "\n"
 
-    _updatePolicyRegex = re.compile(r"(?m)^[ \t]*preseed[ \t]+pkgsel/update-policy[ \t]+.*$")
+    def ubSetPreseedValue(self, qowner, qname, qtype, qvalue):
+        """Set a preseed value in the command section.
+        
+        qowner
+            "d-i" or other owner.
+        
+        qname
+            name string, e.g. "pkgsel/update-policy".
+        
+        qtype
+            type string, e.g. "boolean", "string", "select", or "multiselect".
+        
+        qvalue
+            value string.
+        
+        return
+            self, for daisychaining."""
+        # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
+        commandSection = self.sectionByName("command")
+        if not qowner:
+            qowner = "d-i"
+        preseedString = "preseed " + ("--owner " + qowner + " " if not qowner == "d-i" else "") + qname + " " + qtype + " " + qvalue
+        preseedRegex = re.compile(r"(?m)^[ \t]*preseed[ \t]+" + \
+                                  (r"--owner[ \t]+" + re.escape(qowner) + r"[ \t]+" if not qowner == "d-i" else r"") + \
+                                  qname + r"[ \t]+.*$")
+        if re.search(preseedRegex, commandSection.string): # pre-existing preseed for this qowner and qname
+            # replace
+            commandSection.string = re.sub(preseedRegex,
+                                           preseedString,
+                                           commandSection.string)
+        else: # no pre-existing pkgsel/update-policy
+            # append
+            commandSection.string = commandSection.string + "#\n" + preseedString + "\n"
+
+    def ubSetUpgradeNone(self):
+        """Set whether to upgrade packages after debootstrap to "none".
+        
+        return
+            self, for daisychaining."""
+        # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
+        return self.ubSetPreseedValue("d-i", "pkgsel/upgrade", "select", "none")
+
+    def ubSetUpgradeSafe(self):
+        """Set whether to upgrade packages after debootstrap to "safe-upgrade".
+        
+        return
+            self, for daisychaining."""
+        # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
+        return self.ubSetPreseedValue("d-i", "pkgsel/upgrade", "select", "safe-upgrade")
+
+    def ubSetUpgradeFull(self):
+        """Set whether to upgrade packages after debootstrap to "full-upgrade".
+        
+        return
+            self, for daisychaining."""
+        # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
+        return self.ubSetPreseedValue("d-i", "pkgsel/upgrade", "select", "full-upgrade")
 
     def ubSetUpdatePolicyNone(self):
         """Set policy for applying updates to "none".
@@ -354,16 +410,7 @@ echo '<monitors version="1">
         return
             self, for daisychaining."""
         # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
-        commandSection = self.sectionByName("command")
-        preseedString = r"preseed pkgsel/update-policy select none"
-        if re.search(self._updatePolicyRegex, commandSection.string): # pre-existing pkgsel/update-policy
-            # replace
-            commandSection.string = re.sub(self._updatePolicyRegex,
-                                           preseedString,
-                                           commandSection.string)
-        else: # no pre-existing pkgsel/update-policy
-            # append
-            commandSection.string = commandSection.string + "#\n" + preseedString + "\n"
+        return self.ubSetPreseedValue("d-i", "pkgsel/update-policy", "select", "none")
 
     def ubSetUpdatePolicyUnattended(self):
         """Set policy for applying updates to "unattended-upgrades".
@@ -373,16 +420,7 @@ echo '<monitors version="1">
         return
             self, for daisychaining."""
         # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
-        commandSection = self.sectionByName("command")
-        preseedString = r"preseed pkgsel/update-policy select unattended-upgrades"
-        if re.search(self._updatePolicyRegex, commandSection.string): # pre-existing pkgsel/update-policy
-            # replace
-            commandSection.string = re.sub(self._updatePolicyRegex,
-                                           preseedString,
-                                           commandSection.string)
-        else: # no pre-existing pkgsel/update-policy
-            # append
-            commandSection.string = commandSection.string + "#\n" + preseedString + "\n"
+        return self.ubSetPreseedValue("d-i", "pkgsel/update-policy", "select", "unattended-upgrades")
 
 if __name__ == "__main__":
     from nrvr.distros.ub.kickstarttemplates import UbKickstartTemplates
@@ -404,6 +442,8 @@ if __name__ == "__main__":
                                                           netmask="255.255.255.0",
                                                           gateway="10.123.45.2",
                                                           nameservers=Nameserver.list)
+    _kickstartFileContent.ubSetUpgradeNone()
+    _kickstartFileContent.ubSetUpdatePolicyNone()
     _kickstartFileContent.ubActivateGraphicalLogin()
     _kickstartFileContent.ubSetUser("jack", pwd="rainbow")
     _kickstartFileContent.ubSetUser("jill", pwd="sunshine")

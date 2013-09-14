@@ -218,6 +218,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth1",
                                                                  ipaddress=vmIdentifiers.ipaddress,
                                                                  nameservers=Nameserver.list)
+            kickstartFileContent.ubSetUpgradeNone()
             kickstartFileContent.ubSetUpdatePolicyNone()
             kickstartFileContent.replaceAllPackages(UbKickstartTemplates.packagesForUbuntuDesktop)
             kickstartFileContent.addPackage("default-jre") # Java needed for Selenium Server standalone .jar
