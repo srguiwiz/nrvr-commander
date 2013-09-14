@@ -60,6 +60,10 @@ rootpw --iscrypted $1$sodiumch$UqZCYecJ/y5M5pp1x.7C4/
 #
 authconfig --enableshadow --enablemd5
 #
+# Enable firewall and allow ssh.
+preseed --owner ufw ufw/enable boolean true
+preseed --owner ufw ufw/allow_known_ports multiselect SSH
+#
 # Consider whether it needs to be timezone --utc Etc/UTC
 timezone --utc Etc/UTC
 #
@@ -116,11 +120,6 @@ build-essential
 # To see log, don't automatically shutdown or reboot.
 # Ctrl-Alt-F2 for other console.
 # Other console's /target directory is seen by this code as / via chroot.
-#
-# Allow ssh through firewall.
-ufw allow 22/tcp
-# Enable firewall.
-ufw enable
 #
 # Make a swap partition of all of sdb.
 if ( mkswap /dev/sdb ) ; then
