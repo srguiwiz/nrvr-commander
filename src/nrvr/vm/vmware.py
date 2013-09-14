@@ -1090,7 +1090,7 @@ class VMwareMachine(object):
         sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
         return sshParameters
 
-    def sshCommand(self, argv, user="root"):
+    def sshCommand(self, argv, user="root", exceptionIfNotZero=True):
         """Return an SshCommand instance.
         
         Will wait until completed.
@@ -1114,10 +1114,10 @@ class VMwareMachine(object):
             sshCommand1 = vmwareMachine.sshCommand(["ls", "-al"])
             print "output=" + sshCommand1.output"""
         sshParameters = self.sshParameters(user=user)
-        sshCommand = SshCommand(sshParameters, argv)
+        sshCommand = SshCommand(sshParameters, argv, exceptionIfNotZero=exceptionIfNotZero)
         return sshCommand
 
-    def shutdownCommand(self, extraSleepSeconds=10.0):
+    def shutdownCommand(self, extraSleepSeconds=10.0, ignoreException=False):
         """Send shutdown command.
         
         Assumes .ports file to exist and to have an entry for shutdown.
@@ -1149,7 +1149,7 @@ class VMwareMachine(object):
                             (self.basenameStem))
         if extraSleepSeconds:
             time.sleep(extraSleepSeconds)
-        self.sshCommand([command], user)
+        self.sshCommand([command], user, exceptionIfNotZero = not ignoreException)
 
     def scpPutCommand(self, fromHostPath, toGuestPath, guestUser="root"):
         """Return an ScpCommand instance.
