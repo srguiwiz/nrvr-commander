@@ -24,10 +24,10 @@ import time
 
 from nrvr.diskimage.isoimage import IsoImage
 from nrvr.distros.common.ssh import LinuxSshCommand
+from nrvr.distros.common.util import LinuxUtil
 from nrvr.distros.el.gnome import ElGnome
 from nrvr.distros.el.kickstart import ElIsoImage, ElKickstartFileContent
 from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
-from nrvr.distros.el.util import ElUtil
 from nrvr.distros.ub.gnome import UbGnome
 from nrvr.distros.ub.kickstart import UbIsoImage, UbKickstartFileContent
 from nrvr.distros.ub.kickstarttemplates import UbKickstartTemplates
@@ -380,7 +380,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         #
         # apparently on some virtual machines the NAT interface takes some time to come up
         SshCommand(userSshParameters,
-                   [ElUtil.commandToWaitForNetworkDevice(device="eth0", maxSeconds=100)])
+                   [LinuxUtil.commandToWaitForNetworkDevice(device="eth0", maxSeconds=100)])
         #
         # start up Selenium Server
         SshCommand(userSshParameters,

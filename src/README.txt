@@ -3,6 +3,7 @@ Modules provides by this package are
 * nrvr.distros.common.gnome
 * nrvr.distros.common.kickstart
 * nrvr.distros.common.ssh
+* nrvr.distros.common.util
 * nrvr.distros.el.clone
 * nrvr.distros.el.gnome
 * nrvr.distros.el.kickstart
@@ -11,6 +12,7 @@ Modules provides by this package are
 * nrvr.distros.ub.gnome
 * nrvr.distros.ub.kickstart
 * nrvr.distros.ub.kickstarttemplates
+* nrvr.distros.ub.util
 * nrvr.machine.ports
 * nrvr.process.commandcapture
 * nrvr.remote.ssh
