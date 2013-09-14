@@ -210,7 +210,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         elif distro == "ub":
             downloadedDistroIsoImage = UbIsoImage(Download.fromUrl
-                                                  ("http://releases.ubuntu.com/precise/ubuntu-12.04.2-alternate-i386.iso"))
+                                                  ("http://releases.ubuntu.com/precise/ubuntu-12.04.3-alternate-i386.iso"))
             kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
             kickstartFileContent.replaceRootpw(rootpw)
             kickstartFileContent.ubReplaceHostname(testVm.basenameStem)

@@ -58,7 +58,7 @@ exists = exampleVm.vmxFile.exists()
 if exists == False:
     exampleVm.mkdir()
     downloadedDistroIsoImage = UbIsoImage(Download.fromUrl
-                                          ("http://releases.ubuntu.com/precise/ubuntu-12.04.2-alternate-i386.iso"))
+                                          ("http://releases.ubuntu.com/precise/ubuntu-12.04.3-alternate-i386.iso"))
     # some possible choices pointed out
     # server w command line only
     kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
