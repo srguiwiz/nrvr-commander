@@ -117,8 +117,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         a VmIdentifiers instance.
     
     Return a VMwareMachine instance."""
+    testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
     distro = vmIdentifiers.mapas.distro
     browser = vmIdentifiers.mapas.browser
+    #
     if not distro in ["el", "ub"]:
         raise Exception("unknown distro %s" % (distro))
     if distro == "el" and browser == "chrome":
@@ -132,9 +134,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         # Ubuntu kickstart supports only one regular user
         regularUserProperties = testUsersProperties[0]
     #
-    testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
-    #
     if forceThisStep:
+        if VMwareHypervisor.local.isRunning(testVm.vmxFilePath):
+            testVm.shutdownCommand(ignoreException=True)
+            VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         testVm.remove()
     #
     vmExists = testVm.vmxFile.exists()
@@ -277,15 +280,18 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
     return testVm
 
 def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
+    testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
     distro = vmIdentifiers.mapas.distro
     browser = vmIdentifiers.mapas.browser
     #
     snapshots = VMwareHypervisor.local.listSnapshots(vmIdentifiers.vmxFilePath)
     snapshotExists = "tools installed" in snapshots
     if not snapshotExists or forceThisStep:
+        if VMwareHypervisor.local.isRunning(testVm.vmxFilePath):
+            testVm.shutdownCommand(ignoreException=True)
+            VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         VMwareHypervisor.local.revertToSnapshotAndDeleteDescendants(vmIdentifiers.vmxFilePath, "OS installed")
         #
-        testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
@@ -352,15 +358,18 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         VMwareHypervisor.local.createSnapshot(testVm.vmxFilePath, "tools installed")
 
 def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
+    testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
     distro = vmIdentifiers.mapas.distro
     browser = vmIdentifiers.mapas.browser
     #
     snapshots = VMwareHypervisor.local.listSnapshots(vmIdentifiers.vmxFilePath)
     snapshotExists = "ran tests" in snapshots
     if not snapshotExists or forceThisStep:
+        if VMwareHypervisor.local.isRunning(testVm.vmxFilePath):
+            testVm.shutdownCommand(ignoreException=True)
+            VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         VMwareHypervisor.local.revertToSnapshotAndDeleteDescendants(vmIdentifiers.vmxFilePath, "tools installed")
         #
-        testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
