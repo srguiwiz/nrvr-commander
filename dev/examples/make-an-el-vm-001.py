@@ -61,9 +61,10 @@ if exists == False:
     #
     # long comment solely regarding .iso files larger than exactly 4GB, e.g. x86_64 Install-DVD
     #
-    # this is just a temporary minor nuisance that will go away
+    # this has been a nuisance that is about to go away with a fixed newer version iso-read
     #
-    # looking forward to smoother solution soon
+    # since 2013-09-15 there is a fix in the git master branch of libcdio (which provides iso-read),
+    # which should make it into the next release of libcdio, i.e. newer than version 0.90
     #
     # had some issues with some files in the original .iso not coming through right with iso-read,
     # test with

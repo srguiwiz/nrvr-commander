@@ -15,7 +15,10 @@ sudo yum install qemu-img
 
 Possibly more to be listed here.
 
-There is a known problem with .iso files >4G not being read correctly,
-which means the example given won't make Scientific Linux 64-bit,
+As a temporary nuisance that is about to go away, there has been a
+known problem with .iso files >4G not being read correctly,
+which means the example given wasn't making Scientific Linux 64-bit,
 but making 64-bit guests is known to work otherwise.
-Hoping for solution via http://savannah.gnu.org/bugs/?39373 before trying other fix.
+Since 2013-09-15 there is a fix in the git master branch of libcdio,
+which provides iso-read.
+Should make it into the next release of libcdio, i.e. newer than version 0.90.
