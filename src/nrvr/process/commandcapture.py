@@ -261,6 +261,14 @@ class CommandCapture(object):
                 self._stderr = None
             self._done = True
         # raise an exception if asked to and there is a reason
+        self.raiseExceptionIfThereIsAReason()
+
+    def raiseExceptionIfThereIsAReason(self):
+        """Raise a CommandCaptureException if there is a reason.
+        
+        Available to provide standardized exception content in case calling code
+        with exceptionIfAnyStderr=False after looking at .stderr decides
+        in some circumstances only to raise an exception."""
         exceptionMessage = ""
         if self._exceptionIfAnyStderr and self._stderr:
             exceptionMessage += "stderr:\n" + self._stderr
