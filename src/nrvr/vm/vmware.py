@@ -111,24 +111,56 @@ class VmdkFile(object):
         megabytes = self.compliantDiskSize(megabytes)
         if SystemRequirements.which("vmware-vdiskmanager"):
             # see vmware-vdiskmanager --help
-            CommandCapture(["vmware-vdiskmanager",
-                            "-c", # create
-                            "-a", "ide",
-                            "-s", "{0:d}MB".format(megabytes),
-                            "-t", "0" if not preallocated else "2", # 0 growable, 2 preallocated
-                           self._vmdkFilePath])
+            #
+            # note: since VMware Workstation 10, vmware-vdiskmanager build 1295980
+            # stderr output has been observed reading
+            #   VixDiskLib: Invalid configuration file parameter.  Failed to read configuration file.
+            # while at the same time stdout ends with a line
+            #   Virtual disk creation successful.
+            # and returncode is 0,
+            # hence we are detecting and tolerating that specific stderr content, but no other
+            creationCommand = CommandCapture(
+                ["vmware-vdiskmanager",
+                 "-c", # create
+                 "-a", "ide",
+                 "-s", "{0:d}MB".format(megabytes),
+                 "-t", "0" if not preallocated else "2", # 0 growable, 2 preallocated
+                 self._vmdkFilePath],
+                exceptionIfAnyStderr=False)
+            # BEGIN workaround
+            looksOk = False
+            creationCommandStderr = creationCommand.stderr
+            creationCommandStdout = creationCommand.stdout
+            if creationCommandStderr:
+                if re.match(
+                    r"(?si)^\s*VixDiskLib:\s+Invalid\s+configuration\s+file\s+parameter.\s+Failed\s+to\s+read\s+configuration\s+file.\s*$",
+                    creationCommandStderr): # expected
+                    if re.match(
+                        r"(?si)^.*Virtual\s+disk\s+creation\s+successful.\s*$",
+                        creationCommandStdout): # expected
+                        looksOk = True
+                    else: # unexpected other text in stdout
+                        looksOk = False
+                else: # unexpected other text in stderr
+                    looksOk = False
+            else: # not any text in stderr is expected
+                looksOk = True
+            if not looksOk:
+                creationCommand.raiseExceptionIfThereIsAReason()
+            # END workaround
         else:
             warning = "Warning: lacking vmware-vdiskmanager, using qemu-img for creating " + self._vmdkFilePath
             if preallocated:
                 warning += ", therefore CANNOT make preallocated"
             print warning
             # see man qemu-img
-            CommandCapture(["qemu-img",
-                            "create",
-                            "-f", "vmdk",
-                            "-o", "compat6", # .vmdk version 6 instead of older 4
-                           self._vmdkFilePath,
-                           "{0:d}M".format(megabytes)])
+            CommandCapture(
+                ["qemu-img",
+                 "create",
+                 "-f", "vmdk",
+                 "-o", "compat6", # .vmdk version 6 instead of older 4
+                 self._vmdkFilePath,
+                 "{0:d}M".format(megabytes)])
 
 if __name__ == "__main__":
     SystemRequirements.commandsRequiredByImplementations([VmdkFile], verbose=True)
