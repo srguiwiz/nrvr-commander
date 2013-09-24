@@ -50,6 +50,7 @@ SystemRequirements.commandsRequiredByImplementations([IsoImage,
                                                      verbose=True)
 # this is a good way to preflight check
 VMwareHypervisor.localRequired()
+VMwareHypervisor.snapshotsRequired()
 
 # from http://code.google.com/p/selenium/downloads/list
 seleniumServerStandaloneJarUrl = "http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar"

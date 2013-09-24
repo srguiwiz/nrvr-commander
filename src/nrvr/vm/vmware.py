@@ -630,13 +630,24 @@ class VMwareHypervisor(object):
 
     def __init__(self, hostType):
         """Create new VMware hypervisor descriptor."""
+        # essential
         self._hostType = hostType
+        # auxiliary
+        self._hostCapabilities = []
+        if self._hostType == VMwareHypervisor.WORKSTATION:
+            self._hostCapabilities.append(VMwareHypervisor.SNAPSHOTS)
+            if sys.platform != 'darwin': # except Mac OS X
+                self._hostCapabilities.append(VMwareHypervisor.CLONING)
 
     # as implemented MUST match -T <hostType> parameter of vmrun command,
     # except UNKNOWN
     WORKSTATION = "ws"
     PLAYER = "player"
     UNKNOWN = "unknown"
+
+    # capabilities
+    SNAPSHOTS = "snapshots"
+    CLONING = "cloning"
 
     @classmethod
     def localHostType(cls):
@@ -686,6 +697,24 @@ class VMwareHypervisor(object):
     def hostType(self):
         """Host type of VMware hypervisor."""
         return self._hostType
+
+    @property
+    def hostCapabilities(self):
+        """Host list of capabilities of VMware hypervisor.
+        
+        As little as an empty list for VMware Player.
+        As much as [VMwareHypervisor.SNAPSHOTS, VMwareHypervisor.CLONING] for VMware Workstation.
+        Regrettably [VMwareHypervisor.SNAPSHOTS] only for VMware Fusion."""
+        return self._hostCapabilities
+
+    @classmethod
+    def snapshotsRequired(cls):
+        """Raises exception if not supporting snapshots in VMware hypervisor available locally."""
+        cls.localRequired()
+        if not VMwareHypervisor.SNAPSHOTS in VMwareHypervisor.local.hostCapabilities:
+            raise Exception("must support snapshots in VMware hypervisor available locally"
+                            ", which as implemented means VMware Workstation 9.0 or newer"
+                            " or VMware Fusion 5.0 or newer")
 
     def listRunning(self):
         """Return list of paths of .vmx files of all running virtual machines."""
@@ -985,6 +1014,7 @@ if __name__ == "__main__":
     #
     if VMwareHypervisor.local:
         print VMwareHypervisor.local.hostType
+        print VMwareHypervisor.local.hostCapabilities
         print "VMs:\n" + str(VMwareHypervisor.local.listRunning())
         someVms = VMwareHypervisor.local.listRunning()
         if someVms:
