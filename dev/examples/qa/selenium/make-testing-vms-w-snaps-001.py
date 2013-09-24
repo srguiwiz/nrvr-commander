@@ -5,6 +5,8 @@ specifically this script runs Selenium automated tests of a website;
 specifically this script should allow load testing, which so far
 hasn't been something Selenium has beeen used for.
 
+As implemented uses virtual machine snapshots.
+
 Example use of NrvrCommander.
 
 Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
