@@ -1213,7 +1213,9 @@ class VMwareMachine(object):
             time.sleep(extraSleepSeconds)
         self.sshCommand([command], user, exceptionIfNotZero = not ignoreException)
 
-    def scpPutCommand(self, fromHostPath, toGuestPath, guestUser="root"):
+    def scpPutCommand(self,
+                      fromHostPath, toGuestPath, guestUser="root",
+                      preserveTimes=True):
         """Return an ScpCommand instance.
         
         Will wait until completed.
@@ -1223,10 +1225,13 @@ class VMwareMachine(object):
         Needs virtual machine to be running already, ready to accept ssh connections, duh."""
         toSshParameters = self.sshParameters(user=guestUser)
         scpCommand = ScpCommand.put(fromLocalPath=fromHostPath,
-                                    toSshParameters=toSshParameters, toRemotePath=toGuestPath)
+                                    toSshParameters=toSshParameters, toRemotePath=toGuestPath,
+                                    preserveTimes=preserveTimes)
         return scpCommand
 
-    def scpGetCommand(self, fromGuestPath, toHostPath, guestUser="root"):
+    def scpGetCommand(self,
+                      fromGuestPath, toHostPath, guestUser="root",
+                      recurseDirectories=False, preserveTimes=True):
         """Return an ScpCommand instance.
         
         Will wait until completed.
@@ -1236,7 +1241,8 @@ class VMwareMachine(object):
         Needs virtual machine to be running already, ready to accept ssh connections, duh."""
         fromSshParameters = self.sshParameters(user=guestUser)
         scpCommand = ScpCommand.get(fromSshParameters=fromSshParameters, fromRemotePath=fromGuestPath,
-                                    toLocalPath=toHostPath)
+                                    toLocalPath=toHostPath,
+                                    recurseDirectories=recurseDirectories, preserveTimes=preserveTimes)
         return scpCommand
 
     def sshIsAvailable(self, user="root", probingCommand="hostname"):

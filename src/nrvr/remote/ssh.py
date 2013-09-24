@@ -481,7 +481,9 @@ class ScpCommand(object):
 
     def __init__(self,
                  fromPath, toPath,
-                 fromSshParameters=None, toSshParameters=None):
+                 fromSshParameters=None, toSshParameters=None,
+                 recurseDirectories=False,
+                 preserveTimes=True):
         """Create new ScpCommand instance.
         
         Will wait until completed.
@@ -490,11 +492,26 @@ class ScpCommand(object):
         Correspondingly either fromSshParameters or toSshParameters must NOT be assigned an SshParameters
         instance and remain default None.
         
+        fromPath
+            one path or a list of paths.
+            
+            Absolute paths strongly recommended.
+        
+        toPath
+            one path.
+            
+            Absolute path strongly recommended.
+            
+            Must be directory if more than one fromPath.
+        
         fromSshParameters
             an SshParameters instance.
         
         toSshParameters
-            an SshParameters instance."""
+            an SshParameters instance.
+        
+        recurseDirectories
+            a hint for when fromSshParameters."""
         if not _gotPty:
             # cannot use scp if no pty
             raise Exception("must have module pty available to use scp command"
@@ -503,18 +520,42 @@ class ScpCommand(object):
         if fromSshParameters and toSshParameters:
             raise Exception("cannot copy if both fromSshParameters and toSshParameters, only one or other")
         if not fromSshParameters and not toSshParameters:
-            raise Exception("cannot copy if neither fromSshParameters nor toSshParameters, require one or other")
+            raise Exception("cannot copy if neither fromSshParameters nor toSshParameters, requires one or other")
         #
-        if fromSshParameters:
+        if not isinstance(fromPath, (list, tuple)): # should be one string for one path to copy from
+            fromPaths = [fromPath]
+        else: # should be a list of strings for multiple paths to copy from
+            fromPaths = fromPath
+        if len(fromPaths) == 0:
+            raise Exception("cannot copy zero files, requires at least one")
+        if fromSshParameters: # get files from remote
+            if len(fromPaths) > 1 or recurseDirectories:
+                if not os.path.isdir(toPath):
+                    raise Exception("cannot copy multiple files into a file, must copy into a directory, not into %s" % toPath)
             self._fromSpecification = \
-                fromSshParameters.user + "@" + IPAddress.asString(fromSshParameters.ipaddress) + ":" + fromPath
+                [fromSshParameters.user + "@" + IPAddress.asString(fromSshParameters.ipaddress) + ":" + " ".join(fromPaths)]
             self._toSpecification = toPath
             self._pwd = fromSshParameters.pwd
-        else:
-            self._fromSpecification = fromPath
+        else: # put files to remote
+            anyFromDirectory = False
+            for path in fromPaths:
+                if os.path.isdir(path):
+                    anyFromDirectory = True
+                    break
+            if anyFromDirectory:
+                recurseDirectories = True # mandatory in this case
+            self._fromSpecification = fromPaths
             self._toSpecification = \
                 toSshParameters.user + "@" + IPAddress.asString(toSshParameters.ipaddress) + ":" + toPath
             self._pwd = toSshParameters.pwd
+        self._args = ["scp"]
+        if preserveTimes:
+            self._args.append("-p")
+        if recurseDirectories:
+            self._args.append("-r")
+        self._args.extend(self._fromSpecification) # a list because possibly more than one
+        self._args.append(self._toSpecification)
+        #
         self._output = ""
         self._returncode = None
         #
@@ -522,7 +563,7 @@ class ScpCommand(object):
         self._pid, self._fd = pty.fork()
         if self._pid == 0:
             # in child process
-            os.execvp("scp", ["scp", self._fromSpecification, self._toSpecification])
+            os.execvp("scp", self._args)
         else:
             # in parent process
             if self._pwd:
@@ -590,8 +631,9 @@ class ScpCommand(object):
                         if self._returncode:
                             exceptionMessage += "returncode: " + str(self._returncode)
                         if exceptionMessage:
-                            commandDescription = "scp from:\n\t" + self._fromSpecification
+                            commandDescription = "scp from:\n\t" + str(self._fromSpecification)
                             commandDescription += "\nto:\n\t" + self._toSpecification
+                            commandDescription += "\nargs:\n\t" + str(self._args)
                             exceptionMessage = commandDescription + "\n" + exceptionMessage
                             exceptionMessage += "\noutput:\n" + self._output
                             raise ScpCommandException(exceptionMessage)
@@ -619,25 +661,41 @@ class ScpCommand(object):
         return self._returncode
 
     @classmethod
-    def put(cls, fromLocalPath, toSshParameters, toRemotePath):
+    def put(cls,
+            fromLocalPath, toSshParameters, toRemotePath,
+            preserveTimes=True):
         """Return an ScpCommand instance.
         
         Will wait until completed.
         
+        fromLocalPath
+            one path or a list of paths.
+            
+            Absolute paths strongly recommended.
+        
         toSshParameters
             an SshParameters instance for remote."""
-        scpCommand = ScpCommand(fromPath=fromLocalPath, toPath=toRemotePath, toSshParameters=toSshParameters)
+        scpCommand = ScpCommand(fromPath=fromLocalPath, toPath=toRemotePath, toSshParameters=toSshParameters,
+                                preserveTimes=preserveTimes)
         return scpCommand
 
     @classmethod
-    def get(cls, fromSshParameters, fromRemotePath, toLocalPath):
+    def get(cls,
+            fromSshParameters, fromRemotePath, toLocalPath,
+            recurseDirectories=False, preserveTimes=True):
         """Return an ScpCommand instance.
         
         Will wait until completed.
         
         fromSshParameters
-            an SshParameters instance for remote."""
-        scpCommand = ScpCommand(fromPath=fromRemotePath, toPath=toLocalPath, fromSshParameters=fromSshParameters)
+            an SshParameters instance for remote.
+        
+        fromRemotePath
+            one path or a list of paths.
+            
+            Absolute paths strongly recommended."""
+        scpCommand = ScpCommand(fromPath=fromRemotePath, toPath=toLocalPath, fromSshParameters=fromSshParameters,
+                                recurseDirectories=recurseDirectories, preserveTimes=preserveTimes)
         return scpCommand
 
 if __name__ == "__main__":
