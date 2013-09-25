@@ -1,5 +1,16 @@
 #!/usr/bin/python
 
+"""Loop over running a set of test scripts in a directory.
+
+Made for use within NrvrCommander.
+
+Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
+
+Public repository - https://github.com/srguiwiz/nrvr-commander
+
+Copyright (c) Nirvana Research 2006-2013.
+Modified BSD License"""
+
 import glob
 import os
 import os.path
