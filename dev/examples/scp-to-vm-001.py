@@ -12,6 +12,8 @@ exampleVm = VMwareMachine(ScriptUser.loggedIn.userHomeRelative("vmware/examples/
 VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True)
 print exampleVm.sshCommand(["ls nonexistent ; echo `hostname`"]).output
 
+import os
+import os.path
 import shutil
 import tempfile
 from nrvr.util.times import Timestamp

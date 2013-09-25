@@ -15,6 +15,7 @@ Modified BSD License"""
 from io import BlockingIOError
 from optparse import OptionParser
 import os
+import os.path
 import subprocess
 import sys
 import threading
