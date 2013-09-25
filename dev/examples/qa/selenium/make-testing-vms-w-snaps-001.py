@@ -65,8 +65,10 @@ googleChromeUbuntu64InstallerUrl = "https://dl.google.com/linux/direct/google-ch
 chromeDriverLinux32InstallerZipUrl = "https://chromedriver.googlecode.com/files/chromedriver_linux32_2.3.zip"
 chromeDriverLinux64InstallerZipUrl = "https://chromedriver.googlecode.com/files/chromedriver_linux64_2.3.zip"
 
-# specific to the website you are testing
-seleniumTestsScript = "selenium-tests.py"
+# used to be specific to the website you are testing,
+# no probably just the files inside testsDirectory will change
+testsInvokerScript = "tests-invoker.py"
+testsDirectory = "tests"
 
 # customize as needed
 testVmsRange = range(181, 183)
@@ -380,15 +382,16 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         #
         # copy tests
         scriptDir = os.path.dirname(os.path.abspath(__file__))
-        seleniumTestsScriptPath = os.path.join(scriptDir, seleniumTestsScript)
-        testVm.scpPutCommand(fromHostPath=seleniumTestsScriptPath,
-                             toGuestPath="~/Downloads/" + seleniumTestsScript,
+        testsInvokerScriptPath = os.path.join(scriptDir, testsInvokerScript)
+        testsDirectoryPath = os.path.join(scriptDir, testsDirectory)
+        testVm.scpPutCommand(fromHostPath=[testsInvokerScriptPath, testsDirectoryPath],
+                             toGuestPath="~/Downloads/",
                              guestUser=testVm.regularUser)
         # fix up tests, if necessary
         if browser == "chrome":
             # switch from webdriver.Firefox() to webdriver.Chrome()
             testVm.sshCommand(["sed -i -e 's/webdriver\.Firefox/webdriver.Chrome/'"
-                               + " ~/Downloads/" + seleniumTestsScript],
+                               + " ~/Downloads/" + testsDirectory + "/*.py"],
                               user=testVm.regularUser)
         #
         # apparently on some virtual machines the NAT interface takes some time to come up
@@ -406,8 +409,9 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         # run tests
         testVm.sshCommand(["export DISPLAY=:0.0 ; "
                            + "cd ~/Downloads/"
-                           + " && chmod +x " + seleniumTestsScript
-                           + " && ( nohup ./" + seleniumTestsScript + " &> ./" + seleniumTestsScript + ".log & )"],
+                           + " && chmod +x " + testsInvokerScript
+                           + " && chmod +x " + testsDirectory + "/*.py"
+                           + " && ( nohup ./" + testsInvokerScript + " &> ./" + testsInvokerScript + ".log & )"],
                           user=testVm.regularUser)
         #time.sleep(60)
         #
