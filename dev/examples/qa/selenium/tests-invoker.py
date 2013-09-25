@@ -42,7 +42,7 @@ for iteration in range(0, numberOfIterations):
         try:
             os.system(test)
             stdFlush()
-            print "NORMALLY completed iteration #%d of %s:" % (iteration, test)
+            print "NORMALLY completed iteration #%d of %s" % (iteration, test)
             stdFlush()
         except Exception as ex:
             stdFlush()
