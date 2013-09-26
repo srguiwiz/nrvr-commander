@@ -71,7 +71,7 @@ testsInvokerScript = "tests-invoker.py"
 testsDirectory = "tests"
 
 # customize as needed
-testVmsRange = range(181, 184)
+testVmsRange = range(181, 185)
 
 # customize as needed
 rootpw = "redwood"
@@ -86,7 +86,8 @@ MachineParameters = namedtuple("MachineParameters", ["distro", "browser", "lang"
 # customize as needed
 machinesPattern = [MachineParameters(distro="el", browser="firefox", lang="en_US.UTF-8"),
                    MachineParameters(distro="ub", browser="chrome", lang="en_US.UTF-8"),
-                   MachineParameters(distro="el", browser="firefox", lang="de_DE.UTF-8")]
+                   MachineParameters(distro="el", browser="firefox", lang="de_DE.UTF-8"),
+                   MachineParameters(distro="ub", browser="chrome", lang="de_DE.UTF-8")]
 
 # trying to approximate the order in which identifiers are used from this tuple
 VmIdentifiers = namedtuple("VmIdentifiers", ["vmxFilePath", "name", "number", "ipaddress", "mapas"])
