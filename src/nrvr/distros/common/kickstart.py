@@ -216,6 +216,23 @@ class DistroKickstartFileContent(object):
                 sections.append(section)
         return sections
 
+    def replaceLang(self, lang):
+        """Replace lang option.
+        
+        lang
+            e.g. "de_DE.UTF-8" to replace "en_US.UTF-8".
+            
+            As implemented does not do any sanity checking.
+        
+        return
+            self, for daisychaining."""
+        # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
+        commandSection = self.sectionByName("command")
+        commandSection.string = re.sub(r"(?m)^([ \t]*lang[ \t]+).*$",
+                                       r"\g<1>" + lang,
+                                       commandSection.string)
+        return self
+
     @classmethod
     def cryptedPwd(cls, plainPwd):
         """Encrypt in a format acceptable for kickstart."""
@@ -466,6 +483,7 @@ if __name__ == "__main__":
     from nrvr.distros.el.kickstart import ElKickstartFileContent
     from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
     _kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableElKickstartTemplate001)
+    _kickstartFileContent.replaceLang("de_DE.UTF-8")
     _kickstartFileContent.replaceRootpw("redwood")
     _kickstartFileContent.elReplaceHostname("test-hostname-101")
     _kickstartFileContent.elReplaceStaticIP("10.123.45.67")
