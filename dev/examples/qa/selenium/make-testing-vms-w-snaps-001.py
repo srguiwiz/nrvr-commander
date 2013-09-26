@@ -71,7 +71,7 @@ testsInvokerScript = "tests-invoker.py"
 testsDirectory = "tests"
 
 # customize as needed
-testVmsRange = range(181, 183)
+testVmsRange = range(181, 184)
 
 # customize as needed
 rootpw = "redwood"
@@ -82,10 +82,11 @@ UserProperties = namedtuple("UserProperties", ["username", "pwd"])
 testUsersProperties = [UserProperties(username="tester", pwd="testing"),
                        UserProperties(username="tester2", pwd="testing")]
 
-MachineParameters = namedtuple("MachineParameters", ["distro", "browser"])
+MachineParameters = namedtuple("MachineParameters", ["distro", "browser", "lang"])
 # customize as needed
-machinesPattern = [MachineParameters(distro="el", browser="firefox"),
-                   MachineParameters(distro="ub", browser="chrome")]
+machinesPattern = [MachineParameters(distro="el", browser="firefox", lang="en_US.UTF-8"),
+                   MachineParameters(distro="ub", browser="chrome", lang="en_US.UTF-8"),
+                   MachineParameters(distro="el", browser="firefox", lang="de_DE.UTF-8")]
 
 # trying to approximate the order in which identifiers are used from this tuple
 VmIdentifiers = namedtuple("VmIdentifiers", ["vmxFilePath", "name", "number", "ipaddress", "mapas"])
@@ -156,6 +157,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             downloadedDistroIsoImage = ElIsoImage(Download.fromUrl
                                                   ("http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"))
             kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableElKickstartTemplate001)
+            kickstartFileContent.replaceLang(vmIdentifiers.mapas.lang)
             kickstartFileContent.replaceRootpw(rootpw)
             kickstartFileContent.elReplaceHostname(testVm.basenameStem)
             #kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameservers=Nameserver.list)
@@ -219,6 +221,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             downloadedDistroIsoImage = UbIsoImage(Download.fromUrl
                                                   ("http://releases.ubuntu.com/precise/ubuntu-12.04.3-alternate-i386.iso"))
             kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
+            kickstartFileContent.replaceLang(vmIdentifiers.mapas.lang)
             kickstartFileContent.replaceRootpw(rootpw)
             kickstartFileContent.ubReplaceHostname(testVm.basenameStem)
             kickstartFileContent.ubCreateNetworkConfigurationSection()
