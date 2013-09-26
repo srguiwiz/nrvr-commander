@@ -172,7 +172,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
             # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "centos" versus "centos-64"
-            testVm.create(memsizeMegabytes=1200, guestOS="centos", ideDrives=[20000, 300, modifiedDistroIsoImage])
+            testVm.create(memsizeMegabytes=1000, guestOS="centos", ideDrives=[20000, 300, modifiedDistroIsoImage])
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
             for additionalUserProperties in additionalUsersProperties:
@@ -240,7 +240,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
             # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "ubuntu" versus "ubuntu-64"
-            testVm.create(memsizeMegabytes=1200, guestOS="ubuntu", ideDrives=[20000, 300, modifiedDistroIsoImage])
+            testVm.create(memsizeMegabytes=1000, guestOS="ubuntu", ideDrives=[20000, 300, modifiedDistroIsoImage])
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress,
