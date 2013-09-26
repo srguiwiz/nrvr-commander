@@ -73,6 +73,9 @@ testsDirectory = "tests"
 # customize as needed
 testVmsRange = range(181, 183)
 
+# customize as needed
+rootpw = "redwood"
+
 UserProperties = namedtuple("UserProperties", ["username", "pwd"])
 # customize as needed
 # normally at least one
@@ -131,7 +134,6 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
     if distro == "el" and browser == "chrome":
         raise Exception("cannot run browser %s in distro %s" % (browser, distro))
     #
-    rootpw = "redwood"
     if distro == "el":
         additionalUsersProperties = testUsersProperties
         regularUserProperties = testUsersProperties[0]
