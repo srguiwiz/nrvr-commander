@@ -48,7 +48,7 @@ class Download(object):
         urlFilename = cls.basename(url)
         downloadDir = ScriptUser.loggedIn.userHomeRelative("Downloads")
         if not os.path.exists(downloadDir): # possibly on an international version OS
-            os.mkdir(downloadDir)
+            os.makedirs(downloadDir)
         downloadPath = os.path.join(downloadDir, urlFilename)
         semaphorePath = downloadPath + cls.semaphoreExtenstion
         #
