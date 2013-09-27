@@ -13,6 +13,7 @@ Public repository - https://github.com/srguiwiz/nrvr-commander
 Copyright (c) Nirvana Research 2006-2013.
 Modified BSD License"""
 
+import os
 import os.path
 import posixpath
 import shutil
@@ -46,6 +47,8 @@ class Download(object):
         Return file path."""
         urlFilename = cls.basename(url)
         downloadDir = ScriptUser.loggedIn.userHomeRelative("Downloads")
+        if not os.path.exists(downloadDir): # possibly on an international version OS
+            os.mkdir(downloadDir)
         downloadPath = os.path.join(downloadDir, urlFilename)
         semaphorePath = downloadPath + cls.semaphoreExtenstion
         #
