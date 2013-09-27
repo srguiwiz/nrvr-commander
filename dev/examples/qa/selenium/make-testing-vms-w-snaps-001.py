@@ -312,6 +312,9 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
         LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
+        # a necessity on some international version OS
+        testVm.sshCommand(["mkdir -p ~/Downloads"], user=testVm.regularUser)
+        #
         # install Google Chrome
         if browser == "chrome" and distro == "ub":
             chromeInstallerOnHostPath = Download.fromUrl(googleChromeUbuntu32InstallerUrl)
