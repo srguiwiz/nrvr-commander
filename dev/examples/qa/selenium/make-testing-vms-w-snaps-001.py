@@ -82,12 +82,12 @@ UserProperties = namedtuple("UserProperties", ["username", "pwd"])
 testUsersProperties = [UserProperties(username="tester", pwd="testing"),
                        UserProperties(username="tester2", pwd="testing")]
 
-MachineParameters = namedtuple("MachineParameters", ["distro", "browser", "lang"])
+MachineParameters = namedtuple("MachineParameters", ["distro", "browser", "lang", "memsize"])
 # customize as needed
-machinesPattern = [MachineParameters(distro="el", browser="firefox", lang="en_US.UTF-8"),
-                   MachineParameters(distro="ub", browser="chrome", lang="en_US.UTF-8"),
-                   MachineParameters(distro="el", browser="firefox", lang="de_DE.UTF-8"),
-                   MachineParameters(distro="ub", browser="chrome", lang="de_DE.UTF-8")]
+machinesPattern = [MachineParameters(distro="el", browser="firefox", lang="en_US.UTF-8", memsize=900),
+                   MachineParameters(distro="ub", browser="chrome", lang="en_US.UTF-8", memsize=960),
+                   MachineParameters(distro="el", browser="firefox", lang="de_DE.UTF-8", memsize=920),
+                   MachineParameters(distro="ub", browser="chrome", lang="de_DE.UTF-8", memsize=980)]
 
 # trying to approximate the order in which identifiers are used from this tuple
 VmIdentifiers = namedtuple("VmIdentifiers", ["vmxFilePath", "name", "number", "ipaddress", "mapas"])
@@ -177,7 +177,9 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
             # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "centos" versus "centos-64"
-            testVm.create(memsizeMegabytes=1000, guestOS="centos", ideDrives=[20000, 300, modifiedDistroIsoImage])
+            testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
+                          guestOS="centos",
+                          ideDrives=[20000, 300, modifiedDistroIsoImage])
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
             for additionalUserProperties in additionalUsersProperties:
@@ -246,7 +248,9 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
             # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "ubuntu" versus "ubuntu-64"
-            testVm.create(memsizeMegabytes=1000, guestOS="ubuntu", ideDrives=[20000, 300, modifiedDistroIsoImage])
+            testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
+                          guestOS="ubuntu",
+                          ideDrives=[20000, 300, modifiedDistroIsoImage])
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress,
