@@ -60,6 +60,22 @@ class LinuxUtil():
                   r" ; done"
         return command
 
+    @classmethod
+    def commandToEnableSudo(cls, username=None):
+        """Build command to enable sudo.
+        
+        As implemented in /etc/sudoers duplicates any (presumably only one) line
+        starting with "root " and replaces "root" with the username.
+        
+        Must be root to succeed.
+        
+        Return command to enable sudo."""
+        username = re.escape(username) # precaution
+        command = r"sed -i -e '/^root\s/ p; s/^root\(\s\.*\)/" + \
+                  r"# Made same for user " + username + r" too\n" + username + r"\1/' /etc/sudoers"
+        return command
+
 if __name__ == "__main__":
     print LinuxUtil.commandToAppendAddressNameLineToEtcHosts("127.0.0.1", "myself")
     print LinuxUtil.commandToWaitForNetworkDevice("eth1",30)
+    print LinuxUtil.commandToEnableSudo("joe")

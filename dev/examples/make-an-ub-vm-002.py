@@ -19,6 +19,7 @@ import time
 
 from nrvr.diskimage.isoimage import IsoImage
 from nrvr.distros.common.ssh import LinuxSshCommand
+from nrvr.distros.common.util import LinuxUtil
 from nrvr.distros.ub.gnome import UbGnome
 from nrvr.distros.ub.kickstart import UbIsoImage, UbKickstartFileContent
 from nrvr.distros.ub.kickstarttemplates import UbKickstartTemplates
@@ -110,6 +111,9 @@ if exists == False:
 # start up for accepting known host key
 VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True)
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
+
+# a possible choice pointed out
+#exampleVm.sshCommand([LinuxUtil.commandToEnableSudo(exampleVm.regularUser)])
 
 # a possible choice pointed out
 #exampleVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(exampleVm.regularUser)])

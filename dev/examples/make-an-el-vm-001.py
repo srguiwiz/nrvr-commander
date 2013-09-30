@@ -19,6 +19,7 @@ import time
 
 from nrvr.diskimage.isoimage import IsoImage
 from nrvr.distros.common.ssh import LinuxSshCommand
+from nrvr.distros.common.util import LinuxUtil
 from nrvr.distros.el.gnome import ElGnome
 from nrvr.distros.el.kickstart import ElIsoImage, ElKickstartFileContent
 from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
@@ -139,6 +140,10 @@ if exists == False:
 # start up for accepting known host key
 VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True, extraSleepSeconds=0)
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
+
+# a possible choice pointed out
+#if exampleVm.regularUser:
+#    exampleVm.sshCommand([LinuxUtil.commandToEnableSudo(exampleVm.regularUser)])
 
 # some possible choices pointed out
 #if exampleVm.regularUser:

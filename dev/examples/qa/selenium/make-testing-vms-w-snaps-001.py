@@ -207,6 +207,9 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.sshCommand([ElGnome.elCommandToSetSolidColorBackground("#dddd66")], user=regularUserProperties.username)
             testVm.sshCommand([ElGnome.elCommandToDisableUpdateNotifications()], user=regularUserProperties.username)
             #
+            # might as well
+            testVm.sshCommand([LinuxUtil.commandToEnableSudo(regularUserProperties.username)])
+            #
             # shut down
             testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
@@ -272,6 +275,9 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             #
             # a test machine needs to come up ready to run tests, no manual login
             testVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(regularUserProperties.username)])
+            #
+            # might as well
+            testVm.sshCommand([LinuxUtil.commandToEnableSudo(regularUserProperties.username)])
             #
             # shut down
             testVm.shutdownCommand()
