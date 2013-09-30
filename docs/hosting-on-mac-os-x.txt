@@ -1,3 +1,5 @@
+Remember to run installlocally.py.
+
 NrvrCommander is capable of telling which commands it needs on the host.
 
 Assuming Mac OS X 10.8 or newer.
@@ -14,7 +16,7 @@ or even better edit file ~/.profile to have that line.
 
 To install needed libraries:
 
-Install MacPorts from http://www.macports.org/
+Install MacPorts from http://www.macports.org/ .
 
 Then:
 
@@ -24,31 +26,52 @@ sudo port install qemu
 
 Possibly more to be listed here.
 
-Following these steps in OS X currently iso-read cannot read the SL-6*.iso files
-used in some examples.  Solution provided here.
+When libcdio version 0.91 comes to MacPorts, this should be it.
+End of host platform specific instructions.
+Below is a workaround you will need meanwhile.
 
-As discussed http://savannah.gnu.org/bugs/?39354 there is a problem with libcdio 0.90.
+-----------------------------------------------------------------------------
 
-That problem in libcdio 0.90 has been fixed since and the next version libcdio
-should be working fine again.
+Alas, following these steps, in OS X at the time of this writing the version of iso-read
+installed via MacPorts, that version being 0.90, cannot read common distro .iso files
+used in examples, and presumbly needed for real use of NrvrCommander.
 
-Hence, for now, install older version libcdio 0.81 per
+More about that in an enclosed text file on that topic.
+
+Meanwhile, one possible workaround is provided here.
+
+To see your version enter:
+
+iso-read --version
+
+If 0.90 then, for now only, install an older version libcdio 0.81 per instructions:
+
 http://trac.macports.org/wiki/howto/InstallingOlderPort
+
+First:
+
 sudo port uninstall libcdio
-then using
+
+Then using a Portfile downloaded from:
+
 http://trac.macports.org/log/trunk/dports/devel/libcdio
-and
 http://trac.macports.org/browser/trunk/dports/devel/libcdio/Portfile?rev=41757
+
+Try:
+
 mkdir ~/Downloads/libcdio-81-port
 mv ~/Downloads/Portfile ~/Downloads/libcdio-81-port/
 sudo chown -R macports:macports ~/Downloads/libcdio-81-port/Portfile
 cd ~/Downloads/libcdio-81-port/
 sudo port install
-may fail with
+
+It may fail with:
+
 Error: Unable to execute port: Could not open file: ~/Downloads/libcdio-81-port/Portfile
-per various postings probably a permission problem, not same but
-similar to http://trac.macports.org/ticket/38472
-found workaround
+
+Per various postings found this is probably a permission problem. Not the same but
+similar to http://trac.macports.org/ticket/38472 found workaround:
+
 sudo mkdir /tmp-make-port
 sudo cp ~/Downloads/libcdio-81-port/Portfile /tmp-make-port/
 sudo chown macports:macports /tmp-make-port
@@ -56,13 +79,20 @@ cd /tmp-make-port
 sudo port install
 cd ~
 sudo rm -rf /tmp-make-port
-check with
+
+Check with:
+
 iso-read --version
 
-As a temporary nuisance that is about to go away, there has been a
-known problem with .iso files >4G not being read correctly,
-which means the example given wasn't making Scientific Linux 64-bit,
-but making 64-bit guests is known to work otherwise.
-Since 2013-09-15 there is a fix in the git master branch of libcdio,
-which provides iso-read.
-Should make it into the next release of libcdio, i.e. newer than version 0.90.
+This has been done and has been in continuous use for some time, for making a
+number of Linux machines, mostly 32-bit.
+
+If, however, you would want to work with a distro .iso file >4GB, e.g. for
+making Scientific Linux 6.x, 64-bit machines, then ...
+
+instructions how to build a newer version iso-read that is known to work well
+with NrvrCommander, from the git repository of libcdio, for RHEL 6.x, could be
+written similarly to an enclosed text file on hosting on Ubuntu ...
+
+if someone would bother to do so, correctly, after figuring it out.  Might be
+better off pushing for a release of a libcdio version 0.91.
