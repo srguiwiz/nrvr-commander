@@ -84,15 +84,22 @@ class IsoImage(object):
             CommandCapture(["umount", "-d", self.mountDir],
                            exceptionIfNotZero=False, exceptionIfAnyStderr=False)
 
-    def copyToDirectory(self, copyDirectory, tolerance=0.0):
+    def copyToDirectory(self, copyDirectory, noJoliet=True, tolerance=0.0):
         """Copy all files into a directory.
         
         Not using mount command, no need to run as root."""
+        # as of 2013-09-29 given known uses of this package and known bugs of iso-info
+        # it appears better to default to noJoliet=True
+        # see https://savannah.gnu.org/bugs/?40130
+        # see https://savannah.gnu.org/bugs/?40138
+        #
         # really want abspath and expanduser
         copyDirectory = os.path.abspath(os.path.expanduser(copyDirectory))
         # get directories info in a reasonably parsable list
-        isoInfoL = CommandCapture(["iso-info", "-i", self._isoImagePath, "-l"],
-                                  copyToStdio=False)
+        isoInfoLArgs = ["iso-info", "-i", self._isoImagePath, "-l"]
+        if noJoliet:
+            isoInfoLArgs.insert(1, "--no-joliet")
+        isoInfoL = CommandCapture(isoInfoLArgs, copyToStdio=False)
         # directories without leading slash and without trailing slash
         directories = re.findall(r"(?m)^[ \t]*/(.+?)/?[ \t]*:[ \t]*$", isoInfoL.stdout)
         # sorting matters to allow building of a tree of directories
@@ -107,8 +114,10 @@ class IsoImage(object):
             pathOnHost = os.path.join(copyDirectory, relativePathOnIso)
             os.mkdir(pathOnHost, 0755)
         # get files info in a reasonably parsable list
-        isoInfoF = CommandCapture(["iso-info", "-i", self._isoImagePath, "-f"],
-                                  copyToStdio=False)
+        isoInfoFArgs = ["iso-info", "-i", self._isoImagePath, "-f"]
+        if noJoliet:
+            isoInfoFArgs.insert(1, "--no-joliet")
+        isoInfoF = CommandCapture(isoInfoFArgs, copyToStdio=False)
         # files without leading slash and without trailing slash
         files = re.findall(r"(?m)^[ \t]*[0-9]*[ \t]+/(.+?)/?[ \t]*$", isoInfoF.stdout)
         # tolerate some defects in iso-read
