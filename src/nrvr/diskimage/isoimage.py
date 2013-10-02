@@ -84,12 +84,12 @@ class IsoImage(object):
             CommandCapture(["umount", "-d", self.mountDir],
                            exceptionIfNotZero=False, exceptionIfAnyStderr=False)
 
-    def copyToDirectory(self, copyDirectory, noJoliet=True, tolerance=0.0):
+    def copyToDirectory(self, copyDirectory, ignoreJoliet=True, tolerance=0.0):
         """Copy all files into a directory.
         
         Not using mount command, no need to run as root."""
         # as of 2013-09-29 given known uses of this package and known bugs of iso-info
-        # it appears better to default to noJoliet=True
+        # it appears better to default to ignoreJoliet=True
         # see https://savannah.gnu.org/bugs/?40130
         # see https://savannah.gnu.org/bugs/?40138
         #
@@ -97,7 +97,7 @@ class IsoImage(object):
         copyDirectory = os.path.abspath(os.path.expanduser(copyDirectory))
         # get directories info in a reasonably parsable list
         isoInfoLArgs = ["iso-info", "-i", self._isoImagePath, "-l"]
-        if noJoliet:
+        if ignoreJoliet:
             isoInfoLArgs.insert(1, "--no-joliet")
         isoInfoL = CommandCapture(isoInfoLArgs, copyToStdio=False)
         # directories without leading slash and without trailing slash
@@ -115,7 +115,7 @@ class IsoImage(object):
             os.mkdir(pathOnHost, 0755)
         # get files info in a reasonably parsable list
         isoInfoFArgs = ["iso-info", "-i", self._isoImagePath, "-f"]
-        if noJoliet:
+        if ignoreJoliet:
             isoInfoFArgs.insert(1, "--no-joliet")
         isoInfoF = CommandCapture(isoInfoFArgs, copyToStdio=False)
         # files without leading slash and without trailing slash
@@ -148,7 +148,7 @@ class IsoImage(object):
             print "continuing despite some ({0} of {1}) failures reading {2}".format(readFailureCount, readAttemptCount, self._isoImagePath)
         return copyDirectory
 
-    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None):
+    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None, ignoreJoliet=True):
         """Clone with any number of instances of IsoImageModification applied.
         
         A temporary assembly directory in the same directory as cloneIsoImagePath needs disk space,
@@ -162,6 +162,11 @@ class IsoImage(object):
         
         return
             IsoImage(cloneIsoImagePath)."""
+        # as of 2013-09-29 given known uses of this package and known bugs of iso-info
+        # it appears better to default to ignoreJoliet=True
+        # see https://savannah.gnu.org/bugs/?40130
+        # see https://savannah.gnu.org/bugs/?40138
+        #
         # timestamp to the microsecond should be good enough
         timestamp = Timestamp.microsecondTimestamp()
         # ensure there is a cloneIsoImagePath
@@ -176,7 +181,7 @@ class IsoImage(object):
         try:
             # copy files from original .iso image
             print "copying files from {0}, this may take a few minutes".format(self._isoImagePath)
-            self.copyToDirectory(temporaryAssemblyDirectory)
+            self.copyToDirectory(temporaryAssemblyDirectory, ignoreJoliet=ignoreJoliet)
             # apply modifications
             print "applying modifications into {0}".format(temporaryAssemblyDirectory)
             for modification in modifications:
