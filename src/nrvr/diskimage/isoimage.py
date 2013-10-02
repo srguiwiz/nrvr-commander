@@ -262,34 +262,30 @@ class IsoImage(object):
             os.rmdir(temporaryMountDirectory)
         return IsoImage(cloneIsoImagePath)
 
-    def genisoimageOptions(self,
-                           bootImage="isolinux/isolinux.bin", bootCatalog="isolinux/boot.cat",
-                           label=None):
+    def genisoimageOptions(self, label=None):
         """Auxiliary method, called by cloneWithModifications.
+        
+        Can be overridden by subclass methods genisoimageOptions,
+        which may want to extend the returned list.
         
         Could be improved in the future.
         Could recognize content of .iso image.
         Could select different options depending on content of .iso image.
-        Could use isoinfo -d -i self.isoImagePath.
-        Also, in case it makes sense, could be overridden for an instance."""
-        # this implementation has been made to work for Enterprise Linux 6
+        Maybe could use iso-info -d 9 -i self.isoImagePath.
+        Could be overridden for a subclass."""
+        # this implementation has been made to be a workable basis for most uses
         if not label:
             label = Timestamp.microsecondTimestamp()
-        return[# broader compatibility of filenames and metadata
-               "-r", "-J", "-T",
-               "-f",
-               #
-               # boot related
-               "-no-emul-boot",
-               "-boot-load-size", "4",
-               "-boot-info-table",
-               "-b", bootImage,
-               "-c", bootCatalog,
-               #
-               # possibly needed labeling,
-               # volume id, volume name or label, max 32 characters
-               "-V", label[-32:],
-               ]
+        genisoimageOptions = [
+            # broader compatibility of filenames and metadata
+            "-r", "-J", "-T",
+            "-f",
+            #
+            # possibly needed labeling,
+            # volume id, volume name or label, max 32 characters
+            "-V", label[-32:]
+        ]
+        return genisoimageOptions
 
 class IsoImageModification(object):
     """A modification to an .iso image."""

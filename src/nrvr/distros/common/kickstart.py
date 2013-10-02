@@ -26,13 +26,36 @@ from nrvr.process.commandcapture import CommandCapture
 from nrvr.util.ipaddress import IPAddress
 
 class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
-    """An Enterprise Linux .iso ISO CD-ROM or DVD-ROM disk image."""
+    """A Linux .iso ISO CD-ROM or DVD-ROM disk image."""
 
     def __init__(self, isoImagePath):
         """Create new Linux distribution IsoImage descriptor.
         
         A descriptor can describe an .iso image that does or doesn't yet exist on the host disk."""
         nrvr.diskimage.isoimage.IsoImage.__init__(self, isoImagePath)
+
+    def genisoimageOptions(self,
+                           bootImage="isolinux/isolinux.bin", bootCatalog="isolinux/boot.cat",
+                           label=None):
+        """Auxiliary method, called by cloneWithModifications.
+        
+        As implemented calls superclass method genisoimageOptions and extends the returned list.
+        
+        Could be improved in the future.
+        Could recognize content of .iso image.
+        Could select different options depending on content of .iso image.
+        Could be overridden for a subclass."""
+        # this implementation has been made to work for Linux
+        genisoimageOptions = super(DistroIsoImage, self).genisoimageOptions(label=label)
+        genisoimageOptions.extend([
+            # boot related
+            "-no-emul-boot",
+            "-boot-load-size", "4",
+            "-boot-info-table",
+            "-b", bootImage,
+            "-c", bootCatalog
+        ])
+        return genisoimageOptions
 
     def modificationsIncludingKickstartFile(self, _kickstartFileContent):
         """Construct and return a list of modifications to be passed to method cloneWithModifications.
