@@ -26,7 +26,7 @@ from nrvr.process.commandcapture import CommandCapture
 from nrvr.util.ipaddress import IPAddress
 
 class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
-    """A Linux .iso ISO CD-ROM or DVD-ROM disk image."""
+    """A Linux distribution .iso ISO CD-ROM or DVD-ROM disk image."""
 
     def __init__(self, isoImagePath):
         """Create new Linux distribution IsoImage descriptor.

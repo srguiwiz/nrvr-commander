@@ -13,6 +13,7 @@ from optparse import OptionParser, OptionError
 import os.path
 
 from nrvr.diskimage.isoimage import IsoImage
+from nrvr.distros.common.kickstart import DistroIsoImage
 
 optionsParser = OptionParser(usage="%prog [options] isofile",
                              description=
@@ -23,18 +24,24 @@ optionsParser.add_option("-j", "--dont-ignore-joliet", action="store_true", dest
                          help="don't ignore Joliet-extension information, default %default", default=False)
 optionsParser.add_option("-k", "--keep-clone", action="store_true", dest="keepClone",
                          help="keep clone when exiting, which uses disk space, default %default", default=False)
+optionsParser.add_option("-l", "--linux-distro", action="store_true", dest="linuxDistro",
+                         help="clone a Linux distro, bootable with boot image and catalog, default %default", default=False)
 (options, args) = optionsParser.parse_args()
 if len(args) is not 1:
     raise OptionError("needs exactly one argument, a .iso file")
 
 try:
     isoFile = args[0]
-    isoImage = IsoImage(isoFile)
+    isoImageClone = isoImage = None # define to avoid distracting exceptions
+    if options.linuxDistro:
+        isoImage = DistroIsoImage(isoFile)
+    else:
+        isoImage = IsoImage(isoFile)
     isoImageClone = isoImage.cloneWithModifications(modifications=[],
                                                     ignoreJoliet=not options.dontIgnoreJoliet)
     print "cloned into %s" % (isoImageClone.isoImagePath)
 finally:
-    if os.path.exists(isoImageClone.isoImagePath):
+    if isoImageClone and os.path.exists(isoImageClone.isoImagePath):
         if not options.keepClone:
             print "avoiding disk clogging, now deleting cloned %s" % (isoImageClone.isoImagePath)
             isoImageClone.remove()
