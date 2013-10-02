@@ -64,8 +64,8 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
         # modifications, could be quite different per distro specific subclass
         modifications = self.modificationsIncludingKickstartFile(_kickstartFileContent)
         # clone with modifications
-        clone = self.cloneWithModifications(cloneIsoImagePath=cloneIsoImagePath,
-                                            modifications=modifications)
+        clone = self.cloneWithModifications(modifications=modifications,
+                                            cloneIsoImagePath=cloneIsoImagePath)
         return clone
 
 

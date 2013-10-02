@@ -148,15 +148,20 @@ class IsoImage(object):
             print "continuing despite some ({0} of {1}) failures reading {2}".format(readFailureCount, readAttemptCount, self._isoImagePath)
         return copyDirectory
 
-    def cloneWithModifications(self, cloneIsoImagePath=None, modifications=[]):
+    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None):
         """Clone with any number of instances of IsoImageModification applied.
         
-        Returns a new IsoImage.
-        
-        If not given cloneIsoImagePath then in same directory.
-        
         A temporary assembly directory in the same directory as cloneIsoImagePath needs disk space,
-        but it is removed automatically upon completion of cloning."""
+        but it is removed automatically upon completion of cloning.
+        
+        modifications
+            a list of IsoImageModification instances.
+        
+        cloneIsoImagePath
+            if not given then in same directory with a timestamp in the filename.
+        
+        return
+            IsoImage(cloneIsoImagePath)."""
         # timestamp to the microsecond should be good enough
         timestamp = Timestamp.microsecondTimestamp()
         # ensure there is a cloneIsoImagePath
