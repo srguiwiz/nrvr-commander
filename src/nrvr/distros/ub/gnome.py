@@ -118,7 +118,8 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
                   r"gsettings set de.mh21.indicator.multiload view-netload true ; " + \
                   r"gsettings set de.mh21.indicator.multiload view-swapload true ; " + \
                   r"gsettings set de.mh21.indicator.multiload view-loadavg true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload view-diskload true"
+                  r"gsettings set de.mh21.indicator.multiload view-diskload true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload speed 2000"
         return command
 
 if __name__ == "__main__":
