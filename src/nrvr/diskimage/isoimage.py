@@ -197,7 +197,7 @@ class IsoImage(object):
             else:
                 # preferred choice for error message
                 makeIsoImageCommandName = "genisoimage"
-            genisoimageOptions = self.genisoimageOptions(label=timestamp)
+            genisoimageOptions = self.genisoimageOptions(label=timestamp, ignoreJoliet=ignoreJoliet)
             CommandCapture([makeIsoImageCommandName] +
                            genisoimageOptions + 
                            ["-o", cloneIsoImagePath,
@@ -209,20 +209,25 @@ class IsoImage(object):
             shutil.rmtree(temporaryAssemblyDirectory, ignore_errors=True)
         return IsoImage(cloneIsoImagePath)
 
-    def cloneWithModificationsUsingMount(self, cloneIsoImagePath=None, modifications=[]):
+    def cloneWithModificationsUsingMount(self, modifications=[], cloneIsoImagePath=None, ignoreJoliet=True):
         """Clone with any number of instances of IsoImageModification applied.
-        
-        Returns a new IsoImage.
-        
-        If not given cloneIsoImagePath then in same directory.
-        
-        A temporary assembly directory in the same directory as cloneIsoImagePath needs disk space,
-        but it is removed automatically upon completion of cloning.
         
         This is an older implementation which regrettably because of the mount command requires
         having superuser privileges.
         It is still here in case a newer implementation doesn't work right, which could be for any
-        of a number of reasons, for example for symbolic links."""
+        of a number of reasons, for example for symbolic links.
+        
+        A temporary assembly directory in the same directory as cloneIsoImagePath needs disk space,
+        but it is removed automatically upon completion of cloning.
+        
+        modifications
+            a list of IsoImageModification instances.
+        
+        cloneIsoImagePath
+            if not given then in same directory with a timestamp in the filename.
+        
+        return
+            IsoImage(cloneIsoImagePath)."""
         # timestamp to the microsecond should be good enough
         timestamp = Timestamp.microsecondTimestamp()
         # ensure there is a cloneIsoImagePath
@@ -248,7 +253,7 @@ class IsoImage(object):
                 modification.writeIntoAssembly(temporaryAssemblyDirectory)
             # make new .iso image file
             print "making new {0}, this may take a few minutes".format(cloneIsoImagePath)
-            genisoimageOptions = self.genisoimageOptions(label=timestamp)
+            genisoimageOptions = self.genisoimageOptions(label=timestamp, ignoreJoliet=ignoreJoliet)
             CommandCapture(["genisoimage"] + 
                            genisoimageOptions + 
                            ["-o", cloneIsoImagePath,
@@ -262,7 +267,7 @@ class IsoImage(object):
             os.rmdir(temporaryMountDirectory)
         return IsoImage(cloneIsoImagePath)
 
-    def genisoimageOptions(self, label=None):
+    def genisoimageOptions(self, label=None, ignoreJoliet=True):
         """Auxiliary method, called by cloneWithModifications.
         
         Can be overridden by subclass methods genisoimageOptions,
@@ -276,15 +281,19 @@ class IsoImage(object):
         # this implementation has been made to be a workable basis for most uses
         if not label:
             label = Timestamp.microsecondTimestamp()
-        genisoimageOptions = [
+        genisoimageOptions = []
+        if not ignoreJoliet:
             # broader compatibility of filenames and metadata
-            "-r", "-J", "-T",
+            genisoimageOptions.append("-J")
+        genisoimageOptions.extend([
+            # broader compatibility of filenames and metadata
+            "-r", "-T",
             "-f",
             #
             # possibly needed labeling,
             # volume id, volume name or label, max 32 characters
             "-V", label[-32:]
-        ]
+        ])
         return genisoimageOptions
 
 class IsoImageModification(object):
