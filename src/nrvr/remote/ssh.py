@@ -31,6 +31,7 @@ import re
 import sys
 import time
 
+from nrvr.process.commandcapture import CommandCapture
 from nrvr.util.classproperty import classproperty
 from nrvr.util.ipaddress import IPAddress
 
@@ -87,7 +88,7 @@ class SshCommand(object):
         """Return a list to be passed to SystemRequirements.commandsRequired().
         
         This class can be passed to SystemRequirements.commandsRequiredByImplementations()."""
-        return ["ssh"]
+        return ["ssh", "ssh-keygen"]
 
     def __init__(self, sshParameters, argv,
                  exceptionIfNotZero=True):
@@ -264,6 +265,12 @@ class SshCommand(object):
         if anyMatch:
             with open (knownHostsFile, "w") as outputFile:
                 outputFile.writelines(newKnownHostLines)
+        if not anyMatch: # possibly not found as plain text because hashed
+            sshKeygen = CommandCapture(["ssh-keygen",
+                                        "-f", knownHostsFile,
+                                        "-R", ipaddress],
+                                       copyToStdio=False,
+                                       exceptionIfNotZero=False, exceptionIfAnyStderr=False)
 
     @classmethod
     def acceptKnownHostKey(cls, ipaddress):
