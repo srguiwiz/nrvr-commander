@@ -54,6 +54,14 @@ SystemRequirements.commandsRequiredByImplementations([IsoImage,
 VMwareHypervisor.localRequired()
 VMwareHypervisor.snapshotsRequired()
 
+# from https://www.scientificlinux.org/download/
+scientificLinuxDistro32IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"
+scientificLinuxDistro64IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.4/x86_64/iso/SL-64-x86_64-2013-03-18-Install-DVD.iso"
+
+# from http://releases.ubuntu.com/
+ubuntuDistro32IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-i386.iso"
+ubuntuDistro64IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-amd64.iso"
+
 # from http://code.google.com/p/selenium/downloads/list
 seleniumServerStandaloneJarUrl = "http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar"
 # from https://pypi.python.org/pypi/selenium/
@@ -70,8 +78,9 @@ chromeDriverLinux64InstallerZipUrl = "https://chromedriver.googlecode.com/files/
 testsInvokerScript = "tests-invoker.py"
 testsDirectory = "tests"
 
+# will modulo over machinesPattern,
 # customize as needed
-testVmsRange = range(181, 185)
+testVmsRange = range(181, 183) #189) # or more
 
 # customize as needed
 rootpw = "redwood"
@@ -80,14 +89,21 @@ UserProperties = namedtuple("UserProperties", ["username", "pwd"])
 # customize as needed
 # normally at least one
 testUsersProperties = [UserProperties(username="tester", pwd="testing"),
-                       UserProperties(username="tester2", pwd="testing")]
+                       UserProperties(username="tester2", pwd="testing")
+                       ]
 
-MachineParameters = namedtuple("MachineParameters", ["distro", "browser", "lang", "memsize"])
+MachineParameters = namedtuple("MachineParameters", ["distro", "arch", "browser", "lang", "memsize"])
+class Arch(str): pass # make sure it is a string to avoid string-number unequality
 # customize as needed
-machinesPattern = [MachineParameters(distro="el", browser="firefox", lang="en_US.UTF-8", memsize=900),
-                   MachineParameters(distro="ub", browser="chrome", lang="en_US.UTF-8", memsize=960),
-                   MachineParameters(distro="el", browser="firefox", lang="de_DE.UTF-8", memsize=920),
-                   MachineParameters(distro="ub", browser="chrome", lang="de_DE.UTF-8", memsize=980)]
+machinesPattern = [MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
+                   MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
+                   MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
+                   MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
+                   MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
+                   MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
+                   MachineParameters(distro="el", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
+                   MachineParameters(distro="ub", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460)
+                   ]
 
 # trying to approximate the order in which identifiers are used from this tuple
 VmIdentifiers = namedtuple("VmIdentifiers", ["vmxFilePath", "name", "number", "ipaddress", "mapas"])
@@ -129,10 +145,13 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
     Return a VMwareMachine instance."""
     testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
     distro = vmIdentifiers.mapas.distro
+    arch = vmIdentifiers.mapas.arch
     browser = vmIdentifiers.mapas.browser
     #
     if not distro in ["el", "ub"]:
         raise Exception("unknown distro %s" % (distro))
+    if not arch in [Arch(32), Arch(64)]:
+        raise Exception("unknown architecture arch=%s" % (arch))
     if distro == "el" and browser == "chrome":
         raise Exception("cannot run browser %s in distro %s" % (browser, distro))
     #
@@ -155,8 +174,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         testVm.mkdir()
         #
         if distro == "el":
-            downloadedDistroIsoImage = ElIsoImage(Download.fromUrl
-                                                  ("http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"))
+            if arch == Arch(32):
+                downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(scientificLinuxDistro32IsoUrl))
+            elif arch == Arch(64):
+                downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(scientificLinuxDistro64IsoUrl))
             kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableElKickstartTemplate001)
             kickstartFileContent.replaceLang(vmIdentifiers.mapas.lang)
             kickstartFileContent.replaceRootpw(rootpw)
@@ -177,8 +198,12 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
             # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "centos" versus "centos-64"
+            if arch == Arch(32):
+                guestOS = "centos"
+            elif arch == Arch(64):
+                guestOS = "centos-64"
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
-                          guestOS="centos",
+                          guestOS=guestOS,
                           ideDrives=[20000, 300, modifiedDistroIsoImage])
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
@@ -224,8 +249,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         elif distro == "ub":
-            downloadedDistroIsoImage = UbIsoImage(Download.fromUrl
-                                                  ("http://releases.ubuntu.com/precise/ubuntu-12.04.3-alternate-i386.iso"))
+            if arch == Arch(32):
+                downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(ubuntuDistro32IsoUrl))
+            elif arch == Arch(64):
+                downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(ubuntuDistro64IsoUrl))
             kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
             kickstartFileContent.replaceLang(vmIdentifiers.mapas.lang)
             kickstartFileContent.replaceRootpw(rootpw)
@@ -251,8 +278,12 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
             # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "ubuntu" versus "ubuntu-64"
+            if arch == Arch(32):
+                guestOS = "ubuntu"
+            elif arch == Arch(64):
+                guestOS = "ubuntu-64"
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
-                          guestOS="ubuntu",
+                          guestOS=guestOS,
                           ideDrives=[20000, 300, modifiedDistroIsoImage])
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
@@ -303,6 +334,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
 def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
     testVm = VMwareMachine(vmIdentifiers.vmxFilePath)
     distro = vmIdentifiers.mapas.distro
+    arch = vmIdentifiers.mapas.arch
     browser = vmIdentifiers.mapas.browser
     #
     snapshots = VMwareHypervisor.local.listSnapshots(vmIdentifiers.vmxFilePath)
@@ -323,8 +355,12 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         #
         # install Google Chrome
         if browser == "chrome" and distro == "ub":
-            chromeInstallerOnHostPath = Download.fromUrl(googleChromeUbuntu32InstallerUrl)
-            chromeInstallerOnGuestPath = "~/" + Download.basename(googleChromeUbuntu32InstallerUrl)
+            if arch == Arch(32):
+                googleChromeUbuntuInstallerUrl = googleChromeUbuntu32InstallerUrl
+            elif arch == Arch(64):
+                googleChromeUbuntuInstallerUrl = googleChromeUbuntu64InstallerUrl
+            chromeInstallerOnHostPath = Download.fromUrl(googleChromeUbuntuInstallerUrl)
+            chromeInstallerOnGuestPath = "~/" + Download.basename(googleChromeUbuntuInstallerUrl)
             testVm.scpPutCommand(fromHostPath=chromeInstallerOnHostPath,
                                  toGuestPath=chromeInstallerOnGuestPath,
                                  guestUser="root")
@@ -350,8 +386,12 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         if browser == "chrome":
             # install ChromeDriver
             # see http://code.google.com/p/selenium/wiki/ChromeDriver
-            chromeDriverInstallerZipPath = Download.fromUrl(chromeDriverLinux32InstallerZipUrl)
-            chromeDriverInstallerZipBaseName = Download.basename(chromeDriverLinux32InstallerZipUrl)
+            if arch == Arch(32):
+                chromeDriverLinuxInstallerZipUrl = chromeDriverLinux32InstallerZipUrl
+            elif arch == Arch(64):
+                chromeDriverLinuxInstallerZipUrl = chromeDriverLinux64InstallerZipUrl
+            chromeDriverInstallerZipPath = Download.fromUrl(chromeDriverLinuxInstallerZipUrl)
+            chromeDriverInstallerZipBaseName = Download.basename(chromeDriverLinuxInstallerZipUrl)
             testVm.scpPutCommand(fromHostPath=chromeDriverInstallerZipPath,
                                  toGuestPath="~/" + chromeDriverInstallerZipBaseName,
                                  guestUser="root")
