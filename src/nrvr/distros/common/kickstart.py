@@ -36,7 +36,7 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
 
     def genisoimageOptions(self,
                            bootImage="isolinux/isolinux.bin", bootCatalog="isolinux/boot.cat",
-                           label=None):
+                           label=None, ignoreJoliet=True):
         """Auxiliary method, called by cloneWithModifications.
         
         As implemented calls superclass method genisoimageOptions and extends the returned list.
@@ -46,7 +46,7 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
         Could select different options depending on content of .iso image.
         Could be overridden for a subclass."""
         # this implementation has been made to work for Linux
-        genisoimageOptions = super(DistroIsoImage, self).genisoimageOptions(label=label)
+        genisoimageOptions = super(DistroIsoImage, self).genisoimageOptions(label=label, ignoreJoliet=ignoreJoliet)
         genisoimageOptions.extend([
             # boot related
             "-no-emul-boot",
