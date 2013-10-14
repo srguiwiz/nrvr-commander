@@ -250,9 +250,9 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         elif distro == "ub":
             if arch == Arch(32):
-                downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(ubuntuDistro32IsoUrl))
+                downloadedDistroIsoImage = UbIsoImage(Download.fromUrl(ubuntuDistro32IsoUrl))
             elif arch == Arch(64):
-                downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(ubuntuDistro64IsoUrl))
+                downloadedDistroIsoImage = UbIsoImage(Download.fromUrl(ubuntuDistro64IsoUrl))
             kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
             kickstartFileContent.replaceLang(vmIdentifiers.mapas.lang)
             kickstartFileContent.replaceRootpw(rootpw)
