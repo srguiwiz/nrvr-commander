@@ -46,4 +46,4 @@ finally:
             print "avoiding disk clogging, now deleting cloned %s" % (isoImageClone.isoImagePath)
             isoImageClone.remove()
         else:
-            print "watch your disk space, per --keep-clone nowkeeping cloned %s" % (isoImageClone.isoImagePath)
+            print "watch your disk space, per --keep-clone now keeping cloned %s" % (isoImageClone.isoImagePath)
