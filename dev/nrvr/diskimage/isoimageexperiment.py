@@ -20,6 +20,8 @@ optionsParser = OptionParser(usage="%prog [options] isofile",
 """Utility to use in developing and testing of cloning and modifying an .iso disk image.
 Exercises nrvr.diskimage.isoimage.IsoImage.cloneWithModifications() without any modifications.""",
                              version="%prog 1.0")
+optionsParser.add_option("-u", "--udf", action="store_true", dest="udf",
+                         help="use UDF instead of ISO 9660, default %default", default=False)
 optionsParser.add_option("-j", "--dont-ignore-joliet", action="store_true", dest="dontIgnoreJoliet",
                          help="don't ignore Joliet-extension information, default %default", default=False)
 optionsParser.add_option("-k", "--keep-clone", action="store_true", dest="keepClone",
@@ -38,6 +40,7 @@ try:
     else:
         isoImage = IsoImage(isoFile)
     isoImageClone = isoImage.cloneWithModifications(modifications=[],
+                                                    udf=options.udf,
                                                     ignoreJoliet=not options.dontIgnoreJoliet)
     print "cloned into %s" % (isoImageClone.isoImagePath)
 finally:

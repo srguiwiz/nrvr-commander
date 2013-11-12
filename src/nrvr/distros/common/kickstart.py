@@ -29,14 +29,15 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
     """A Linux distribution .iso ISO CD-ROM or DVD-ROM disk image."""
 
     def __init__(self, isoImagePath):
-        """Create new Linux distribution IsoImage descriptor.
+        """Create new Linux distribution DistroIsoImage descriptor.
         
         A descriptor can describe an .iso image that does or doesn't yet exist on the host disk."""
         nrvr.diskimage.isoimage.IsoImage.__init__(self, isoImagePath)
 
     def genisoimageOptions(self,
                            bootImage="isolinux/isolinux.bin", bootCatalog="isolinux/boot.cat",
-                           label=None, ignoreJoliet=True):
+                           label=None,
+                           udf=False, ignoreJoliet=True):
         """Auxiliary method, called by cloneWithModifications.
         
         As implemented calls superclass method genisoimageOptions and extends the returned list.
@@ -44,9 +45,11 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
         Could be improved in the future.
         Could recognize content of .iso image.
         Could select different options depending on content of .iso image.
+        Maybe could use iso-info -d 9 -i self.isoImagePath.
         Could be overridden for a subclass."""
         # this implementation has been made to work for Linux
-        genisoimageOptions = super(DistroIsoImage, self).genisoimageOptions(label=label, ignoreJoliet=ignoreJoliet)
+        genisoimageOptions = super(DistroIsoImage, self).genisoimageOptions(label=label,
+                                                                            udf=udf, ignoreJoliet=ignoreJoliet)
         genisoimageOptions.extend([
             # boot related
             "-no-emul-boot",

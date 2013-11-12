@@ -32,7 +32,7 @@ from nrvr.util.requirements import SystemRequirements
 from nrvr.util.times import Timestamp
 
 class IsoImage(object):
-    """An .iso ISO CD-ROM or DVD-ROM disk image."""
+    """An .iso ISO 9660 (or UDF) CD-ROM or DVD-ROM disk image."""
 
     @classmethod
     def commandsUsedInImplementation(cls):
@@ -64,7 +64,7 @@ class IsoImage(object):
         """Remove (delete) .iso image from the host disk."""
         os.remove(self._isoImagePath)
 
-    def mount(self, mountDir):
+    def mount(self, mountDir, udf=False):
         """Mount .iso image."""
         if not os.path.exists(mountDir):
             # was os.makedirs, but that could allow unintended wild creations to go undetected
@@ -73,7 +73,11 @@ class IsoImage(object):
         # which makes mounting and unmounting easier for us than it used to be,
         # also see https://lkml.org/lkml/2007/10/30/413,
         # also see http://marc.info/?l=util-linux-ng&m=119362955431694
-        CommandCapture(["mount", "-o", "loop", "-t", "iso9660", "-r",
+        if not udf: # iso9660
+            filesystemType = "iso9660"
+        else: # udf
+            filesystemType = "udf"
+        CommandCapture(["mount", "-o", "loop", "-t", filesystemType, "-r",
                        self._isoImagePath, mountDir])
         # record only in case of success
         self.mountDir = mountDir
@@ -84,7 +88,7 @@ class IsoImage(object):
             CommandCapture(["umount", "-d", self.mountDir],
                            exceptionIfNotZero=False, exceptionIfAnyStderr=False)
 
-    def copyToDirectory(self, copyDirectory, ignoreJoliet=True, tolerance=0.0):
+    def copyToDirectory(self, copyDirectory, udf=False, ignoreJoliet=True, tolerance=0.0):
         """Copy all files into a directory.
         
         Not using mount command, no need to run as root."""
@@ -95,31 +99,44 @@ class IsoImage(object):
         #
         # really want abspath and expanduser
         copyDirectory = os.path.abspath(os.path.expanduser(copyDirectory))
-        # get directories info in a reasonably parsable list
-        isoInfoLArgs = ["iso-info", "-i", self._isoImagePath, "-l"]
-        if ignoreJoliet:
-            isoInfoLArgs.insert(1, "--no-joliet")
-        isoInfoL = CommandCapture(isoInfoLArgs, copyToStdio=False)
-        # directories without leading slash and without trailing slash
-        directories = re.findall(r"(?m)^[ \t]*/(.+?)/?[ \t]*:[ \t]*$", isoInfoL.stdout)
-        # sorting matters to allow building of a tree of directories
-        directories = sorted(directories)
         # make sure not merging with pre-existing directory or files
         if os.path.exists(copyDirectory):
             shutil.rmtree(copyDirectory)
         # make directory
         os.mkdir(copyDirectory, 0755)
+        if not udf: # iso9660
+            # get directories info in a reasonably parsable list
+            isoInfoLArgs = ["iso-info", "-i", self._isoImagePath, "-l"]
+            if ignoreJoliet:
+                isoInfoLArgs.insert(1, "--no-joliet")
+            isoInfoL = CommandCapture(isoInfoLArgs, copyToStdio=False)
+            # directories without leading slash and without trailing slash
+            directories = re.findall(r"(?m)^[ \t]*/(.+?)/?[ \t]*:[ \t]*$", isoInfoL.stdout)
+            # get files info in a reasonably parsable list
+            isoInfoFArgs = ["iso-info", "-i", self._isoImagePath, "-f"]
+            if ignoreJoliet:
+                isoInfoFArgs.insert(1, "--no-joliet")
+            isoInfoF = CommandCapture(isoInfoFArgs, copyToStdio=False)
+            # files without leading slash and without trailing slash
+            files = re.findall(r"(?m)^[ \t]*[0-9]*[ \t]+/(.+?)/?[ \t]*$", isoInfoF.stdout)
+        else: # udf
+            # get directories and files info in a reasonably parsable list
+            isoInfoUArgs = ["iso-info", "-i", self._isoImagePath, "-U"]
+            if ignoreJoliet:
+                isoInfoUArgs.insert(1, "--no-joliet")
+            isoInfoU = CommandCapture(isoInfoUArgs, copyToStdio=False)
+            # list below excluded line 123456 /.
+            isoInfoUList = re.search(r"(?s)[ \t]*[0-9]+[ \t]+/\.\s*\n(.*)", isoInfoU.stdout).group(1)
+            # directories without leading slash and without trailing slash
+            directories = re.findall(r"(?m)^[ \t]*[0-9]+[ \t]+/(.+?)/\.[ \t]*$", isoInfoUList)
+            # files without leading slash and without trailing slash dot
+            files = re.findall(r"(?m)^[ \t]*[0-9]+[ \t]+/(.*?)(?:/\.)?[ \t]*$", isoInfoUList)
+        # sorting matters to allow building a tree of directories
+        directories = sorted(directories)
         # make directories
         for relativePathOnIso in directories:
             pathOnHost = os.path.join(copyDirectory, relativePathOnIso)
             os.mkdir(pathOnHost, 0755)
-        # get files info in a reasonably parsable list
-        isoInfoFArgs = ["iso-info", "-i", self._isoImagePath, "-f"]
-        if ignoreJoliet:
-            isoInfoFArgs.insert(1, "--no-joliet")
-        isoInfoF = CommandCapture(isoInfoFArgs, copyToStdio=False)
-        # files without leading slash and without trailing slash
-        files = re.findall(r"(?m)^[ \t]*[0-9]*[ \t]+/(.+?)/?[ \t]*$", isoInfoF.stdout)
         # tolerate some defects in iso-read
         readAttemptCount = 0
         readSuccessCount = 0
@@ -132,11 +149,13 @@ class IsoImage(object):
             # copy file
             try:
                 readAttemptCount += 1
-                CommandCapture(["iso-read",
-                                "-i", self._isoImagePath,
-                                "-e", relativePathOnIso,
-                                "-o", pathOnHost],
-                               copyToStdio=False)
+                isoReadArgs = ["iso-read",
+                               "-i", self._isoImagePath,
+                               "-e", relativePathOnIso,
+                               "-o", pathOnHost];
+                if udf: # udf
+                    isoReadArgs.append("-U")
+                CommandCapture(isoReadArgs, copyToStdio=False)
                 readSuccessCount += 1
             except Exception as ex:
                 print ex
@@ -148,7 +167,7 @@ class IsoImage(object):
             print "continuing despite some ({0} of {1}) failures reading {2}".format(readFailureCount, readAttemptCount, self._isoImagePath)
         return copyDirectory
 
-    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None, ignoreJoliet=True):
+    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None, udf=False, ignoreJoliet=True):
         """Clone with any number of instances of IsoImageModification applied.
         
         A temporary assembly directory in the same directory as cloneIsoImagePath needs disk space,
@@ -181,7 +200,7 @@ class IsoImage(object):
         try:
             # copy files from original .iso image
             print "copying files from {0}, this may take a few minutes".format(self._isoImagePath)
-            self.copyToDirectory(temporaryAssemblyDirectory, ignoreJoliet=ignoreJoliet)
+            self.copyToDirectory(temporaryAssemblyDirectory, udf=udf, ignoreJoliet=ignoreJoliet)
             # apply modifications
             print "applying modifications into {0}".format(temporaryAssemblyDirectory)
             for modification in modifications:
@@ -197,7 +216,7 @@ class IsoImage(object):
             else:
                 # preferred choice for error message
                 makeIsoImageCommandName = "genisoimage"
-            genisoimageOptions = self.genisoimageOptions(label=timestamp, ignoreJoliet=ignoreJoliet)
+            genisoimageOptions = self.genisoimageOptions(label=timestamp, udf=udf, ignoreJoliet=ignoreJoliet)
             CommandCapture([makeIsoImageCommandName] +
                            genisoimageOptions + 
                            ["-o", cloneIsoImagePath,
@@ -209,7 +228,7 @@ class IsoImage(object):
             shutil.rmtree(temporaryAssemblyDirectory, ignore_errors=True)
         return IsoImage(cloneIsoImagePath)
 
-    def cloneWithModificationsUsingMount(self, modifications=[], cloneIsoImagePath=None, ignoreJoliet=True):
+    def cloneWithModificationsUsingMount(self, modifications=[], cloneIsoImagePath=None, udf=False, ignoreJoliet=True):
         """Clone with any number of instances of IsoImageModification applied.
         
         This is an older implementation which regrettably because of the mount command requires
@@ -243,7 +262,7 @@ class IsoImage(object):
         #os.mkdir(temporaryAssemblyDirectory, 0755)
         try:
             # mount
-            self.mount(temporaryMountDirectory)
+            self.mount(temporaryMountDirectory, udf=udf)
             # copy files from original .iso image
             print "copying files from {0}, this may take a few minutes".format(self._isoImagePath)
             shutil.copytree(temporaryMountDirectory, temporaryAssemblyDirectory, symlinks=True)
@@ -253,7 +272,7 @@ class IsoImage(object):
                 modification.writeIntoAssembly(temporaryAssemblyDirectory)
             # make new .iso image file
             print "making new {0}, this may take a few minutes".format(cloneIsoImagePath)
-            genisoimageOptions = self.genisoimageOptions(label=timestamp, ignoreJoliet=ignoreJoliet)
+            genisoimageOptions = self.genisoimageOptions(label=timestamp, udf=udf, ignoreJoliet=ignoreJoliet)
             CommandCapture(["genisoimage"] + 
                            genisoimageOptions + 
                            ["-o", cloneIsoImagePath,
@@ -267,7 +286,7 @@ class IsoImage(object):
             os.rmdir(temporaryMountDirectory)
         return IsoImage(cloneIsoImagePath)
 
-    def genisoimageOptions(self, label=None, ignoreJoliet=True):
+    def genisoimageOptions(self, label=None, udf=False, ignoreJoliet=True):
         """Auxiliary method, called by cloneWithModifications.
         
         Can be overridden by subclass methods genisoimageOptions,
@@ -282,6 +301,8 @@ class IsoImage(object):
         if not label:
             label = Timestamp.microsecondTimestamp()
         genisoimageOptions = []
+        if udf: # udf
+            genisoimageOptions.append("-udf")
         if not ignoreJoliet:
             # broader compatibility of filenames and metadata
             genisoimageOptions.append("-J")
