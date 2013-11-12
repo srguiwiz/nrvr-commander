@@ -91,8 +91,54 @@ If, however, you would want to work with a distro .iso file >4GB, e.g. for
 making Scientific Linux 6.x, 64-bit machines, then ...
 
 instructions how to build a newer version iso-read that is known to work well
-with NrvrCommander, from the git repository of libcdio, for RHEL 6.x, could be
+with NrvrCommander, from the git repository of libcdio, for Mac OS X, could be
 written similarly to an enclosed text file on hosting on Ubuntu ...
 
 if someone would bother to do so, correctly, after figuring it out.  Might be
 better off pushing for a release of a libcdio version 0.91.
+
+-----------------------------------------------------------------------------
+
+Here are instructions how to build a specific newer version iso-read that is
+known to work well with NrvrCommander, from the git repository of libcdio.
+
+Assuming MacPorts has been installed as described above.
+
+sudo port selfupdate
+#
+sudo port install automake
+sudo port install autoconf
+#
+sudo port install libcddb
+sudo port install libiconv
+sudo port install gettext
+sudo port install popt
+sudo port install ncurses
+#
+cd ~/Downloads
+git clone git://git.savannah.gnu.org/libcdio.git
+cd libcdio
+git checkout 9c9f9d0
+sed -i -e 's/VERSION_STR,[^)]*/VERSION_STR, 0.$1.git9c9f9d0/' configure.ac
+#
+sh ./autogen.sh
+./configure
+make
+#
+# work around a problem
+touch ./src/cd-drive.1
+touch ./src/cd-info.1
+touch ./src/cd-read.1
+touch ./src/iso-read.1
+touch ./src/iso-info.1
+make
+#
+sudo make install
+
+In case iso-info --version shows a previously installed iso-info still shadows this
+newly installed version then try:
+
+sudo port uninstall libcdio
+
+Be sure to switch to a new terminal, window or tab to see the correct and lasting
+result of installing and uninstalling.
