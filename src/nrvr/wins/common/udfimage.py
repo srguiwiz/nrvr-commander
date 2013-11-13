@@ -102,7 +102,8 @@ class WinUdfImage(nrvr.diskimage.isoimage.IsoImage):
                 start, stop)
         return modification
 
-    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None, udf=True, ignoreJoliet=False):
+    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None, udf=True, ignoreJoliet=False,
+                               pause=False):
         """Clone with any number of instances of IsoImageModification applied.
         
         A temporary assembly directory in the same directory as cloneIsoImagePath needs disk space,
@@ -120,5 +121,6 @@ class WinUdfImage(nrvr.diskimage.isoimage.IsoImage):
         clone = super(WinUdfImage, self).cloneWithModifications(modifications=modifications,
                                                                 cloneIsoImagePath=cloneIsoImagePath,
                                                                 udf=udf,
-                                                                ignoreJoliet=ignoreJoliet)
+                                                                ignoreJoliet=ignoreJoliet,
+                                                                pause=pause)
         return WinUdfImage(clone.isoImagePath)

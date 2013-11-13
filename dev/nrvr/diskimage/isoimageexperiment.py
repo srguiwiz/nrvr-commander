@@ -31,6 +31,8 @@ optionsParser.add_option("-u", "--udf", action="store_true", dest="udf",
                          help="use UDF instead of ISO 9660, default %default", default=False)
 optionsParser.add_option("-w", "--windows-installer", action="store_true", dest="windowsInstaller",
                          help="clone a Windows installer, bootable with boot image, default %default", default=False)
+optionsParser.add_option("-p", "--pause", action="store_true", dest="pause",
+                         help="pause before and after applying modifications, default %default", default=False)
 (options, args) = optionsParser.parse_args()
 if len(args) is not 1:
     raise OptionError("needs exactly one argument, a .iso file")
@@ -45,7 +47,8 @@ try:
                                                         ignoreJoliet=not options.dontIgnoreJoliet)
     elif options.windowsInstaller:
         isoImage = WinUdfImage(isoFile)
-        isoImageClone = isoImage.cloneWithModifications(modifications=[])
+        isoImageClone = isoImage.cloneWithModifications(modifications=[],
+                                                        pause=options.pause)
     else:
         isoImage = IsoImage(isoFile)
         isoImageClone = isoImage.cloneWithModifications(modifications=[],

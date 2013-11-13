@@ -168,7 +168,8 @@ class IsoImage(object):
             print "continuing despite some ({0} of {1}) failures reading {2}".format(readFailureCount, readAttemptCount, self._isoImagePath)
         return copyDirectory
 
-    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None, udf=False, ignoreJoliet=True):
+    def cloneWithModifications(self, modifications=[], cloneIsoImagePath=None, udf=False, ignoreJoliet=True,
+                               pause=False):
         """Clone with any number of instances of IsoImageModification applied.
         
         A temporary assembly directory in the same directory as cloneIsoImagePath needs disk space,
@@ -202,10 +203,16 @@ class IsoImage(object):
             # copy files from original .iso image
             print "copying files from {0}, this may take a few minutes".format(self._isoImagePath)
             self.copyToDirectory(temporaryAssemblyDirectory, udf=udf, ignoreJoliet=ignoreJoliet)
+            # give a chance to look
+            if pause:
+                raw_input("you requested to pause before applying modifications, press Enter to continue:")
             # apply modifications
             print "applying modifications into {0}".format(temporaryAssemblyDirectory)
             for modification in modifications:
                 modification.writeIntoAssembly(temporaryAssemblyDirectory)
+            # give a chance to look
+            if pause:
+                raw_input("you requested to pause after applying modifications, press Enter to continue:")
             # make new .iso image file
             print "making new {0}, this may take a few minutes".format(cloneIsoImagePath)
             if SystemRequirements.which("genisoimage"):
@@ -229,7 +236,8 @@ class IsoImage(object):
             shutil.rmtree(temporaryAssemblyDirectory, ignore_errors=True)
         return IsoImage(cloneIsoImagePath)
 
-    def cloneWithModificationsUsingMount(self, modifications=[], cloneIsoImagePath=None, udf=False, ignoreJoliet=True):
+    def cloneWithModificationsUsingMount(self, modifications=[], cloneIsoImagePath=None, udf=False, ignoreJoliet=True,
+                                         pause=False):
         """Clone with any number of instances of IsoImageModification applied.
         
         This is an older implementation which regrettably because of the mount command requires
@@ -267,10 +275,16 @@ class IsoImage(object):
             # copy files from original .iso image
             print "copying files from {0}, this may take a few minutes".format(self._isoImagePath)
             shutil.copytree(temporaryMountDirectory, temporaryAssemblyDirectory, symlinks=True)
+            # give a chance to look
+            if pause:
+                raw_input("you requested to pause before applying modifications, press Enter to continue:")
             # apply modifications
             print "applying modifications into {0}".format(temporaryAssemblyDirectory)
             for modification in modifications:
                 modification.writeIntoAssembly(temporaryAssemblyDirectory)
+            # give a chance to look
+            if pause:
+                raw_input("you requested to pause after applying modifications, press Enter to continue:")
             # make new .iso image file
             print "making new {0}, this may take a few minutes".format(cloneIsoImagePath)
             genisoimageOptions = self.genisoimageOptions(label=timestamp, udf=udf, ignoreJoliet=ignoreJoliet)
