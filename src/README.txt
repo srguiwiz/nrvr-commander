@@ -26,6 +26,7 @@ Modules provides by this package are
 * nrvr.util.user
 * nrvr.vm.vmware
 * nrvr.vm.vmwaretemplates
+* nrvr.wins.common.udfimage
 * nrvr.xml.etree
 
 To install do the usual:

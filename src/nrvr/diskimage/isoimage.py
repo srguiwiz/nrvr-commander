@@ -8,6 +8,7 @@ Implemented subclasses of IsoImageModification are
 * IsoImageModificationFromString
 * IsoImageModificationFromPath
 * IsoImageModificationByReplacement
+* IsoImageModificationFromByteRange
 
 As implemented works in Linux.
 As implemented requires mount, umount, iso-info, iso-read, genisoimage commands.
@@ -386,6 +387,37 @@ class IsoImageModificationByReplacement(IsoImageModification):
         # overwrite
         with codecs.open(pathInTemporaryAssemblyDirectory, "w", encoding=self.encoding) as outputFile:
             outputFile.write(fileContent)
+class IsoImageModificationFromByteRange(IsoImageModification):
+    """A modification to an .iso image, copy from byte range from file into a file by itself."""
+    def __init__(self, pathOnIso, pathOnHost, start, stop):
+        super(IsoImageModificationFromByteRange, self).__init__(pathOnIso)
+        self.pathOnHost = pathOnHost
+        self.start = start
+        self.stop = stop
+    def writeIntoAssembly(self, temporaryAssemblyDirectory):
+        pathInTemporaryAssemblyDirectory = self.pathInTemporaryAssemblyDirectory(temporaryAssemblyDirectory)
+        if self.start:
+            start = self.start
+        else:
+            start = 0
+        if self.stop:
+            stop = self.stop
+        else:
+            stop = os.path.getsize(self.pathOnHost)
+        # remove pre-existing file, if any
+        if os.path.exists(pathInTemporaryAssemblyDirectory):
+            os.remove(pathInTemporaryAssemblyDirectory)
+        # copy
+        with open(self.pathOnHost, "rb") as inputFile:
+            inputFile.seek(start)
+            with open(pathInTemporaryAssemblyDirectory, "wb") as outputFile:
+                current = start
+                while current < stop:
+                    remainder = stop - current
+                    chunk = min(remainder, 10240)
+                    bytes = inputFile.read(chunk)
+                    outputFile.write(bytes)
+                    current += chunk
 
 if __name__ == "__main__":
     from nrvr.util.requirements import SystemRequirements

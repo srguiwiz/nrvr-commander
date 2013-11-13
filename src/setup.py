@@ -33,6 +33,7 @@ setup(name="NrvrCommander",
       * nrvr.util.user
       * nrvr.vm.vmware
       * nrvr.vm.vmwaretemplates
+      * nrvr.wins.common.udfimage
       * nrvr.xml.etree""",
       packages=["nrvr",
                 "nrvr.diskimage",
@@ -45,6 +46,8 @@ setup(name="NrvrCommander",
                 "nrvr.remote",
                 "nrvr.util",
                 "nrvr.vm",
+                "nrvr.wins",
+                "nrvr.wins.common",
                 "nrvr.xml"],
       maintainer='Nirvana Research',
       maintainer_email='nrvr.commander.python@nrvr.com',
