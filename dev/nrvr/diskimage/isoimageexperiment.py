@@ -14,7 +14,7 @@ import os.path
 
 from nrvr.diskimage.isoimage import IsoImage
 from nrvr.distros.common.kickstart import DistroIsoImage
-from nrvr.wins.common.udfimage import WinUdfImage
+from nrvr.wins.common.autounattend import WinUdfImage
 
 optionsParser = OptionParser(usage="%prog [options] isofile",
                              description=
@@ -47,7 +47,7 @@ try:
                                                         ignoreJoliet=not options.dontIgnoreJoliet)
     elif options.windowsInstaller:
         isoImage = WinUdfImage(isoFile)
-        isoImageClone = isoImage.cloneWithModifications(modifications=[],
+        isoImageClone = isoImage.cloneWithModifications(modifications=[isoImage.modificationForElToritoBootImage()],
                                                         pause=options.pause)
     else:
         isoImage = IsoImage(isoFile)

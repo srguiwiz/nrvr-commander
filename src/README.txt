@@ -26,7 +26,9 @@ Modules provides by this package are
 * nrvr.util.user
 * nrvr.vm.vmware
 * nrvr.vm.vmwaretemplates
-* nrvr.wins.common.udfimage
+* nrvr.wins.common.autounattend
+* nrvr.wins.win7.autounattend
+* nrvr.wins.win7.autounattendtemplates
 * nrvr.xml.etree
 
 To install do the usual:

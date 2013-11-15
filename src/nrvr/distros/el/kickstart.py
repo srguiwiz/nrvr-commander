@@ -25,7 +25,7 @@ class ElIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
     """An Enterprise Linux .iso ISO CD-ROM or DVD-ROM disk image."""
 
     def __init__(self, isoImagePath):
-        """Create new Enterprise Linux IsoImage descriptor.
+        """Create new Enterprise Linux ElIsoImage descriptor.
         
         A descriptor can describe an .iso image that does or doesn't yet exist on the host disk."""
         nrvr.distros.common.kickstart.DistroIsoImage.__init__(self, isoImagePath)

@@ -33,7 +33,9 @@ setup(name="NrvrCommander",
       * nrvr.util.user
       * nrvr.vm.vmware
       * nrvr.vm.vmwaretemplates
-      * nrvr.wins.common.udfimage
+      * nrvr.wins.common.autounattend
+      * nrvr.wins.win7.autounattend
+      * nrvr.wins.win7.autounattendtemplates
       * nrvr.xml.etree""",
       packages=["nrvr",
                 "nrvr.diskimage",
@@ -48,6 +50,7 @@ setup(name="NrvrCommander",
                 "nrvr.vm",
                 "nrvr.wins",
                 "nrvr.wins.common",
+                "nrvr.wins.win7",
                 "nrvr.xml"],
       maintainer='Nirvana Research',
       maintainer_email='nrvr.commander.python@nrvr.com',

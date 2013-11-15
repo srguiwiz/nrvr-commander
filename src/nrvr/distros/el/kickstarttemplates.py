@@ -16,7 +16,7 @@ Copyright (c) Nirvana Research 2006-2013.
 Modified BSD License"""
 
 class ElKickstartTemplates(object):
-    """Various generally usable templates for Enterprise Linux."""
+    """Generally usable templates for Enterprise Linux."""
 
     # a kickstart file template known to work well with Scientific Linux 6.1 (tested up to 6.4)
     # for creating generally usable servers

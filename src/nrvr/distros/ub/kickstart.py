@@ -23,7 +23,7 @@ class UbIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
     """An Ubuntu .iso ISO CD-ROM or DVD-ROM disk image."""
 
     def __init__(self, isoImagePath):
-        """Create new Ubuntu IsoImage descriptor.
+        """Create new Ubuntu UbIsoImage descriptor.
         
         A descriptor can describe an .iso image that does or doesn't yet exist on the host disk."""
         nrvr.distros.common.kickstart.DistroIsoImage.__init__(self, isoImagePath)

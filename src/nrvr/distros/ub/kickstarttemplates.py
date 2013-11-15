@@ -16,7 +16,7 @@ Copyright (c) Nirvana Research 2006-2013.
 Modified BSD License"""
 
 class UbKickstartTemplates(object):
-    """Various generally usable templates for Ubuntu."""
+    """Generally usable templates for Ubuntu."""
 
     # a kickstart file template known to work well with Ubuntu 12.04
     # for creating generally usable machines
