@@ -66,8 +66,8 @@ class LinuxSshCommand(SshCommand):
 
     @classmethod
     def sleepUntilIsGuiAvailable(cls, sshParameters,
-                                 checkIntervalSeconds=5.0, ticker=False,
-                                 extraSleepSeconds=10.0):
+                                 checkIntervalSeconds=3.0, ticker=False,
+                                 extraSleepSeconds=5.0):
         """If GUI available return, else loop sleeping for checkIntervalSeconds.
         
         Should be user to be meaningful.

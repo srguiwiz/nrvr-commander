@@ -725,7 +725,7 @@ class VMwareHypervisor(object):
         # here an opportunity to see in debugger
         return paths
 
-    def start(self, vmxFilePath, gui=False, extraSleepSeconds=30.0):
+    def start(self, vmxFilePath, gui=False, extraSleepSeconds=10.0):
         """Start virtual machine.
         
         extraSleepSeconds
@@ -736,7 +736,7 @@ class VMwareHypervisor(object):
         if extraSleepSeconds:
             time.sleep(extraSleepSeconds)
 
-    def stop(self, vmxFilePath, hard=False, tolerateNotRunning=True, extraSleepSeconds=10.0):
+    def stop(self, vmxFilePath, hard=False, tolerateNotRunning=True, extraSleepSeconds=7.0):
         """Stop virtual machine.
         
         Ideally virtual machines would stop from shutting down from within the virtual machine
@@ -754,13 +754,13 @@ class VMwareHypervisor(object):
         probability of leaving behind virtual disk content as if after a crash.
         
         extraSleepSeconds
-            extra time for this process to sleep before stopping virtual machine,
+            extra time for this process to sleep after stopping virtual machine,
             unless None."""
-        if extraSleepSeconds:
-            time.sleep(extraSleepSeconds)
         try:
             CommandCapture(["vmrun", "-T", self._hostType, "stop", vmxFilePath] +
                            (["hard"] if hard else ["soft"]))
+            if extraSleepSeconds:
+                time.sleep(extraSleepSeconds)
         except:
             if tolerateNotRunning:
                 if not self.isRunning(vmxFilePath=vmxFilePath): # apparently .vmx file not listed as running
@@ -1179,7 +1179,7 @@ class VMwareMachine(object):
         sshCommand = SshCommand(sshParameters, argv, exceptionIfNotZero=exceptionIfNotZero)
         return sshCommand
 
-    def shutdownCommand(self, extraSleepSeconds=10.0, ignoreException=False):
+    def shutdownCommand(self, extraSleepSeconds=7.0, ignoreException=False):
         """Send shutdown command.
         
         Assumes .ports file to exist and to have an entry for shutdown.
@@ -1192,7 +1192,7 @@ class VMwareMachine(object):
             VMwareHypervisor.local.sleepUntilNotRunning(vmwareMachine1.vmxFilePath, ticker=True)
         
         extraSleepSeconds
-            extra time for this process to sleep before shutting down virtual machine,
+            extra time for this process to sleep after shutting down virtual machine,
             unless None."""
         ports = self.portsFile.getPorts(protocol="shutdown", user=None)
         if ports == [] or ports is None:
@@ -1209,9 +1209,9 @@ class VMwareMachine(object):
         if command is None or user is None:
             raise Exception("incomplete information to send shutdown command to machine {0}".format
                             (self.basenameStem))
+        self.sshCommand([command], user, exceptionIfNotZero = not ignoreException)
         if extraSleepSeconds:
             time.sleep(extraSleepSeconds)
-        self.sshCommand([command], user, exceptionIfNotZero = not ignoreException)
 
     def scpPutCommand(self,
                       fromHostPath, toGuestPath, guestUser="root",
@@ -1256,7 +1256,7 @@ class VMwareMachine(object):
                                              probingCommand=probingCommand)
         return isAvailable
 
-    def sleepUntilSshIsAvailable(self, checkIntervalSeconds=5.0, ticker=False, user="root", probingCommand="hostname", extraSleepSeconds=10.0):
+    def sleepUntilSshIsAvailable(self, checkIntervalSeconds=3.0, ticker=False, user="root", probingCommand="hostname", extraSleepSeconds=5.0):
         """If available return, else loop sleeping for checkIntervalSeconds.
         
         Assumes .ports file to exist and to have an entry for ssh for the user."""
@@ -1287,7 +1287,7 @@ class VMwareMachine(object):
                 return False
         return True
 
-    def sleepUntilHasAcceptedKnownHostKey(self, checkIntervalSeconds=5.0, ticker=False, extraSleepSeconds=10.0):
+    def sleepUntilHasAcceptedKnownHostKey(self, checkIntervalSeconds=3.0, ticker=False, extraSleepSeconds=5.0):
         """If available return, else loop sleeping for checkIntervalSeconds.
         
         Assumes .ports file to exist and to have an entry for ssh."""

@@ -417,8 +417,8 @@ class SshCommand(object):
 
     @classmethod
     def sleepUntilHasAcceptedKnownHostKey(cls, ipaddress,
-                                          checkIntervalSeconds=5.0, ticker=False,
-                                          extraSleepSeconds=10.0):
+                                          checkIntervalSeconds=3.0, ticker=False,
+                                          extraSleepSeconds=5.0):
         """If available return, else loop sleeping for checkIntervalSeconds."""
         printed = False
         ticked = False
