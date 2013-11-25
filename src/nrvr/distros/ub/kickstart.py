@@ -18,6 +18,7 @@ Modified BSD License"""
 import re
 
 import nrvr.distros.common.kickstart
+from nrvr.util.networkinterface import NetworkConfigurationStaticParameters
 
 class UbIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
     """An Ubuntu .iso ISO CD-ROM or DVD-ROM disk image."""
@@ -49,8 +50,8 @@ class UbIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
         # a distinct path
         kickstartCustomConfigurationPathOnIso = "isolinux/" + kickstartCustomLabel + ".cfg"
         # modifications
-        modifications = \
-        [
+        modifications = []
+        modifications.extend([
             # the kickstart file
             nrvr.diskimage.isoimage.IsoImageModificationFromString
             (kickstartCustomConfigurationPathOnIso,
@@ -97,9 +98,8 @@ class UbIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
             # installer language selection
             nrvr.diskimage.isoimage.IsoImageModificationFromString
             ("isolinux/lang",
-             r"en" + "\n"
-             ),
-        ]
+             r"en" + "\n")
+            ])
         return modifications
 
 
@@ -197,7 +197,7 @@ class UbKickstartFileContent(nrvr.distros.common.kickstart.DistroKickstartFileCo
             self, for daisychaining."""
         # no luck with preseed, hence write into /etc/network/interfaces
         # sanity check
-        normalizedStaticIp = self.normalizeStaticIp(ipaddress, netmask, gateway, nameservers)
+        normalizedStaticIp = NetworkConfigurationStaticParameters.normalizeStaticIp(ipaddress, netmask, gateway, nameservers)
         postSection = self.sectionByName("%post")
         networkConfigurationToAdd = "".join(
             "\necho \"#\" >> /etc/network/interfaces"
@@ -313,14 +313,14 @@ echo '<monitors version="1">
         fullname
             the user's full name, which Ubuntu apparently expects to be given.
             
-            Default to username.capitalize().
+            If None then default to username.capitalize().
         
         return
             self, for daisychaining."""
         # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
         # see https://help.ubuntu.com/lts/installation-guide/i386/automatic-install.html
         # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
-        if not fullname:
+        if fullname is None:
             fullname = username.capitalize()
         username = re.escape(username) # precaution
         fullname = re.escape(fullname) # precaution

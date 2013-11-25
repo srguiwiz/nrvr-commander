@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 """nrvr.vm.vmware - Create and manipulate VMware virtual machines
 
@@ -241,7 +242,7 @@ class VmxFileContent(object):
         
             vmxFile.replaceSettingValue("memsize", 256, "_MEMSIZE_")"""
         # (?m) effects MULTILINE, which is used for ^
-        patternString = r'(?m)^[ \t]*(_NAME_)([ \t]*=[ \t]*)"?[ \t]*_PLACEHOLDER_[ \t]*"?'
+        patternString = r'(?mi)^[ \t]*(_NAME_)([ \t]*=[ \t]*)"?[ \t]*_PLACEHOLDER_[ \t]*"?'
         # make pattern match actual setting name,
         # tolerate regular expression metacharacters
         patternString = re.sub(r"_NAME_", re.escape(name), patternString)
@@ -264,10 +265,10 @@ class VmxFileContent(object):
         
         See method replaceSettingValue."""
         # (?m) effects MULTILINE, which is used for ^
-        patternString = r'(?m)^[ \t]*name[ \t]*=.*'
+        patternString = r'(?mi)^[ \t]*_NAME_[ \t]*=.*'
         # make pattern match actual setting name,
         # tolerate regular expression metacharacters
-        patternString = re.sub(r"name", re.escape(name), patternString)
+        patternString = re.sub(r"_NAME_", re.escape(name), patternString)
         if re.search(patternString, self.string):
             # if an existing setting then replace
             return self.replaceSettingValue(name, newValue)
@@ -287,10 +288,10 @@ class VmxFileContent(object):
     def removeSetting(self, name):
         """Remove a setting."""
         # (?m) effects MULTILINE, which is used for ^
-        patternString = r'(?m)^[ \t]*name[ \t]*=.*$'
+        patternString = r'(?mi)^[ \t]*_NAME_[ \t]*=.*$'
         # make pattern match actual setting name,
         # tolerate regular expression metacharacters
-        patternString = re.sub(r"name", re.escape(name), patternString)
+        patternString = re.sub(r"_NAME_", re.escape(name), patternString)
         # actual replacement
         modifiedSettings = re.sub(patternString, r"", self.string)
         # here an opportunity to compare in debugger
@@ -300,15 +301,34 @@ class VmxFileContent(object):
     def removeSettingsStartingWith(self, prefix):
         """Remove settings having prefix in front of name."""
         # (?m) effects MULTILINE, which is used for ^
-        patternString = r'(?m)^[ \t]*prefix[^\s=]*[ \t]*=.*$'
+        patternString = r'(?mi)^[ \t]*_PREFIX_[^\s=]*[ \t]*=.*$'
         # make pattern match actual setting prefix,
         # tolerate regular expression metacharacters
-        patternString = re.sub(r"prefix", re.escape(prefix), patternString)
+        patternString = re.sub(r"_PREFIX_", re.escape(prefix), patternString)
         # actual replacement
         modifiedSettings = re.sub(patternString, r"", self.string)
         # here an opportunity to compare in debugger
         self.string = modifiedSettings
         self.normalizeLineRuns()
+
+    def getSettingValue(self, name):
+        """Get setting value.
+        
+        If no setting by that name then return None.
+        
+        If double quoted then return without double quotes.
+        
+        return
+            value as string, or None."""
+        # (?m) effects MULTILINE, which is used for ^
+        patternString = r'(?mi)^[ \t]*_NAME_[ \t]*=[ \t]*"?([^"\n\r]*)"?.*$'
+        # make pattern match actual setting name,
+        # tolerate regular expression metacharacters
+        patternString = re.sub(r"_NAME_", re.escape(name), patternString)
+        patternMatch = re.search(patternString, self.string)
+        if not patternMatch:
+            return None
+        return patternMatch.group(1)
 
     newlineRegex = re.compile(r"\r?\n")
 
@@ -386,6 +406,24 @@ class VmxFileContent(object):
                                    self.string)
         for foundPrefix in foundPrefixes:
             self.removeSettingsStartingWith(foundPrefix + ".")
+    def disableAllIdeDrives(self):
+        """Disable all virtual IDE drives, while keeping them for later enabling again.
+        
+        As implemented sets all .vmx file parameters ide*:*.present="FALSE"."""
+        modifiedSettings = re.sub(r'(?mi)^([ \t]*ide[0-9]:[0-9]\.present[ \t]*=[ \t]*"?)([^"\n\r]*)("?.*)$',
+                                  r"\1FALSE\3",
+                                  self.string)
+        # here an opportunity to compare in debugger
+        self.string = modifiedSettings
+    def enableAllIdeDrives(self):
+        """Enable all virtual IDE drives again.
+        
+        As implemented sets all .vmx file parameters ide*:*.present="TRUE"."""
+        modifiedSettings = re.sub(r'(?mi)^([ \t]*ide[0-9]:[0-9]\.present[ \t]*=[ \t]*"?)([^"\n\r]*)("?.*)$',
+                                  r"\1TRUE\3",
+                                  self.string)
+        # here an opportunity to compare in debugger
+        self.string = modifiedSettings
 
     @classmethod
     def ethernetSettingPrefix(cls, adapter=0):
@@ -434,6 +472,39 @@ class VmxFileContent(object):
             self.setSettingValue(ethernetSettingPrefix + ".present", "FALSE", extraEmptyLine=True)
         else: # change == "remove"
             self.removeSettingsStartingWith(ethernetSettingPrefix + ".")
+
+    def getEthernetMacAddress(self, adapter=0):
+        """Get MAC address of a virtual Ethernet adapter.
+        
+        Generated MAC addresses are available only after first start of a virtual machine.
+        
+        return
+            e.g. "01:23:45:67:89:ab", or None."""
+        adapter = int(adapter)
+        if adapter < 0 or adapter > 9:
+            raise Exception("Ethernet adapter must be a single digit, 0, 1, etc., cannot be {0}".format(adapter))
+        ethernetSettingPrefix = self.ethernetSettingPrefix(adapter)
+        present = self.getSettingValue(ethernetSettingPrefix + ".present")
+        if not present:
+            return None
+        addressType = self.getSettingValue(ethernetSettingPrefix + ".addressType")
+        if addressType:
+            addressType = addressType.lower()
+        else:
+            addressType = "generated"
+        validAddressTypes = ["generated", "static"]
+        if not addressType in validAddressTypes:
+            raise Exception("Cannot process Ethernet addressType {0}, only can process one of known types {1}".format(addressType, validAddressTypes))
+        if addressType == "generated":
+            macAddress = self.getSettingValue(ethernetSettingPrefix + ".generatedAddress")
+        elif addressType == "static":
+            macAddress = self.getSettingValue(ethernetSettingPrefix + ".address")
+        else: # never should get here
+            return None
+        if not macAddress:
+            return None
+        macAddress = macAddress.lower()
+        return macAddress
 
 if __name__ == "__main__":
     _vmxFileContent1 = VmxFileContent(VMwareTemplates.usableVMwareVmxTemplate001)
@@ -591,10 +662,25 @@ class VmxFile(object):
         # keep up-to-date
         self._load()
 
+    def setIdeCdromIsoFile(self, pathOnHost, bus=0, device=0):
+        """Set .vmx file parameters for a virtual IDE CD-ROM drive served from an .iso image file."""
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent: vmxFileContent.setIdeCdromIsoFile(pathOnHost=pathOnHost, bus=bus, device=device))
+
     def removeAllIdeCdromImages(self):
         """Remove all .vmx file parameters for all virtual IDE CD-ROM drives served from image files."""
         # recommended safe wrapper
         self.modify(lambda vmxFileContent: vmxFileContent.removeAllIdeCdromImages())
+
+    def disableAllIdeDrives(self):
+        """Disable all virtual IDE drives, while keeping them for later enabling again."""
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent: vmxFileContent.disableAllIdeDrives())
+
+    def enableAllIdeDrives(self):
+        """Enable all virtual IDE drives again."""
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent: vmxFileContent.enableAllIdeDrives())
 
     def setEthernetAdapter(self, adapter=0, connectionType="bridged", change="enable"):
         """Set .vmx file parameters for a virtual Ethernet adapter.
@@ -607,6 +693,19 @@ class VmxFile(object):
         # recommended safe wrapper
         self.modify(lambda vmxFileContent:
             vmxFileContent.setEthernetAdapter(adapter=adapter, connectionType=connectionType, change=change))
+
+    def getEthernetMacAddress(self, adapter=0):
+        """Get MAC address of a virtual Ethernet adapter.
+        
+        Generated MAC addresses are available only after first start of a virtual machine.
+        
+        As implemented forces reading of vmxFile, in case of change after first start of virtual machine.
+        
+        return
+            e.g. "01:23:45:67:89:ab", or None."""
+        # make sure up-to-date, in case of change after first start of virtual machine
+        self._load()
+        return self._vmxFileContent.getEthernetMacAddress(adapter)
 
 if __name__ == "__main__":
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
@@ -818,6 +917,23 @@ class VMwareHypervisor(object):
         else:
             # nothing known to test
             pass
+
+    def startAndStopWithIdeDrivesDisabled(self, vmxFilePath, gui=False, extraSleepSeconds=3.0):
+        u"""Start and stop virtual machine while all virtual IDE drives are disabled.
+        
+        The raison d'être of this method is,
+        generated MAC addresses are available only after first start of a virtual machine.
+        
+        extraSleepSeconds
+            extra time for this process to sleep while virtual machine is starting up,
+            unless None."""
+        vmxFile = VmxFile(vmxFilePath)
+        try:
+            vmxFile.disableAllIdeDrives()
+            self.start(vmxFilePath=vmxFilePath, gui=gui, extraSleepSeconds=extraSleepSeconds)
+            self.stop(vmxFilePath=vmxFilePath, hard=True, extraSleepSeconds=extraSleepSeconds)
+        finally:
+            vmxFile.enableAllIdeDrives()
 
     @property
     def suggestedDirectory(self):

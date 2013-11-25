@@ -39,14 +39,18 @@ from nrvr.remote.ssh import SshCommand, ScpCommand
 from nrvr.util.download import Download
 from nrvr.util.ipaddress import IPAddress
 from nrvr.util.nameserver import Nameserver
+from nrvr.util.registering import RegisteringUser
 from nrvr.util.requirements import SystemRequirements
 from nrvr.util.times import Timestamp
 from nrvr.util.user import ScriptUser
 from nrvr.vm.vmware import VmdkFile, VmxFile, VMwareHypervisor, VMwareMachine
 from nrvr.vm.vmwaretemplates import VMwareTemplates
+from nrvr.wins.common.autounattend import WinUdfImage
+from nrvr.wins.win7.autounattend import Win7UdfImage, Win7AutounattendFileContent
+from nrvr.wins.win7.autounattendtemplates import Win7AutounattendTemplates
 
 # this is a good way to preflight check
-SystemRequirements.commandsRequiredByImplementations([IsoImage,
+SystemRequirements.commandsRequiredByImplementations([IsoImage, WinUdfImage,
                                                       VmdkFile, VMwareHypervisor,
                                                       SshCommand, ScpCommand],
                                                      verbose=True)
@@ -61,6 +65,11 @@ scientificLinuxDistro64IsoUrl = "http://ftp.scientificlinux.org/linux/scientific
 # from http://releases.ubuntu.com/
 ubuntuDistro32IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-i386.iso"
 ubuntuDistro64IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-amd64.iso"
+
+# from http://social.technet.microsoft.com/Forums/windows/en-US/653d34d9-ac99-42db-80c8-6300f01f7aae/windows-7downloard
+# or http://forums.mydigitallife.info/threads/14709-Windows-7-Digital-River-direct-links-Multiple-Languages-X86-amp-X64/page60
+windows7ProInstaller32EnIsoUrl = "http://msft.digitalrivercontent.net/win/X17-59183.iso"
+windows7ProInstaller64EnIsoUrl = "http://msft.digitalrivercontent.net/win/X17-59186.iso"
 
 # from http://code.google.com/p/selenium/downloads/list
 seleniumServerStandaloneJarUrl = "http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar"
@@ -85,12 +94,11 @@ testVmsRange = range(181, 183) #189) # or more
 # customize as needed
 rootpw = "redwood"
 
-UserProperties = namedtuple("UserProperties", ["username", "pwd"])
 # customize as needed
 # normally at least one
-testUsersProperties = [UserProperties(username="tester", pwd="testing"),
-                       UserProperties(username="tester2", pwd="testing")
-                       ]
+testUsers = [RegisteringUser(username="tester", pwd="testing"),
+             RegisteringUser(username="tester2", pwd="testing")
+             ]
 
 MachineParameters = namedtuple("MachineParameters", ["distro", "arch", "browser", "lang", "memsize"])
 class Arch(str): pass # make sure it is a string to avoid string-number unequality
@@ -102,7 +110,9 @@ machinesPattern = [MachineParameters(distro="el", arch=Arch(32), browser="firefo
                    MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
                    MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
                    MachineParameters(distro="el", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
-                   MachineParameters(distro="ub", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460)
+                   MachineParameters(distro="ub", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
+                   #MachineParameters(distro="win", arch=Arch(32), browser="ie", lang="en-US", memsize=1020),
+                   #MachineParameters(distro="win", arch=Arch(64), browser="ie", lang="en-US", memsize=1520),
                    ]
 
 # trying to approximate the order in which identifiers are used from this tuple
@@ -148,7 +158,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
     arch = vmIdentifiers.mapas.arch
     browser = vmIdentifiers.mapas.browser
     #
-    if not distro in ["el", "ub"]:
+    if not distro in ["el", "ub", "win"]:
         raise Exception("unknown distro %s" % (distro))
     if not arch in [Arch(32), Arch(64)]:
         raise Exception("unknown architecture arch=%s" % (arch))
@@ -156,11 +166,14 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         raise Exception("cannot run browser %s in distro %s" % (browser, distro))
     #
     if distro == "el":
-        additionalUsersProperties = testUsersProperties
-        regularUserProperties = testUsersProperties[0]
+        additionalUsers = testUsers
+        regularUser = testUsers[0]
     elif distro == "ub":
         # Ubuntu kickstart supports only one regular user
-        regularUserProperties = testUsersProperties[0]
+        regularUser = testUsers[0]
+    elif distro == "win":
+        additionalUsers = testUsers
+        regularUser = testUsers[0]
     #
     if forceThisStep:
         if VMwareHypervisor.local.isRunning(testVm.vmxFilePath):
@@ -190,14 +203,15 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
             kickstartFileContent.removePackage("@office-suite") # not used for now
             kickstartFileContent.elActivateGraphicalLogin()
-            for additionalUserProperties in additionalUsersProperties:
-                kickstartFileContent.elAddUser(additionalUserProperties.username, pwd=additionalUserProperties.pwd)
+            for additionalUser in additionalUsers:
+                kickstartFileContent.elAddUser(additionalUser.username, pwd=additionalUser.pwd)
             kickstartFileContent.setSwappiness(10)
             # pick right temporary directory, ideally same as VM
             modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
-                (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
+                (kickstartFileContent,
+                 cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
-            # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "centos" versus "centos-64"
+            # 32-bit versus 64-bit Linux, memsizeMegabytes needs to be more for 64-bit
             if arch == Arch(32):
                 guestOS = "centos"
             elif arch == Arch(64):
@@ -207,11 +221,11 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                           ideDrives=[20000, 300, modifiedDistroIsoImage])
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
-            for additionalUserProperties in additionalUsersProperties:
+            for additionalUser in additionalUsers:
                 testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress,
-                                        user=additionalUserProperties.username,
-                                        pwd=additionalUserProperties.pwd)
-            testVm.portsFile.setRegularUser(regularUserProperties.username)
+                                        user=additionalUser.username,
+                                        pwd=additionalUser.pwd)
+            testVm.portsFile.setRegularUser(regularUser.username)
             # NAT works well if before hostonly
             testVm.vmxFile.setEthernetAdapter(0, "nat")
             testVm.vmxFile.setEthernetAdapter(1, "hostonly")
@@ -226,24 +240,24 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
             #
             # a test machine needs to come up ready to run tests, no manual login
-            testVm.sshCommand([ElGnome.elCommandToEnableAutoLogin(regularUserProperties.username)])
-            testVm.sshCommand([ElGnome.elCommandToDisableScreenSaver()], user=regularUserProperties.username)
+            testVm.sshCommand([ElGnome.elCommandToEnableAutoLogin(regularUser.username)])
+            testVm.sshCommand([ElGnome.elCommandToDisableScreenSaver()], user=regularUser.username)
             # avoid distracting backgrounds, picks unique color to be clear this is a test machine
-            testVm.sshCommand([ElGnome.elCommandToSetSolidColorBackground("#dddd66")], user=regularUserProperties.username)
-            testVm.sshCommand([ElGnome.elCommandToDisableUpdateNotifications()], user=regularUserProperties.username)
+            testVm.sshCommand([ElGnome.elCommandToSetSolidColorBackground("#dddd66")], user=regularUser.username)
+            testVm.sshCommand([ElGnome.elCommandToDisableUpdateNotifications()], user=regularUser.username)
             #
             # might as well
-            testVm.sshCommand([LinuxUtil.commandToEnableSudo(regularUserProperties.username)])
+            testVm.sshCommand([LinuxUtil.commandToEnableSudo(regularUser.username)])
             #
             # shut down
             testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
             # start up until successful login into GUI
             VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
-            userSshParameters = testVm.sshParameters(user=regularUserProperties.username)
+            userSshParameters = testVm.sshParameters(user=regularUser.username)
             LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
             #
-            testVm.sshCommand([ElGnome.elCommandToAddSystemMonitorPanel()], user=regularUserProperties.username)
+            testVm.sshCommand([ElGnome.elCommandToAddSystemMonitorPanel()], user=regularUser.username)
             #
             # shut down for snapshot
             testVm.shutdownCommand()
@@ -271,13 +285,14 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
             kickstartFileContent.addPackage("libxss1") # needed for Google Chrome
             kickstartFileContent.ubActivateGraphicalLogin()
-            kickstartFileContent.ubSetUser(regularUserProperties.username, pwd=regularUserProperties.pwd)
+            kickstartFileContent.ubSetUser(regularUser.username, pwd=regularUser.pwd, fullname=regularUser.fullname)
             kickstartFileContent.setSwappiness(10)
             # pick right temporary directory, ideally same as VM
             modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
-                (kickstartFileContent, os.path.join(testVm.directory, "made-to-order-os-install.iso"))
+                (kickstartFileContent,
+                 cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
-            # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "ubuntu" versus "ubuntu-64"
+            # 32-bit versus 64-bit Linux, memsizeMegabytes needs to be more for 64-bit
             if arch == Arch(32):
                 guestOS = "ubuntu"
             elif arch == Arch(64):
@@ -288,9 +303,9 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress,
-                                    user=regularUserProperties.username,
-                                    pwd=regularUserProperties.pwd)
-            testVm.portsFile.setRegularUser(regularUserProperties.username)
+                                    user=regularUser.username,
+                                    pwd=regularUser.pwd)
+            testVm.portsFile.setRegularUser(regularUser.username)
             # NAT works well if before hostonly
             testVm.vmxFile.setEthernetAdapter(0, "nat")
             testVm.vmxFile.setEthernetAdapter(1, "hostonly")
@@ -305,27 +320,80 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
             #
             # a test machine needs to come up ready to run tests, no manual login
-            testVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(regularUserProperties.username)])
+            testVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(regularUser.username)])
             #
             # might as well
-            testVm.sshCommand([LinuxUtil.commandToEnableSudo(regularUserProperties.username)])
+            testVm.sshCommand([LinuxUtil.commandToEnableSudo(regularUser.username)])
             #
             # shut down
             testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
             # start up until successful login into GUI
             VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
-            userSshParameters = testVm.sshParameters(user=regularUserProperties.username)
+            userSshParameters = testVm.sshParameters(user=regularUser.username)
             LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
             #
-            testVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=regularUserProperties.username)
+            testVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=regularUser.username)
             # avoid distracting backgrounds, picks unique color to be clear this is a test machine
-            testVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground("#dddd66")], user=regularUserProperties.username)
-            testVm.sshCommand([UbGnome.ubCommandToAddSystemMonitorPanel()], user=regularUserProperties.username)
+            testVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground("#dddd66")], user=regularUser.username)
+            testVm.sshCommand([UbGnome.ubCommandToAddSystemMonitorPanel()], user=regularUser.username)
             #
             # shut down for snapshot
             testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
+        elif distro == "win":
+            if arch == Arch(32):
+                downloadedDistroIsoImage = Win7UdfImage(Download.fromUrl(windows7ProInstaller32EnIsoUrl))
+            elif arch == Arch(64):
+                downloadedDistroIsoImage = Win7UdfImage(Download.fromUrl(windows7ProInstaller64EnIsoUrl))
+            # some necessary choices pointed out
+            # 32-bit versus 64-bit windows, memsizeMegabytes needs to be more for 64-bit
+            if arch == Arch(32):
+                guestOS = "windows7"
+            elif arch == Arch(64):
+                guestOS = "windows7-64"
+            testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
+                          guestOS=guestOS,
+                          ideDrives=[20000]) #, modifiedDistroIsoImage])
+            # NAT works well if before hostonly
+            testVm.vmxFile.setEthernetAdapter(0, "nat")
+            testVm.vmxFile.setEthernetAdapter(1, "hostonly")
+            # generated MAC addresses are available only after first start of a virtual machine
+            VMwareHypervisor.local.startAndStopWithIdeDrivesDisabled(testVm.vmxFilePath, gui=True)
+            ethernetAdapter0MacAddress = testVm.vmxFile.getEthernetMacAddress(0)
+            ethernetAdapter1MacAddress = testVm.vmxFile.getEthernetMacAddress(1)
+            # autounattend file content
+            autounattendFileContent = Win7AutounattendFileContent(Win7AutounattendTemplates.usableWin7AutounattendTemplate001)
+            if arch == Arch(32):
+                autounattendFileContent.adjustFor32Bit()
+            elif arch == Arch(64):
+                autounattendFileContent.adjustFor64Bit()
+            autounattendFileContent.replaceLanguageAndLocale(vmIdentifiers.mapas.lang)
+            autounattendFileContent.replaceAdminPw(rootpw)
+            autounattendFileContent.replaceComputerName(testVm.basenameStem)
+            # a network interface with static configuration
+            autounattendFileContent.addNetworkConfigurationStatic(mac=ethernetAdapter1MacAddress,
+                                                                  ipaddress=vmIdentifiers.ipaddress,
+                                                                  limitRoutingToLocalByNetmask=True)
+            # simplified use of acceptEula
+            autounattendFileContent.acceptEula(fullname=regularUser.fullname, organization=regularUser.organization)
+            for additionalUser in additionalUsers:
+                autounattendFileContent.addLocalAccount(username=additionalUser.username,
+                                                        pwd=additionalUser.pwd,
+                                                        fullname=additionalUser.fullname,
+                                                        groups=["Administrators"])
+            autounattendFileContent.enableAutoLogon(regularUser.username, regularUser.pwd)
+            # pick right temporary directory, ideally same as VM
+            modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutounattend \
+                (autounattendFileContent,
+                 cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
+            # set CD-ROM .iso file, which had been kept out intentionally for first start for generating MAC addresses
+            testVm.vmxFile.setIdeCdromIsoFile(modifiedDistroIsoImage.isoImagePath, 1, 0)
+            # start up for operating system install
+            VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
+            VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
+            testVm.vmxFile.removeAllIdeCdromImages()
+            modifiedDistroIsoImage.remove()
         #
         VMwareHypervisor.local.createSnapshot(testVm.vmxFilePath, "OS installed")
     #

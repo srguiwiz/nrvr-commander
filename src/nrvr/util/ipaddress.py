@@ -43,7 +43,16 @@ class IPAddress(object):
                     raise Exception("won't recognize as IP address because > 255: {0}".format(ipaddress))
                 octets[index] = octet
             return octets
+        elif isinstance(ipaddress, (int, long)):
+            octets = []
+            while ipaddress:
+                octets.append(ipaddress % 256)
+                ipaddress /= 256
+            octets += [0 for i in range(max(4 - len(octets), 0))]
+            octets.reverse()
+            return octets
         else:
+            # force making a copy
             return list(ipaddress)
 
     @classmethod
@@ -61,8 +70,21 @@ class IPAddress(object):
         """For ipaddress=[10, 123, 45, 67] return "10.123.45.67"."""
         if isinstance(ipaddress, basestring):
             return ipaddress
-        else:
-            return ".".join(map(str, ipaddress))
+        if isinstance(ipaddress, (int, long)):
+            ipaddress = cls.asList(ipaddress)
+        return ".".join(map(str, ipaddress))
+
+    @classmethod
+    def asInteger(cls, ipaddress):
+        """For ipaddress=[10, 123, 45, 67] return 175844675.
+        
+        At the time of this writing, such an integer however is
+        not accepted as input by other methods of this class."""
+        octets = cls.asList(ipaddress) # must make a copy
+        integer = 0
+        while octets:
+            integer = 256 * integer + octets.pop(0)
+        return integer
 
     @classmethod
     def bitAnd(cls, one, other):
@@ -141,12 +163,17 @@ if __name__ == "__main__":
     print IPAddress.asList("10.123.45.67")
     print IPAddress.asList((192, 168, 95, 17))
     print IPAddress.asList([192, 168, 95, 17])
+    print IPAddress.asList(175844675)
     print IPAddress.asTuple("10.123.45.67")
     print IPAddress.asTuple([192, 168, 95, 17])
     print IPAddress.asTuple((192, 168, 95, 17))
+    print IPAddress.asTuple(175844675)
     print IPAddress.asString([192, 168, 95, 17])
     print IPAddress.asString((192, 168, 95, 17))
     print IPAddress.asString("10.123.45.67")
+    print IPAddress.asString(175844675)
+    print IPAddress.asInteger("10.123.45.67")
+    print IPAddress.asInteger([10,123,45,67])
     print IPAddress.bitAnd("10.123.45.67", "255.255.255.0")
     print IPAddress.bitOr(IPAddress.bitAnd("10.123.45.67", "255.255.255.0"), "0.0.0.1")
     print IPAddress.bitNot("1.2.3.4")

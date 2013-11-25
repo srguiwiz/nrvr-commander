@@ -28,6 +28,7 @@ setup(name="NrvrCommander",
       * nrvr.util.ipaddress
       * nrvr.util.nameserver
       * nrvr.util.networkinterface
+      * nrvr.util.registering
       * nrvr.util.requirements
       * nrvr.util.times
       * nrvr.util.user

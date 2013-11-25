@@ -20,6 +20,7 @@ Modified BSD License"""
 import re
 
 import nrvr.distros.common.kickstart
+from nrvr.util.networkinterface import NetworkConfigurationStaticParameters
 
 class ElIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
     """An Enterprise Linux .iso ISO CD-ROM or DVD-ROM disk image."""
@@ -51,8 +52,8 @@ class ElIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
         # a distinct path
         kickstartCustomConfigurationPathOnIso = "isolinux/ks-custom.cfg"
         # modifications
-        modifications = \
-        [
+        modifications = []
+        modifications.extend([
             # the kickstart file
             nrvr.diskimage.isoimage.IsoImageModificationFromString
             (kickstartCustomConfigurationPathOnIso,
@@ -84,7 +85,7 @@ class ElIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
             ("isolinux/isolinux.cfg",
              re.compile(r"(\r?\n)(timeout[ \t]+\d+)(\s)"),
              r"\1timeout 50\3")
-        ]
+            ])
         return modifications
 
 
@@ -137,7 +138,7 @@ class ElKickstartFileContent(nrvr.distros.common.kickstart.DistroKickstartFileCo
             self, for daisychaining."""
         # see http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html
         # sanity check
-        normalizedStaticIp = self.normalizeStaticIp(ipaddress, netmask, gateway, nameservers)
+        normalizedStaticIp = NetworkConfigurationStaticParameters.normalizeStaticIp(ipaddress, netmask, gateway, nameservers)
         commandSection = self.sectionByName("command")
         # several set
         commandSection.string = re.sub(r"(?m)^([ \t]*network[ \t]+.*--ip[ \t]*(?:=|[ \t])[ \t]*)[^\s]+(.*)$",

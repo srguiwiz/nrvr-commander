@@ -88,7 +88,8 @@ if exists == False:
     #kickstartFileContent.setSwappiness(10)
     # pick right temporary directory, ideally same as VM
     modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
-    (kickstartFileContent, os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
+    (kickstartFileContent,
+     cloneIsoImagePath=os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
     # some necessary choices pointed out
     # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "ubuntu" versus "ubuntu-64"
     exampleVm.create(memsizeMegabytes=1200, guestOS="ubuntu", ideDrives=[20000, 300, modifiedDistroIsoImage])
