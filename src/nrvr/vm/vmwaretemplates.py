@@ -18,12 +18,12 @@ Modified BSD License"""
 class VMwareTemplates(object):
     """Various generally usable templates."""
 
-    # a .vmx file template known to work well with VMware Workstation 7.1 to 9.0 and VMware Player 3.1 to 5.0
+    # a .vmx file template known to work well with VMware Workstation 8.0 to 10.0 and VMware Player 4.0 to 6.0
     # for creating generally usable virtual machines
     usableVMwareVmxTemplate001 = """#!/usr/bin/vmware
 .encoding = "UTF-8"
 config.version = "8"
-virtualHW.version = "7"
+virtualHW.version = "8"
 
 memsize = "480" # megabytes, must be multiple of 4
 
