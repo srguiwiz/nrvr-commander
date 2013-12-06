@@ -121,6 +121,10 @@ if exists == False:
     # some necessary choices pointed out
     # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "centos" versus "centos-64"
     exampleVm.create(memsizeMegabytes=1200, guestOS="centos", ideDrives=[20000, 300, modifiedDistroIsoImage])
+    # some possible modifications pointed out
+    #exampleVm.vmxFile.setMemorySize(1280)
+    #exampleVm.vmxFile.setNumberOfProcessors(2)
+    #exampleVm.vmxFile.setAccelerate3D()
     exampleVm.portsFile.setSsh(ipaddress=ipaddress, user="root", pwd=rootpw)
     exampleVm.portsFile.setShutdown()
     for additionalUser in additionalUsers:

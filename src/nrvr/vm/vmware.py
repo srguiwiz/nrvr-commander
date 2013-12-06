@@ -506,6 +506,35 @@ class VmxFileContent(object):
         macAddress = macAddress.lower()
         return macAddress
 
+    def setMemorySize(self, memsizeMegabytes):
+        """Set .vmx file parameter for memory size.
+        
+        memsizeMegabytes
+            memory size in megabytes.  E.g. 1000.
+            
+            Will be rounded up to a multiple of 4, if necessary."""
+        memsizeMegabytes = VmxFileContent.compliantMemsize(memsizeMegabytes)
+        if memsizeMegabytes < 32:
+            raise Exception("Memory size must be >= 32 [megabytes], cannot be {0}".format(memsizeMegabytes))
+        self.setSettingValue("memsize", memsizeMegabytes)
+
+    def setNumberOfProcessors(self, number=1):
+        """Set .vmx file parameter for number of processors.
+        
+        number
+            e.g. 2."""
+        number = int(number)
+        if number < 1:
+            raise Exception("Number of processors must be >= 1, cannot be {0}".format(number))
+        self.setSettingValue("numvcpus", number)
+
+    def setAccelerate3D(self, accelerate3D=True):
+        """Set .vmx file parameter for enabling accelerated 3D graphics.
+        
+        accelerate3D
+            whether to accelerate 3D graphics."""
+        self.setSettingValue("mks.enable3d", "TRUE" if accelerate3D else "FALSE")
+
 if __name__ == "__main__":
     _vmxFileContent1 = VmxFileContent(VMwareTemplates.usableVMwareVmxTemplate001)
     _vmxFileContent1.setIdeDiskVmdkFile("test1-disk0.vmdk", 0, 0)
@@ -706,6 +735,35 @@ class VmxFile(object):
         # make sure up-to-date, in case of change after first start of virtual machine
         self._load()
         return self._vmxFileContent.getEthernetMacAddress(adapter)
+
+    def setMemorySize(self, memsizeMegabytes):
+        """Set .vmx file parameter for memory size.
+        
+        memsizeMegabytes
+            memory size in megabytes.  E.g. 1000.
+            
+            Will be rounded up to a multiple of 4, if necessary."""
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent:
+            vmxFileContent.setMemorySize(memsizeMegabytes=memsizeMegabytes))
+
+    def setNumberOfProcessors(self, number=1):
+        """Set .vmx file parameter for number of processors.
+        
+        number
+            the number."""
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent:
+            vmxFileContent.setNumberOfProcessors(number=number))
+
+    def setAccelerate3D(self, accelerate3D=True):
+        """Set .vmx file parameter for enabling accelerated 3D graphics.
+        
+        accelerate3D
+            whether to accelerate 3D graphics."""
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent:
+            vmxFileContent.setAccelerate3D(accelerate3D=accelerate3D))
 
 if __name__ == "__main__":
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
