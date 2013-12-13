@@ -39,27 +39,19 @@ class Download(object):
         return baseName
 
     @classmethod
-    def fromUrl(cls, url, ticker=True):
+    def fromUrl(cls, url, dontDownload=False, ticker=True):
         """Download file or use previously downloaded file.
         
         As implemented uses urllib2.
         
+        dontDownload
+            whether you don't want to start a download, for some reason.
+        
         Return file path."""
         urlFilename = cls.basename(url)
         downloadDir = ScriptUser.loggedIn.userHomeRelative("Downloads")
-        if not os.path.exists(downloadDir): # possibly on an international version OS
-            os.makedirs(downloadDir)
         downloadPath = os.path.join(downloadDir, urlFilename)
         semaphorePath = downloadPath + cls.semaphoreExtenstion
-        #
-        if not os.path.exists(downloadDir):
-            try:
-                os.makedirs(downloadDir)
-            except OSError:
-                if os.path.exists(downloadDir): # concurrently made
-                    pass
-                else: # failure
-                    raise
         #
         if os.path.exists(downloadPath):
             if not os.path.exists(semaphorePath):
@@ -90,7 +82,16 @@ class Download(object):
                     # final printing
                     sys.stdout.write("]\n")
                     sys.stdout.flush()
-        else:
+        elif not dontDownload: # it is normal to download
+            if not os.path.exists(downloadDir): # possibly on an international version OS
+                try:
+                    os.makedirs(downloadDir)
+                except OSError:
+                    if os.path.exists(downloadDir): # concurrently made
+                        pass
+                    else: # failure
+                        raise
+            #
             # try downloading
             pid = os.getpid()
             try:
@@ -157,5 +158,7 @@ if __name__ == "__main__":
     _exampleFile = Download.fromUrl(_exampleUrl)
     print _exampleFile
     _exampleFile = Download.fromUrl(_exampleUrl)
+    print _exampleFile
+    _exampleFile = Download.fromUrl(_exampleUrl, dontDownload=True)
     print _exampleFile
     os.remove(_exampleFile)
