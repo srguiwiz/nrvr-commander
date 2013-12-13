@@ -46,7 +46,7 @@ class NetworkInterface(object):
             the name of the interface.
         
         Return the IP address of the interface, or None."""
-        # as implemented does NOT require vmrun command, absence means not any
+        # as implemented absent ifconfig command return as if interface not found
         ifconfig = CommandCapture(["ifconfig", networkInterfaceName],
                                   copyToStdio=False,
                                   exceptionIfNotZero=False, exceptionIfAnyStderr=False)
