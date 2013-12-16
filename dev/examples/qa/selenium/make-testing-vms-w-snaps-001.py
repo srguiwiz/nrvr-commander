@@ -17,14 +17,17 @@ Copyright (c) Nirvana Research 2006-2013.
 Modified BSD License"""
 
 from collections import namedtuple
+import ntpath
 import os.path
+import random
 import re
 import shutil
+import string
 import sys
 import tempfile
 import time
 
-from nrvr.diskimage.isoimage import IsoImage
+from nrvr.diskimage.isoimage import IsoImage, IsoImageModificationFromPath
 from nrvr.distros.common.ssh import LinuxSshCommand
 from nrvr.distros.common.util import LinuxUtil
 from nrvr.distros.el.gnome import ElGnome
@@ -46,13 +49,15 @@ from nrvr.util.user import ScriptUser
 from nrvr.vm.vmware import VmdkFile, VmxFile, VMwareHypervisor, VMwareMachine
 from nrvr.vm.vmwaretemplates import VMwareTemplates
 from nrvr.wins.common.autounattend import WinUdfImage
+from nrvr.wins.common.cygwin import CygwinDownload
 from nrvr.wins.win7.autounattend import Win7UdfImage, Win7AutounattendFileContent
 from nrvr.wins.win7.autounattendtemplates import Win7AutounattendTemplates
 
 # this is a good way to preflight check
 SystemRequirements.commandsRequiredByImplementations([IsoImage, WinUdfImage,
                                                       VmdkFile, VMwareHypervisor,
-                                                      SshCommand, ScpCommand],
+                                                      SshCommand, ScpCommand,
+                                                      CygwinDownload],
                                                      verbose=True)
 # this is a good way to preflight check
 VMwareHypervisor.localRequired()
@@ -355,6 +360,22 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
                           guestOS=guestOS,
                           ideDrives=[20000]) #, modifiedDistroIsoImage])
+            # some possible choices pointed out
+            #testVm.vmxFile.setNumberOfProcessors(2)
+            #testVm.vmxFile.setAccelerate3D()
+            cygServerRandomPwd = ''.join(random.choice(string.letters) for i in xrange(30))
+            # were considering doing  ssh-host-config --yes --pwd `openssl rand -hex 16`
+            # and intentionally not knowing how to log in as user cyg_server
+            testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="cyg_server", pwd=cygServerRandomPwd)
+            # either way no easy success yet, hence not doing
+            #testVm.portsFile.setShutdown(command="shutdown -h now", user="cyg_server")
+            # instead do something that works
+            testVm.portsFile.setShutdown(command="shutdown -h now", user=regularUser.username)
+            for additionalUser in additionalUsers:
+                testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress,
+                                        user=additionalUser.username,
+                                        pwd=additionalUser.pwd)
+            testVm.portsFile.setRegularUser(regularUser.username)
             # NAT works well if before hostonly
             testVm.vmxFile.setEthernetAdapter(0, "nat")
             testVm.vmxFile.setEthernetAdapter(1, "hostonly")
@@ -383,14 +404,64 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                                                         fullname=additionalUser.fullname,
                                                         groups=["Administrators"])
             autounattendFileContent.enableAutoLogon(regularUser.username, regularUser.pwd)
+            # additional modifications
+            modifications = []
+            # locally downloaded Cygwin packages directory
+            # see http://www.cygwin.com/install.html
+            # see http://www.cygwin.com/faq/faq.html#faq.setup.cli
+            cygwinPackagesPathOnHost = CygwinDownload.forArch(arch, CygwinDownload.usablePackageDirs001)
+            cygwinPackagesPathOnIso = os.path.join("custom", os.path.basename(cygwinPackagesPathOnHost))
+            cygwinPackagesPathForCommandLine = cygwinPackagesPathOnIso.replace("/", "\\")
+            cygwinInstallCommandLine = \
+                ntpath.join("D:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installer(arch)) + \
+                r" --local-install" + \
+                r" --local-package-dir " + ntpath.join("D:\\", cygwinPackagesPathForCommandLine) + \
+                r" --quiet-mode" + \
+                r" --no-desktop" + \
+                r" --packages openssh,shutdown"
+            autounattendFileContent.addFirstLogonCommand(order=400,
+                                                         commandLine=cygwinInstallCommandLine,
+                                                         description="Install Cygwin")
+            cygwinSshdConfigCommandLine = \
+                r"C:\cygwin\bin\bash --login -c " '"' + \
+                r"ssh-host-config --yes --pwd " + cygServerRandomPwd + \
+                '"'
+            autounattendFileContent.addFirstLogonCommand(order=401,
+                                                         commandLine=cygwinSshdConfigCommandLine,
+                                                         description="Configure sshd")
+            openFirewallForSshdCommandLine = \
+                r"C:\cygwin\bin\bash --login -c " '"' + \
+                r"if ! netsh advfirewall firewall show rule name=SSHD ; then " + \
+                r"netsh advfirewall firewall add rule name=SSHD dir=in action=allow protocol=tcp localport=22" + \
+                r" ; fi" + \
+                '"'
+            autounattendFileContent.addFirstLogonCommand(order=402,
+                                                         commandLine=openFirewallForSshdCommandLine,
+                                                         description="Open Firewall for sshd")
+            startSshdCommandLine = \
+                "net start sshd"
+            autounattendFileContent.addFirstLogonCommand(order=403,
+                                                         commandLine=startSshdCommandLine,
+                                                         description="Start sshd")
+            modifications.extend([
+                # the Cygwin packages
+                IsoImageModificationFromPath(cygwinPackagesPathOnIso, cygwinPackagesPathOnHost),
+                ])
             # pick right temporary directory, ideally same as VM
             modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutounattend \
                 (autounattendFileContent,
+                 modifications=modifications,
                  cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # set CD-ROM .iso file, which had been kept out intentionally for first start for generating MAC addresses
             testVm.vmxFile.setIdeCdromIsoFile(modifiedDistroIsoImage.isoImagePath, 1, 0)
             # start up for operating system install
             VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
+            #
+            # let it run until accepting known host key
+            testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True, extraSleepSeconds=120)
+            #
+            # shut down
+            testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
             testVm.vmxFile.removeAllIdeCdromImages()
             modifiedDistroIsoImage.remove()

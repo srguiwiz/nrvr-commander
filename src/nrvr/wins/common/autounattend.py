@@ -250,17 +250,17 @@ class InstallerAutounattendFileContent(object):
             text to insert.
             If empty string then simply make it empty.
             If None then delete the element instead.
-            
-            As implemented does not escape.
         
         return
             self, for daisychaining."""
         patternString = r"(?s)(<" + name + r"(?:\s*|\s+.*?)>)(.*?)(</" + name + r"\s*>)"
         if text is not None:
-            replacementString = r"\g<1>" + text + r"\g<3>"
+            #replacementString = r"\g<1>" + text + r"\g<3>"
+            replacementFunction = lambda match: match.group(1) + text + match.group(3)
         else:
-            replacementString = r""
-        self._string = re.sub(patternString, replacementString, self._string)
+            #replacementString = r""
+            replacementFunction = lambda match: r""
+        self._string = re.sub(patternString, replacementFunction, self._string)
         return self
 
     def _replaceNestedElementText(self, names, text):
@@ -275,8 +275,6 @@ class InstallerAutounattendFileContent(object):
             text to insert.
             If empty string then simply make it empty.
             If None then delete the element instead.
-            
-            As implemented does not escape.
         
         return
             self, for daisychaining."""
@@ -293,10 +291,12 @@ class InstallerAutounattendFileContent(object):
             firstLevel = False
         patternString = r"(?s)(" + openingTagsPattern + r")(.*?)(" + closingTagsPattern + r")"
         if text is not None:
-            replacementString = r"\g<1>" + text + r"\g<3>"
+            #replacementString = r"\g<1>" + text + r"\g<3>"
+            replacementFunction = lambda match: match.group(1) + text + match.group(3)
         else:
-            replacementString = r""
-        self._string = re.sub(patternString, replacementString, self._string)
+            #replacementString = r""
+            replacementFunction = lambda match: r""
+        self._string = re.sub(patternString, replacementFunction, self._string)
         return self
 
     def _appendToChildren(self, elementName, attributeName, attributeValue, additionalContent, prepend=False):
@@ -316,8 +316,6 @@ class InstallerAutounattendFileContent(object):
         
         additionalContent
             a string of additionalContent to insert.
-            
-            As implemented does not escape.
         
         prepend
             whether to prepend instead of to append.
@@ -336,10 +334,12 @@ class InstallerAutounattendFileContent(object):
             patternString = re.sub(r"_ATTRIBUTENAME_", re.escape(attributeName), patternString)
             patternString = re.sub(r"_ATTRIBUTEVALUE_", re.escape(attributeValue), patternString)
         if not prepend:
-            replacementString = r"\g<1>\g<2>" + additionalContent + r"\g<3>"
+            #replacementString = r"\g<1>\g<2>" + additionalContent + r"\g<3>"
+            replacementFunction = lambda match: match.group(1) + match.group(2) + additionalContent + match.group(3)
         else:
-            replacementString = r"\g<1>" + additionalContent + r"\g<2>\g<3>"
-        self._string = re.sub(patternString, replacementString, self._string)
+            #replacementString = r"\g<1>" + additionalContent + r"\g<2>\g<3>"
+            replacementFunction = lambda match: match.group(1) + additionalContent + match.group(2) + match.group(3)
+        self._string = re.sub(patternString, replacementFunction, self._string)
         return self
 
     def _appendToNestedChildren(self, elementAttributeNameValues, additionalContent, prepend=False):
@@ -359,8 +359,6 @@ class InstallerAutounattendFileContent(object):
         
         additionalContent
             a string of additionalContent to insert.
-            
-            As implemented does not escape.
         
         prepend
             whether to prepend instead of to append.
@@ -387,10 +385,12 @@ class InstallerAutounattendFileContent(object):
             firstLevel = False
         patternString = r"(?s)(" + openingTagsPattern + r")(.*?)(" + closingTagsPattern + r")"
         if not prepend:
-            replacementString = r"\g<1>\g<2>" + additionalContent + r"\g<3>"
+            #replacementString = r"\g<1>\g<2>" + additionalContent + r"\g<3>"
+            replacementFunction = lambda match: match.group(1) + match.group(2) + additionalContent + match.group(3)
         else:
-            replacementString = r"\g<1>" + additionalContent + r"\g<2>\g<3>"
-        self._string = re.sub(patternString, replacementString, self._string)
+            #replacementString = r"\g<1>" + additionalContent + r"\g<2>\g<3>"
+            replacementFunction = lambda match: match.group(1) + additionalContent + match.group(2) + match.group(3)
+        self._string = re.sub(patternString, replacementFunction, self._string)
         return self
 
     def replaceLanguageAndLocale(self, languageAndLocale):
@@ -606,6 +606,38 @@ class InstallerAutounattendFileContent(object):
         self._appendToNestedChildren([ElementAttributeNameValue("settings", "pass", "oobeSystem"),
                                       ElementAttributeNameValue("component", "name", "Microsoft-Windows-Shell-Setup")],
             additionalContent)
+        return self
+
+    def addFirstLogonCommand(self, order, commandLine, description=""):
+        """Add a local account.
+        
+        order
+            an integer from 1 through 500.
+        
+        commandLine
+            commandLine.
+        
+        description
+            description.
+            May be empty string.
+        
+        return
+            self, for daisychaining."""
+        # see http://technet.microsoft.com/en-us/library/ff715886.aspx
+        order = int(order)
+        if not order in range(1, 501):
+            raise Exception("FirstLogonCommands order must be an integer from 1 through 500, cannot be {0}".format(order))
+        if len(commandLine) > 1024:
+            raise Exception("FirstLogonCommands commandLine maximum length is 1024, cannot be {0}".format(commandLine))
+        if len(description) > 256:
+            raise Exception("FirstLogonCommands description maximum length is 256, cannot be {0}".format(description))
+        additionalContent = r"""<SynchronousCommand wcm:action="add">
+  <Order>""" + str(order) + r"""</Order>
+  <CommandLine>""" + commandLine + r"""</CommandLine>
+  <Description>""" + description + r"""</Description>
+</SynchronousCommand>
+"""
+        self._appendToChildren("FirstLogonCommands", None, None, additionalContent)
         return self
 
     def adjustFor32Bit(self):

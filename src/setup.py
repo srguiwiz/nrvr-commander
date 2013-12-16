@@ -35,6 +35,7 @@ setup(name="NrvrCommander",
       * nrvr.vm.vmware
       * nrvr.vm.vmwaretemplates
       * nrvr.wins.common.autounattend
+      * nrvr.wins.common.cygwin
       * nrvr.wins.win7.autounattend
       * nrvr.wins.win7.autounattendtemplates
       * nrvr.xml.etree""",

@@ -122,7 +122,6 @@ class Win7AutounattendTemplates(object):
             <DisableAutoDaylightTimeSet>false</DisableAutoDaylightTimeSet>
             <FirstLogonCommands>
                 <SynchronousCommand wcm:action="add">
-                    <RequiresUserInput>false</RequiresUserInput>
                     <Order>1</Order>
                     <Description>Disable Auto Updates</Description>
                     <CommandLine>reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 1 /f</CommandLine>

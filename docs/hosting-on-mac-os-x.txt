@@ -23,6 +23,7 @@ Then:
 sudo port install libcdio
 sudo port install cdrtools
 sudo port install qemu
+sudo port install wget
 
 Possibly more to be listed here.
 
