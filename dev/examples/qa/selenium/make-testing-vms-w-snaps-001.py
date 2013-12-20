@@ -27,7 +27,7 @@ import sys
 import tempfile
 import time
 
-from nrvr.diskimage.isoimage import IsoImage, IsoImageModificationFromPath
+from nrvr.diskimage.isoimage import IsoImage, IsoImageModificationFromString, IsoImageModificationFromPath
 from nrvr.distros.common.ssh import LinuxSshCommand
 from nrvr.distros.common.util import LinuxUtil
 from nrvr.distros.el.gnome import ElGnome
@@ -363,7 +363,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             # some possible choices pointed out
             #testVm.vmxFile.setNumberOfProcessors(2)
             #testVm.vmxFile.setAccelerate3D()
-            cygServerRandomPwd = ''.join(random.choice(string.letters) for i in xrange(30))
+            cygServerRandomPwd = ''.join(random.choice(string.letters) for i in xrange(20))
             # were considering doing  ssh-host-config --yes --pwd `openssl rand -hex 16`
             # and intentionally not knowing how to log in as user cyg_server
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="cyg_server", pwd=cygServerRandomPwd)
@@ -406,11 +406,28 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             autounattendFileContent.enableAutoLogon(regularUser.username, regularUser.pwd)
             # additional modifications
             modifications = []
+            customDirectoryPathOnIso = "custom"
+            # shutdown only while installer dike is present
+            shutdownRandomScriptName = ''.join(random.choice(string.letters) for i in xrange(8))
+            shutdownScriptPathOnIso = os.path.join(customDirectoryPathOnIso, shutdownRandomScriptName + ".bat")
+            modifications.extend([
+                # an intentionally transient shutdown script
+                IsoImageModificationFromString
+                (shutdownScriptPathOnIso,
+                 r'shutdown -s -t 60 -c "Running shutdown script ' + shutdownScriptPathOnIso +
+                 r' intended as part of installation process."'),
+                ])
+            shutdownScriptPathForCommandLine = shutdownScriptPathOnIso.replace("/", "\\")
+            shutdownScriptInvocationCommandLine = \
+                ntpath.join("D:\\", shutdownScriptPathForCommandLine)
+            autounattendFileContent.addLogonCommand(order=490,
+                                                    commandLine=shutdownScriptInvocationCommandLine,
+                                                    description="Shutdown - intentionally transient")
             # locally downloaded Cygwin packages directory
             # see http://www.cygwin.com/install.html
             # see http://www.cygwin.com/faq/faq.html#faq.setup.cli
             cygwinPackagesPathOnHost = CygwinDownload.forArch(arch, CygwinDownload.usablePackageDirs001)
-            cygwinPackagesPathOnIso = os.path.join("custom", os.path.basename(cygwinPackagesPathOnHost))
+            cygwinPackagesPathOnIso = os.path.join(customDirectoryPathOnIso, os.path.basename(cygwinPackagesPathOnHost))
             cygwinPackagesPathForCommandLine = cygwinPackagesPathOnIso.replace("/", "\\")
             cygwinInstallCommandLine = \
                 ntpath.join("D:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installer(arch)) + \
@@ -429,18 +446,26 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             autounattendFileContent.addFirstLogonCommand(order=401,
                                                          commandLine=cygwinSshdConfigCommandLine,
                                                          description="Configure sshd")
+            # in /etc/sshd_config set MaxAuthTries 2, minimum to get prompted, less than default 6
+            cygwinSshdFixUpConfigCommandLine = \
+                r"C:\cygwin\bin\bash --login -c " '"' + \
+                r"sed -i -e 's/.*MaxAuthTries\s.*/MaxAuthTries 2/g' /etc/sshd_config" + \
+                '"'
+            autounattendFileContent.addFirstLogonCommand(order=402,
+                                                         commandLine=cygwinSshdFixUpConfigCommandLine,
+                                                         description="Fix Up Configuration of sshd")
             openFirewallForSshdCommandLine = \
                 r"C:\cygwin\bin\bash --login -c " '"' + \
                 r"if ! netsh advfirewall firewall show rule name=SSHD ; then " + \
                 r"netsh advfirewall firewall add rule name=SSHD dir=in action=allow protocol=tcp localport=22" + \
                 r" ; fi" + \
                 '"'
-            autounattendFileContent.addFirstLogonCommand(order=402,
+            autounattendFileContent.addFirstLogonCommand(order=403,
                                                          commandLine=openFirewallForSshdCommandLine,
                                                          description="Open Firewall for sshd")
             startSshdCommandLine = \
                 "net start sshd"
-            autounattendFileContent.addFirstLogonCommand(order=403,
+            autounattendFileContent.addFirstLogonCommand(order=404,
                                                          commandLine=startSshdCommandLine,
                                                          description="Start sshd")
             modifications.extend([
@@ -456,15 +481,17 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.vmxFile.setIdeCdromIsoFile(modifiedDistroIsoImage.isoImagePath, 1, 0)
             # start up for operating system install
             VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
-            #
-            # let it run until accepting known host key
-            testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True, extraSleepSeconds=120)
-            #
-            # shut down
-            testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
             testVm.vmxFile.removeAllIdeCdromImages()
             modifiedDistroIsoImage.remove()
+            #
+            # start up for accepting known host key
+            VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
+            testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
+            #
+            # shut down for snapshot
+            testVm.shutdownCommand()
+            VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
         #
         VMwareHypervisor.local.createSnapshot(testVm.vmxFilePath, "OS installed")
     #

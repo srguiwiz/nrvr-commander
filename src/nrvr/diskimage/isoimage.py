@@ -24,6 +24,7 @@ Copyright (c) Nirvana Research 2006-2013.
 Modified BSD License"""
 
 import codecs
+import os
 import os.path
 import re
 import shutil
@@ -355,6 +356,10 @@ class IsoImageModificationFromString(IsoImageModification):
         # remove pre-existing file, if any
         if os.path.exists(pathInTemporaryAssemblyDirectory):
             os.remove(pathInTemporaryAssemblyDirectory)
+        # if necessary make directory
+        directoryInTemporaryAssemblyDirectory = os.path.dirname(pathInTemporaryAssemblyDirectory)
+        if not os.path.exists(directoryInTemporaryAssemblyDirectory):
+            os.makedirs(directoryInTemporaryAssemblyDirectory)
         # write
         with codecs.open(pathInTemporaryAssemblyDirectory, "w", encoding=self.encoding) as temporaryFile:
             temporaryFile.write(self.string)

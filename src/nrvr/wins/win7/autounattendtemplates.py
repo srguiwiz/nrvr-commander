@@ -113,6 +113,13 @@ class Win7AutounattendTemplates(object):
         </component>
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <RegisteredOwner>replacethis</RegisteredOwner>
+            <UserAccounts>
+                <AdministratorPassword>
+                    <Value>replacethis</Value>
+                </AdministratorPassword>
+                <LocalAccounts>
+                </LocalAccounts>
+            </UserAccounts>
             <OOBE>
                 <HideEULAPage>true</HideEULAPage>
                 <NetworkLocation>Other</NetworkLocation>
@@ -127,13 +134,8 @@ class Win7AutounattendTemplates(object):
                     <CommandLine>reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 1 /f</CommandLine>
                 </SynchronousCommand>
             </FirstLogonCommands>
-            <UserAccounts>
-                <AdministratorPassword>
-                    <Value>replacethis</Value>
-                </AdministratorPassword>
-                <LocalAccounts>
-                </LocalAccounts>
-            </UserAccounts>
+            <LogonCommands>
+            </LogonCommands>
             <Display>
                 <HorizontalResolution>1280</HorizontalResolution>
                 <VerticalResolution>720</VerticalResolution>

@@ -609,7 +609,10 @@ class InstallerAutounattendFileContent(object):
         return self
 
     def addFirstLogonCommand(self, order, commandLine, description=""):
-        """Add a local account.
+        """Add a command to run the first time a user logs on to the computer.
+        
+        This is to run a service or command that needs to finish before other commands can start, a synchronous command.
+        A synchronous command is run after logon but before the user sees the desktop.
         
         order
             an integer from 1 through 500.
@@ -638,6 +641,40 @@ class InstallerAutounattendFileContent(object):
 </SynchronousCommand>
 """
         self._appendToChildren("FirstLogonCommands", None, None, additionalContent)
+        return self
+
+    def addLogonCommand(self, order, commandLine, description=""):
+        """Add a command to run the first time a user logs on to the computer.
+        
+        This is to run a service or command that can start at the same time as others, an asynchronous command.
+        
+        order
+            an integer from 1 through 500.
+        
+        commandLine
+            commandLine.
+        
+        description
+            description.
+            May be empty string.
+        
+        return
+            self, for daisychaining."""
+        # see http://technet.microsoft.com/en-us/library/ff715901.aspx
+        order = int(order)
+        if not order in range(1, 501):
+            raise Exception("LogonCommands order must be an integer from 1 through 500, cannot be {0}".format(order))
+        if len(commandLine) > 1024:
+            raise Exception("LogonCommands commandLine maximum length is 1024, cannot be {0}".format(commandLine))
+        if len(description) > 256:
+            raise Exception("LogonCommands description maximum length is 256, cannot be {0}".format(description))
+        additionalContent = r"""<AsynchronousCommand wcm:action="add">
+  <Order>""" + str(order) + r"""</Order>
+  <CommandLine>""" + commandLine + r"""</CommandLine>
+  <Description>""" + description + r"""</Description>
+</AsynchronousCommand>
+"""
+        self._appendToChildren("LogonCommands", None, None, additionalContent)
         return self
 
     def adjustFor32Bit(self):

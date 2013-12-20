@@ -136,22 +136,23 @@ class CommandCapture(object):
         
         Will wait until completed.
         
-        args
-            are passed on to subprocess.Popen().
-            
-            If given a string instead of a list then fixed by args=[args],
-            but that may only work as expected for a command without arguments.
-        
         Example use::
         
             example = CommandCapture(["hostname"])
             print "returncode=" + str(example.returncode)
             print "stdout=" + example.stdout
-            print >> sys.stderr, "stderr=" + example.stderr"""
+            print >> sys.stderr, "stderr=" + example.stderr
+        
+        args
+            are passed on to subprocess.Popen().
+            
+            If given a string instead of a list then fixed by args=args.split() making a list.
+            That may only work as expected for some commands on some platforms.
+            It should work for a command without arguments.
+            
+            Hence if you don't want a string split, pass it in wrapped as sole item of a list."""
         if isinstance(args, basestring):
-            if re.search(r"\s", args):
-                raise CommandCaptureException("MUST pass command args as list rather than as string: {0}".format(args))
-            args = [args]
+            args = args.split()
         self._args = args
         self._copyToStdio = copyToStdio
         self._forgoPty = forgoPty

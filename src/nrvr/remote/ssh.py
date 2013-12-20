@@ -60,6 +60,10 @@ class SshParameters(object):
     def __init__(self, ipaddress, user, pwd):
         """Create new SshParameters instance.
         
+        Example use::
+        
+            exampleSshParameters = SshParameters("10.123.45.67", "joe", "redwood")
+        
         ipaddress
             IP address or domain name.
         
@@ -67,11 +71,7 @@ class SshParameters(object):
             a string.
         
         pwd
-            a string or None.
-        
-        Example use::
-        
-            exampleSshParameters = SshParameters("10.123.45.67", "joe", "redwood")"""
+            a string or None."""
         self.ipaddress = IPAddress.asString(ipaddress)
         self.user = user
         self.pwd = pwd
@@ -91,18 +91,12 @@ class SshCommand(object):
         return ["ssh", "ssh-keygen"]
 
     def __init__(self, sshParameters, argv,
-                 exceptionIfNotZero=True):
+                 exceptionIfNotZero=True,
+                 maxConnectionRetries=10,
+                 connectionRetryIntervalSeconds=5.0):
         """Create new SshCommand instance.
         
         Will wait until completed.
-        
-        sshParameters
-            an SshParameters instance.
-        
-        argv
-            list of command and arguments passed to ssh.
-            
-            If given a string instead of a list then fixed by argv=[argv].
         
         Output may contain extraneous leading or trailing newlines and whitespace.
         
@@ -110,114 +104,135 @@ class SshCommand(object):
         
             example = SshCommand(exampleSshParameters, ["ls", "-al"])
             print "returncode=" + str(example.returncode)
-            print "output=" + example.output"""
+            print "output=" + example.output
+        
+        sshParameters
+            an SshParameters instance.
+        
+        argv
+            list of command and arguments passed to ssh.
+            
+            If given a string instead of a list then fixed by argv=argv.split() making a list.
+            That may only work as expected for some commands on some platforms.
+            It should work for a command without arguments.
+            
+            Hence if you don't want a string split, pass it in wrapped as sole item of a list."""
         if not _gotPty:
             # cannot use ssh if no pty
             raise Exception("must have module pty available to use ssh command"
                             ", which is known to be available in Python 2.6 on Linux, but not on Windows")
         #
         if isinstance(argv, basestring):
-            if re.search(r"\s", argv):
-                raise SshCommandException("MUST pass command argv as list rather than as string: {0}".format(argv))
-            argv = [argv]
-        self._ipaddress = IPAddress.asString(sshParameters.ipaddress)
+            argv = argv.split()
+        maxConnectionRetries = int(maxConnectionRetries)
+        connectionRetryIntervalSeconds = float(connectionRetryIntervalSeconds)
+        #
+        self._ipaddress = sshParameters.ipaddress
         self._argv = argv
         self._user = sshParameters.user
         self._pwd = sshParameters.pwd
         self._exceptionIfNotZero = exceptionIfNotZero
+        self._connectionRetriesRemaining = maxConnectionRetries if maxConnectionRetries else -1
+        self._connectionRetryIntervalSeconds = connectionRetryIntervalSeconds
         self._output = ""
         self._returncode = None
         #
-        # fork and connect child to a pseudo-terminal
-        self._pid, self._fd = pty.fork()
-        if self._pid == 0:
-            # in child process
-            os.execvp("ssh", ["ssh", "-l", self._user, self._ipaddress] + self._argv)
-        else:
-            # in parent process
-            if self._pwd:
-                # if given a password then apply
-                promptedForPassword = False
-                outputTillPrompt = ""
-                # look for password prompt
-                while not promptedForPassword:
-                    try:
-                        newOutput = os.read(self._fd, 1024)
-                        if not len(newOutput):
-                            # end has been reached
-                            # was raise Exception("unexpected end of output from ssh")
+        while self._connectionRetriesRemaining:
+            self._connectionRetriesRemaining += 1
+            # fork and connect child to a pseudo-terminal
+            self._pid, self._fd = pty.fork()
+            if self._pid == 0:
+                # in child process
+                os.execvp("ssh", ["ssh", "-l", self._user, self._ipaddress] + self._argv)
+            else:
+                # in parent process
+                if self._pwd:
+                    # if given a password then apply
+                    promptedForPassword = False
+                    outputTillPrompt = ""
+                    # look for password prompt
+                    while not promptedForPassword:
+                        try:
+                            newOutput = os.read(self._fd, 1024)
+                            if not len(newOutput):
+                                # end has been reached
+                                if not self._connectionRetriesRemaining:
+                                    # was raise Exception("unexpected end of output from ssh")
+                                    raise Exception("failing to connect via ssh\n" + 
+                                                    outputTillPrompt)
+                                break # break out of while not promptedForPassword:
+                            # ssh has been observed returning "\r\n" for newline, but we want "\n"
+                            newOutput = SshCommand._crLfRegex.sub("\n", newOutput)
+                            outputTillPrompt += newOutput
+                            if SshCommand._acceptPromptRegex.search(outputTillPrompt):
+                                # e.g. "Are you sure you want to continue connecting (yes/no)? "
+                                raise Exception("cannot proceed unless having accepted host key\n" + 
+                                                outputTillPrompt + 
+                                                "\nE.g. invoke SshCommand.acceptKnownHostKey({0}).".format(self._ipaddress))
+                            if SshCommand._pwdPromptRegex.search(outputTillPrompt):
+                                # e.g. "10.123.45.67's password: "
+                                promptedForPassword = True
+                        except EnvironmentError:
+                            # e.g. "@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @" and closing
                             raise Exception("failing to connect via ssh\n" + 
                                             outputTillPrompt)
-                        # ssh has been observed returning "\r\n" for newline, but we want "\n"
-                        newOutput = SshCommand._crLfRegex.sub("\n", newOutput)
-                        outputTillPrompt += newOutput
-                        if SshCommand._acceptPromptRegex.search(outputTillPrompt):
-                            # e.g. "Are you sure you want to continue connecting (yes/no)? "
-                            raise Exception("cannot proceed unless having accepted host key\n" + 
-                                            outputTillPrompt + 
-                                            "\nE.g. invoke SshCommand.acceptKnownHostKey({0}).".format(self._ipaddress))
-                        if SshCommand._pwdPromptRegex.search(outputTillPrompt):
-                            # e.g. "10.123.45.67's password: "
-                            promptedForPassword = True
-                    except EnvironmentError:
-                        # e.g. "@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @" and closing
-                        raise Exception("failing to connect via ssh\n" + 
-                                        outputTillPrompt)
-                os.write(self._fd, self._pwd + "\n")
-            # look for output
-            endOfOutput = False
-            outputSincePrompt = ""
-            try:
-                while not endOfOutput:
-                    try:
-                        newOutput = os.read(self._fd, 1024)
-                        if len(newOutput):
-                            outputSincePrompt += newOutput
-                        else:
-                            # end has been reached
-                            endOfOutput = True
-                    except EnvironmentError as e:
-                        # some ideas maybe at http://bugs.python.org/issue5380
-                        if e.errno == 5: # errno.EIO:
-                            # seen when pty closes OSError: [Errno 5] Input/output error
-                            endOfOutput = True
-                        else:
-                            # we accept what we got so far, for now
-                            endOfOutput = True
-            finally:
-                # remove any leading space (maybe there after "password:" prompt) and
-                # remove first newline (is there after entering password and "\n")
-                self._output = re.sub(r"^\s*?\n(.*)$", r"\1", outputSincePrompt)
-                #
-                # get returncode
+                    if not promptedForPassword: # i.e. if got here from breaking out of while not promptedForPassword:
+                        continue # continue at while self._connectionRetriesRemaining:
+                    os.write(self._fd, self._pwd + "\n")
+                # look for output
+                endOfOutput = False
+                outputSincePrompt = ""
                 try:
-                    ignorePidAgain, waitEncodedStatusIndication = os.waitpid(self._pid, 0)
-                    if os.WIFEXITED(waitEncodedStatusIndication):
-                        # normal exit(status) call
-                        self._returncode = os.WEXITSTATUS(waitEncodedStatusIndication)
-                        # raise an exception if asked to and there is a reason
-                        exceptionMessage = ""
-                        if self._exceptionIfNotZero and self._returncode:
-                            exceptionMessage += "returncode: " + str(self._returncode)
-                        if exceptionMessage:
-                            commandDescription = "ipaddress: " + self._ipaddress
-                            commandDescription += "\ncommand:\n\t" + self._argv[0]
-                            if len(self._argv) > 1:
-                                commandDescription += "\narguments:\n\t" + "\n\t".join(self._argv[1:])
+                    while not endOfOutput:
+                        try:
+                            newOutput = os.read(self._fd, 1024)
+                            if len(newOutput):
+                                outputSincePrompt += newOutput
                             else:
-                                commandDescription += "\nno arguments"
-                            commandDescription += "\nuser: " + self._user
-                            exceptionMessage = commandDescription + "\n" + exceptionMessage
-                            exceptionMessage += "\noutput:\n" + self._output
-                            raise SshCommandException(exceptionMessage)
-                    else:
-                        # e.g. os.WIFSIGNALED or os.WIFSTOPPED
+                                # end has been reached
+                                endOfOutput = True
+                        except EnvironmentError as e:
+                            # some ideas maybe at http://bugs.python.org/issue5380
+                            if e.errno == 5: # errno.EIO:
+                                # seen when pty closes OSError: [Errno 5] Input/output error
+                                endOfOutput = True
+                            else:
+                                # we accept what we got so far, for now
+                                endOfOutput = True
+                finally:
+                    # remove any leading space (maybe there after "password:" prompt) and
+                    # remove first newline (is there after entering password and "\n")
+                    self._output = re.sub(r"^\s*?\n(.*)$", r"\1", outputSincePrompt)
+                    #
+                    # get returncode
+                    try:
+                        ignorePidAgain, waitEncodedStatusIndication = os.waitpid(self._pid, 0)
+                        if os.WIFEXITED(waitEncodedStatusIndication):
+                            # normal exit(status) call
+                            self._returncode = os.WEXITSTATUS(waitEncodedStatusIndication)
+                            # raise an exception if asked to and there is a reason
+                            exceptionMessage = ""
+                            if self._exceptionIfNotZero and self._returncode:
+                                exceptionMessage += "returncode: " + str(self._returncode)
+                            if exceptionMessage:
+                                commandDescription = "ipaddress: " + self._ipaddress
+                                commandDescription += "\ncommand:\n\t" + self._argv[0]
+                                if len(self._argv) > 1:
+                                    commandDescription += "\narguments:\n\t" + "\n\t".join(self._argv[1:])
+                                else:
+                                    commandDescription += "\nno arguments"
+                                commandDescription += "\nuser: " + self._user
+                                exceptionMessage = commandDescription + "\n" + exceptionMessage
+                                exceptionMessage += "\noutput:\n" + self._output
+                                raise SshCommandException(exceptionMessage)
+                        else:
+                            # e.g. os.WIFSIGNALED or os.WIFSTOPPED
+                            self._returncode = -1
+                            raise SshCommandException("ssh did not exit normally")
+                    except OSError:
+                        # supposedly can occur
                         self._returncode = -1
                         raise SshCommandException("ssh did not exit normally")
-                except OSError:
-                    # supposedly can occur
-                    self._returncode = -1
-                    raise SshCommandException("ssh did not exit normally")
 
     @property
     def output(self):
@@ -273,7 +288,7 @@ class SshCommand(object):
                                        exceptionIfNotZero=False, exceptionIfAnyStderr=False)
 
     @classmethod
-    def acceptKnownHostKey(cls, ipaddress):
+    def acceptKnownHostKey(cls, sshParameters):
         """Accept host's key.
         
         Will wait until completed.
@@ -285,18 +300,26 @@ class SshCommand(object):
             raise Exception("must have module pty available to use ssh command"
                             ", which is known to be available in Python 2.6 on Linux, but not on Windows")
         #
+        ipaddress = sshParameters.ipaddress
+        user = sshParameters.user
+        pwd = sshParameters.pwd
+        if user is None:
+            user = "dummy" # user "dummy" doesn't give away information about this script's user
+            pwd = None # don't give away information
+        if pwd is None:
+            pwd = "bye" # a dummy too
+        #
         # remove any pre-existing key, if any
         SshCommand.removeKnownHostKey(ipaddress)
-        #
-        ipaddress = IPAddress.asString(ipaddress)
         #
         # fork and connect child to a pseudo-terminal
         pid, fd = pty.fork()
         if pid == 0:
-            # in child process,
-            # user "dummy" doesn't give away information about this script's user,
-            # command "exit" if it would ever execute should be harmless
-            os.execvp("ssh", ["ssh", "-l", "dummy", ipaddress, "exit"])
+            # in child process;
+            # user if given, real or dummy, doesn't give away information about this script's user;
+            # commands "sleep 1 ; exit" if it executes should be harmless;
+            # sleep put before exit so that some sshd (Cygwin) can do what they need to do, we think
+            os.execvp("ssh", ["ssh", "-l", user, ipaddress, '"sleep 1 ; exit"'])
         else:
             # in parent process
             promptedForAccept = False
@@ -362,8 +385,8 @@ class SshCommand(object):
                 # sleep
                 time.sleep(0.1)
             # NOT os.close(fd) because has been observed to prevent ssh writing known_hosts file,
-            # instead enter a dummy password to accelerate closing of ssh port
-            os.write(fd, "bye\n")
+            # instead enter a password, real or dummy, to accelerate closing of ssh port
+            os.write(fd, pwd + "\n")
 
     @classmethod
     def isAvailable(cls, sshParameters,
@@ -405,28 +428,37 @@ class SshCommand(object):
             sys.stdout.write("]\n")
 
     @classmethod
-    def hasAcceptedKnownHostKey(cls, ipaddress):
-        """Return whether acceptKnownHostKey() succeeds.
+    def hasAcceptedKnownHostKey(cls, sshParameters):
+        """Return whether an attempt to acceptKnownHostKey() succeeds.
         
-        Will wait until completed."""
+        Will wait until completed with success or failure.
+        
+        sshParameters
+            an SshParameters instance to use in the attempt.
+        
+        return
+            whether success."""
         try:
-            SshCommand.acceptKnownHostKey(ipaddress=ipaddress)
+            SshCommand.acceptKnownHostKey(sshParameters=sshParameters)
             return True
         except Exception as e:
             return False
 
     @classmethod
-    def sleepUntilHasAcceptedKnownHostKey(cls, ipaddress,
+    def sleepUntilHasAcceptedKnownHostKey(cls, sshParameters,
                                           checkIntervalSeconds=3.0, ticker=False,
                                           extraSleepSeconds=5.0):
-        """If available return, else loop sleeping for checkIntervalSeconds."""
+        """If available return, else loop sleeping for checkIntervalSeconds.
+        
+        sshParameters
+            an SshParameters instance to use in the attempts."""
         printed = False
         ticked = False
         # check the essential condition, initially and then repeatedly
-        while not SshCommand.hasAcceptedKnownHostKey(ipaddress=ipaddress):
+        while not SshCommand.hasAcceptedKnownHostKey(sshParameters=sshParameters):
             if not printed:
                 # first time only printing
-                print "waiting for ssh to be available to get host key from " + ipaddress
+                print "waiting for ssh to be available to get host key from " + IPAddress.asString(sshParameters.ipaddress)
                 printed = True
             if ticker:
                 if not ticked:

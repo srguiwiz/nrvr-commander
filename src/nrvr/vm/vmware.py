@@ -1274,23 +1274,64 @@ class VMwareMachine(object):
         if self._vmxFile.exists(): # sanity check
             shutil.rmtree(self.directory)
 
-    def acceptKnownHostKey(self):
-        """Accept host's key.
+    def listOfSshParametersForAcceptingKnownHostKey(self, user="root"):
+        """Return a list to use for accepting host's key.
         
-        Will wait until completed.
+        No duplicates.
         
-        Assumes .ports file to exist and to have an entry for ssh.
+        Assumes .ports file to exist and to have at least one entry for ssh for the user.
         
-        Needs virtual machine to be running already, ready to accept ssh connections, duh."""
-        ports = self.portsFile.getPorts(protocol="ssh")
+        user
+            a string.
+            
+            If None then any.
+        
+        return
+            a list of SshParameters instances."""
+        ports = self.portsFile.getPorts(protocol="ssh", user=user)
+        if ports == []:
+            if user is not None:
+                # .ports file has no entry for user
+                raise Exception("not known how to ssh connect to machine {0} for user {1}".format
+                                (self.basenameStem, user))
+            else:
+                # .ports file has no entry for any user
+                raise Exception("not known how to ssh connect to machine {0} for any user".format
+                                (self.basenameStem))
         if ports is None:
             # .ports file does not exist
             raise Exception("not known how to ssh connect to machine {0}".format
                             (self.basenameStem))
-        ipaddresses = map(lambda port: port["ipaddress"], ports)
-        ipaddresses = set(ipaddresses)
-        for ipaddress in ipaddresses:
-            SshCommand.acceptKnownHostKey(ipaddress)
+        ipaddresses = set()
+        listOfSshParameters = []
+        for port in ports:
+            ipaddress = port["ipaddress"] if "ipaddress" in port else None
+            if ipaddress is None: # tolerate even though strange
+                continue
+            if ipaddress in ipaddresses:
+                continue # no duplicates wanted
+            ipaddresses.add(ipaddress)
+            pwd = port["pwd"] if "pwd" in port else None
+            sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
+            listOfSshParameters.append(sshParameters)
+        return listOfSshParameters
+
+    def acceptKnownHostKey(self, user=None):
+        """Accept host's key.
+        
+        Will wait until completed.
+        
+        Assumes .ports file to exist and to have at least one entry for ssh for the user.
+        
+        Needs virtual machine to be running already, ready to accept ssh connections, duh.
+        
+        user
+            a string.
+            
+            If None then any."""
+        listOfSshParameters = self.listOfSshParametersForAcceptingKnownHostKey(user=user)
+        for sshParameters in listOfSshParameters:
+            SshCommand.acceptKnownHostKey(sshParameters=sshParameters)
 
     def _sshPortIpaddressPwd(self, user="root"):
         """Return tuple port, ipaddress, pwd.
@@ -1318,10 +1359,10 @@ class VMwareMachine(object):
     def sshParameters(self, user="root"):
         """Return SshParameters instance for user.
         
-        user
-            a string.
+        Assumes .ports file to exist and to have an entry for ssh for the user.
         
-        Assumes .ports file to exist and to have an entry for ssh for the user."""
+        user
+            a string."""
         port, ipaddress, pwd = self._sshPortIpaddressPwd(user)
         sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
         return sshParameters
@@ -1330,6 +1371,13 @@ class VMwareMachine(object):
         """Return an SshCommand instance.
         
         Will wait until completed.
+        
+        Output may contain extraneous leading or trailing newlines and whitespace.
+        
+        Example use::
+        
+            sshCommand1 = vmwareMachine.sshCommand(["ls", "-al"])
+            print "output=" + sshCommand1.output
         
         Assumes .ports file to exist and to have an entry for ssh for the user.
         
@@ -1341,14 +1389,7 @@ class VMwareMachine(object):
             Can accept a string instead of a list.
         
         user
-            a string.
-        
-        Output may contain extraneous leading or trailing newlines and whitespace.
-        
-        Example use::
-        
-            sshCommand1 = vmwareMachine.sshCommand(["ls", "-al"])
-            print "output=" + sshCommand1.output"""
+            a string."""
         sshParameters = self.sshParameters(user=user)
         sshCommand = SshCommand(sshParameters, argv, exceptionIfNotZero=exceptionIfNotZero)
         return sshCommand
@@ -1383,7 +1424,7 @@ class VMwareMachine(object):
         if command is None or user is None:
             raise Exception("incomplete information to send shutdown command to machine {0}".format
                             (self.basenameStem))
-        self.sshCommand([command], user, exceptionIfNotZero = not ignoreException)
+        self.sshCommand(command, user, exceptionIfNotZero = not ignoreException)
         if extraSleepSeconds:
             time.sleep(extraSleepSeconds)
 
@@ -1419,13 +1460,22 @@ class VMwareMachine(object):
                                     recurseDirectories=recurseDirectories, preserveTimes=preserveTimes)
         return scpCommand
 
-    def sshIsAvailable(self, user="root", probingCommand="hostname"):
+    def sshIsAvailable(self, user=None, probingCommand="hostname"):
         """Return whether probingCommand succeeds.
         
         Will wait until completed.
         
-        Assumes .ports file to exist and to have an entry for ssh for the user."""
-        sshParameters = self.sshParameters(user=user)
+        Assumes .ports file to exist and to have an entry for ssh for the user.
+        
+        user
+            a string.
+            
+            If None then any.
+        
+        return
+            whether success."""
+        listOfSshParameters = self.listOfSshParametersForAcceptingKnownHostKey(user=user)
+        sshParameters = listOfSshParameters[0]
         isAvailable = SshCommand.isAvailable(sshParameters,
                                              probingCommand=probingCommand)
         return isAvailable
@@ -1442,38 +1492,39 @@ class VMwareMachine(object):
         if extraSleepSeconds:
             time.sleep(extraSleepSeconds)
 
-    def hasAcceptedKnownHostKey(self):
-        """Return whether acceptKnownHostKey succeeds.
+    def hasAcceptedKnownHostKey(self, user=None):
+        """Return whether attempts to acceptKnownHostKey() succeed.
         
-        Will wait until completed.
+        Will wait until completed with success or failure.
         
-        Assumes .ports file to exist and to have an entry for ssh."""
-        ports = self.portsFile.getPorts(protocol="ssh")
-        if ports is None:
-            # .ports file does not exist
-            raise Exception("not known how to ssh connect to machine {0}".format
-                            (self.basenameStem))
-        ipaddresses = map(lambda port: port["ipaddress"], ports)
-        ipaddresses = set(ipaddresses)
-        for ipaddress in ipaddresses:
-            hasAcceptedKnownHostKey = SshCommand.hasAcceptedKnownHostKey(ipaddress=ipaddress)
+        Assumes .ports file to exist and to have at least one entry for ssh for the user.
+        
+        user
+            a string.
+            
+            If None then any.
+        
+        return
+            whether success."""
+        listOfSshParameters = self.listOfSshParametersForAcceptingKnownHostKey(user=user)
+        for sshParameters in listOfSshParameters:
+            hasAcceptedKnownHostKey = SshCommand.hasAcceptedKnownHostKey(sshParameters=sshParameters)
             if not hasAcceptedKnownHostKey:
                 return False
         return True
 
-    def sleepUntilHasAcceptedKnownHostKey(self, checkIntervalSeconds=3.0, ticker=False, extraSleepSeconds=5.0):
+    def sleepUntilHasAcceptedKnownHostKey(self, user=None, checkIntervalSeconds=3.0, ticker=False, extraSleepSeconds=5.0):
         """If available return, else loop sleeping for checkIntervalSeconds.
         
-        Assumes .ports file to exist and to have an entry for ssh."""
-        ports = self.portsFile.getPorts(protocol="ssh")
-        if ports is None:
-            # .ports file does not exist
-            raise Exception("not known how to ssh connect to machine {0}".format
-                            (self.basenameStem))
-        ipaddresses = map(lambda port: port["ipaddress"], ports)
-        ipaddresses = set(ipaddresses)
-        for ipaddress in ipaddresses:
-            SshCommand.sleepUntilHasAcceptedKnownHostKey(ipaddress=ipaddress,
+        Assumes .ports file to exist and to have at least one entry for ssh for the user.
+        
+        user
+            a string.
+            
+            If None then any."""
+        listOfSshParameters = self.listOfSshParametersForAcceptingKnownHostKey(user=user)
+        for sshParameters in listOfSshParameters:
+            SshCommand.sleepUntilHasAcceptedKnownHostKey(sshParameters=sshParameters,
                                                          checkIntervalSeconds=checkIntervalSeconds,
                                                          ticker=ticker,
                                                          extraSleepSeconds=0)

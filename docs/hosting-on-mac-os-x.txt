@@ -106,6 +106,7 @@ known to work well with NrvrCommander, from the git repository of libcdio.
 Assuming MacPorts has been installed as described above.
 
 sudo port selfupdate
+sudo port upgrade outdated
 #
 sudo port install automake
 sudo port install autoconf
