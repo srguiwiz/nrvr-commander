@@ -365,9 +365,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             #testVm.vmxFile.setAccelerate3D()
             cygServerRandomPwd = ''.join(random.choice(string.letters) for i in xrange(20))
             # were considering doing  ssh-host-config --yes --pwd `openssl rand -hex 16`
-            # and intentionally not knowing how to log in as user cyg_server
-            testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="cyg_server", pwd=cygServerRandomPwd)
-            # either way no easy success yet, hence not doing
+            # and intentionally not knowing how to log in as user cyg_server;
+            # but even knowing pwd apparently we cannot log in via ssh, hence for now we do not
+            #testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="cyg_server", pwd=cygServerRandomPwd)
+            # hence we do not
             #testVm.portsFile.setShutdown(command="shutdown -h now", user="cyg_server")
             # instead do something that works
             testVm.portsFile.setShutdown(command="shutdown -h now", user=regularUser.username)
@@ -429,21 +430,49 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             cygwinPackagesPathOnHost = CygwinDownload.forArch(arch, CygwinDownload.usablePackageDirs001)
             cygwinPackagesPathOnIso = os.path.join(customDirectoryPathOnIso, os.path.basename(cygwinPackagesPathOnHost))
             cygwinPackagesPathForCommandLine = cygwinPackagesPathOnIso.replace("/", "\\")
+            # run Cygwin installer, intentionally only while installer disk is present
+            cygwinInstallRandomScriptName = ''.join(random.choice(string.letters) for i in xrange(7))
+            cygwinInstallScriptPathOnIso = os.path.join(customDirectoryPathOnIso, cygwinInstallRandomScriptName + ".bat")
             cygwinInstallCommandLine = \
-                ntpath.join("D:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installer(arch)) + \
+                ntpath.join("C:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installer(arch)) + \
                 r" --local-install" + \
-                r" --local-package-dir " + ntpath.join("D:\\", cygwinPackagesPathForCommandLine) + \
+                r" --local-package-dir " + ntpath.join("C:\\", cygwinPackagesPathForCommandLine) + \
+                r" --root C:\cygwin" + \
                 r" --quiet-mode" + \
                 r" --no-desktop" + \
                 r" --packages openssh,shutdown"
+            modifications.extend([
+                # an intentionally transient install script,
+                # also copies from install medium to C:\,
+                # also pre-makes /etc/setup directory to prevent subtle setup defects
+                IsoImageModificationFromString
+                (cygwinInstallScriptPathOnIso,
+                 "mkdir C:\\" + cygwinPackagesPathForCommandLine + "\n" + \
+                 "xcopy D:\\" + cygwinPackagesPathForCommandLine + " C:\\" + cygwinPackagesPathForCommandLine + " /S /E" + "\n" + \
+                 "mkdir C:\\cygwin\\etc\\setup\n" + \
+                 cygwinInstallCommandLine),
+                ])
+            cygwinInstallScriptPathForCommandLine = cygwinInstallScriptPathOnIso.replace("/", "\\")
+            cygwinInstallScriptInvocationCommandLine = \
+                ntpath.join("D:\\", cygwinInstallScriptPathForCommandLine)
             autounattendFileContent.addFirstLogonCommand(order=400,
-                                                         commandLine=cygwinInstallCommandLine,
-                                                         description="Install Cygwin")
+                                                         commandLine=cygwinInstallScriptInvocationCommandLine,
+                                                         description="Install Cygwin - intentionally transient")
+            # rebaseall may or may not help against: sshd child_info_fork::abort cygwrap-0.dll Loaded to different address;
+            # and that command line must use ash, not bash
+            cygwinRebaseallCommandLine = \
+                r"C:\cygwin\bin\ash -c " '"' + \
+                r"/bin/rebaseall" + \
+                '"'
+            autounattendFileContent.addFirstLogonCommand(order=401,
+                                                         commandLine=cygwinRebaseallCommandLine,
+                                                         description="Rebaseall")
+            # ssh-host-config
             cygwinSshdConfigCommandLine = \
                 r"C:\cygwin\bin\bash --login -c " '"' + \
                 r"ssh-host-config --yes --pwd " + cygServerRandomPwd + \
                 '"'
-            autounattendFileContent.addFirstLogonCommand(order=401,
+            autounattendFileContent.addFirstLogonCommand(order=402,
                                                          commandLine=cygwinSshdConfigCommandLine,
                                                          description="Configure sshd")
             # in /etc/sshd_config set MaxAuthTries 2, minimum to get prompted, less than default 6
@@ -451,21 +480,23 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 r"C:\cygwin\bin\bash --login -c " '"' + \
                 r"sed -i -e 's/.*MaxAuthTries\s.*/MaxAuthTries 2/g' /etc/sshd_config" + \
                 '"'
-            autounattendFileContent.addFirstLogonCommand(order=402,
+            autounattendFileContent.addFirstLogonCommand(order=403,
                                                          commandLine=cygwinSshdFixUpConfigCommandLine,
                                                          description="Fix Up Configuration of sshd")
+            # allow incoming ssh
             openFirewallForSshdCommandLine = \
                 r"C:\cygwin\bin\bash --login -c " '"' + \
                 r"if ! netsh advfirewall firewall show rule name=SSHD ; then " + \
                 r"netsh advfirewall firewall add rule name=SSHD dir=in action=allow protocol=tcp localport=22" + \
                 r" ; fi" + \
                 '"'
-            autounattendFileContent.addFirstLogonCommand(order=403,
+            autounattendFileContent.addFirstLogonCommand(order=404,
                                                          commandLine=openFirewallForSshdCommandLine,
                                                          description="Open Firewall for sshd")
+            # start service
             startSshdCommandLine = \
                 "net start sshd"
-            autounattendFileContent.addFirstLogonCommand(order=404,
+            autounattendFileContent.addFirstLogonCommand(order=405,
                                                          commandLine=startSshdCommandLine,
                                                          description="Start sshd")
             modifications.extend([

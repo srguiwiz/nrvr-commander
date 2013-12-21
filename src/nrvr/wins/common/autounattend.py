@@ -17,6 +17,7 @@ Modified BSD License"""
 
 from collections import namedtuple
 import re
+from xml.sax.saxutils import escape
 
 import nrvr.diskimage.isoimage
 from nrvr.process.commandcapture import CommandCapture
@@ -238,7 +239,7 @@ class InstallerAutounattendFileContent(object):
         """The whole content."""
         return self._string
 
-    def _replaceElementText(self, name, text):
+    def _replaceElementText(self, name, text, escapeAmpLtGt=False):
         """Very simple replacement of element text.
         
         As implemented replaces all elements that match.
@@ -251,10 +252,15 @@ class InstallerAutounattendFileContent(object):
             If empty string then simply make it empty.
             If None then delete the element instead.
         
+        escapeAmpLtGt
+            Whether to escape '&', '<', and '>'.
+        
         return
             self, for daisychaining."""
         patternString = r"(?s)(<" + name + r"(?:\s*|\s+.*?)>)(.*?)(</" + name + r"\s*>)"
         if text is not None:
+            if escapeAmpLtGt:
+                text = escape(text)
             #replacementString = r"\g<1>" + text + r"\g<3>"
             replacementFunction = lambda match: match.group(1) + text + match.group(3)
         else:
@@ -263,7 +269,7 @@ class InstallerAutounattendFileContent(object):
         self._string = re.sub(patternString, replacementFunction, self._string)
         return self
 
-    def _replaceNestedElementText(self, names, text):
+    def _replaceNestedElementText(self, names, text, escapeAmpLtGt=False):
         """Very simple replacement of element text.
         
         As implemented replaces all elements that match.
@@ -275,6 +281,9 @@ class InstallerAutounattendFileContent(object):
             text to insert.
             If empty string then simply make it empty.
             If None then delete the element instead.
+        
+        escapeAmpLtGt
+            Whether to escape '&', '<', and '>'.
         
         return
             self, for daisychaining."""
@@ -291,6 +300,8 @@ class InstallerAutounattendFileContent(object):
             firstLevel = False
         patternString = r"(?s)(" + openingTagsPattern + r")(.*?)(" + closingTagsPattern + r")"
         if text is not None:
+            if escapeAmpLtGt:
+                text = escape(text)
             #replacementString = r"\g<1>" + text + r"\g<3>"
             replacementFunction = lambda match: match.group(1) + text + match.group(3)
         else:
@@ -619,10 +630,14 @@ class InstallerAutounattendFileContent(object):
         
         commandLine
             commandLine.
+            
+            Escapes '&', '<', and '>'.
         
         description
             description.
             May be empty string.
+            
+            Escapes '&', '<', and '>'.
         
         return
             self, for daisychaining."""
@@ -636,8 +651,8 @@ class InstallerAutounattendFileContent(object):
             raise Exception("FirstLogonCommands description maximum length is 256, cannot be {0}".format(description))
         additionalContent = r"""<SynchronousCommand wcm:action="add">
   <Order>""" + str(order) + r"""</Order>
-  <CommandLine>""" + commandLine + r"""</CommandLine>
-  <Description>""" + description + r"""</Description>
+  <CommandLine>""" + escape(commandLine) + r"""</CommandLine>
+  <Description>""" + escape(description) + r"""</Description>
 </SynchronousCommand>
 """
         self._appendToChildren("FirstLogonCommands", None, None, additionalContent)
@@ -653,10 +668,14 @@ class InstallerAutounattendFileContent(object):
         
         commandLine
             commandLine.
+            
+            Escapes '&', '<', and '>'.
         
         description
             description.
             May be empty string.
+            
+            Escapes '&', '<', and '>'.
         
         return
             self, for daisychaining."""
@@ -670,8 +689,8 @@ class InstallerAutounattendFileContent(object):
             raise Exception("LogonCommands description maximum length is 256, cannot be {0}".format(description))
         additionalContent = r"""<AsynchronousCommand wcm:action="add">
   <Order>""" + str(order) + r"""</Order>
-  <CommandLine>""" + commandLine + r"""</CommandLine>
-  <Description>""" + description + r"""</Description>
+  <CommandLine>""" + escape(commandLine) + r"""</CommandLine>
+  <Description>""" + escape(description) + r"""</Description>
 </AsynchronousCommand>
 """
         self._appendToChildren("LogonCommands", None, None, additionalContent)
