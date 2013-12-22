@@ -1367,7 +1367,11 @@ class VMwareMachine(object):
         sshParameters = SshParameters(ipaddress=ipaddress, user=user, pwd=pwd)
         return sshParameters
 
-    def sshCommand(self, argv, user="root", exceptionIfNotZero=True):
+    def sshCommand(self, argv, user="root",
+                   exceptionIfNotZero=True,
+                   maxConnectionRetries=10,
+                   connectionRetryIntervalSeconds=5.0,
+                   tickerForRetry=True):
         """Return an SshCommand instance.
         
         Will wait until completed.
@@ -1391,7 +1395,11 @@ class VMwareMachine(object):
         user
             a string."""
         sshParameters = self.sshParameters(user=user)
-        sshCommand = SshCommand(sshParameters, argv, exceptionIfNotZero=exceptionIfNotZero)
+        sshCommand = SshCommand(sshParameters, argv,
+                                exceptionIfNotZero=exceptionIfNotZero,
+                                maxConnectionRetries=maxConnectionRetries,
+                                connectionRetryIntervalSeconds=connectionRetryIntervalSeconds,
+                                tickerForRetry=tickerForRetry)
         return sshCommand
 
     def shutdownCommand(self, extraSleepSeconds=7.0, ignoreException=False):

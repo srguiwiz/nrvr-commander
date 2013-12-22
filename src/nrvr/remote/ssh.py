@@ -93,7 +93,8 @@ class SshCommand(object):
     def __init__(self, sshParameters, argv,
                  exceptionIfNotZero=True,
                  maxConnectionRetries=10,
-                 connectionRetryIntervalSeconds=5.0):
+                 connectionRetryIntervalSeconds=5.0,
+                 tickerForRetry=True):
         """Create new SshCommand instance.
         
         Will wait until completed.
@@ -137,8 +138,9 @@ class SshCommand(object):
         self._output = ""
         self._returncode = None
         #
+        ticked = False
         while self._connectionRetriesRemaining:
-            self._connectionRetriesRemaining += 1
+            self._connectionRetriesRemaining -= 1
             # fork and connect child to a pseudo-terminal
             self._pid, self._fd = pty.fork()
             if self._pid == 0:
@@ -160,6 +162,13 @@ class SshCommand(object):
                                     # was raise Exception("unexpected end of output from ssh")
                                     raise Exception("failing to connect via ssh\n" + 
                                                     outputTillPrompt)
+                                if tickerForRetry:
+                                    if not ticked:
+                                        # first time only printing
+                                        sys.stdout.write("retrying to connect via ssh [")
+                                    sys.stdout.write(".")
+                                    sys.stdout.flush()
+                                    ticked = True
                                 break # break out of while not promptedForPassword:
                             # ssh has been observed returning "\r\n" for newline, but we want "\n"
                             newOutput = SshCommand._crLfRegex.sub("\n", newOutput)
@@ -178,6 +187,10 @@ class SshCommand(object):
                                             outputTillPrompt)
                     if not promptedForPassword: # i.e. if got here from breaking out of while not promptedForPassword:
                         continue # continue at while self._connectionRetriesRemaining:
+                    else: # promptedForPassword is normal
+                        # if connecting then no more retries,
+                        # maxConnectionRetries is meant for retrying connecting only
+                        self._connectionRetriesRemaining = 0
                     os.write(self._fd, self._pwd + "\n")
                 # look for output
                 endOfOutput = False
@@ -233,6 +246,10 @@ class SshCommand(object):
                         # supposedly can occur
                         self._returncode = -1
                         raise SshCommandException("ssh did not exit normally")
+        if ticked:
+            # final printing
+            sys.stdout.write("]\n")
+            sys.stdout.flush()
 
     @property
     def output(self):
@@ -317,8 +334,7 @@ class SshCommand(object):
         if pid == 0:
             # in child process;
             # user if given, real or dummy, doesn't give away information about this script's user;
-            # commands "sleep 1 ; exit" if it executes should be harmless;
-            # sleep put before exit so that some sshd (Cygwin) can do what they need to do, we think
+            # commands "sleep 1 ; exit" if it executes should be harmless
             os.execvp("ssh", ["ssh", "-l", user, ipaddress, '"sleep 1 ; exit"'])
         else:
             # in parent process
@@ -426,6 +442,7 @@ class SshCommand(object):
         if ticked:
             # final printing
             sys.stdout.write("]\n")
+            sys.stdout.flush()
 
     @classmethod
     def hasAcceptedKnownHostKey(cls, sshParameters):
@@ -471,6 +488,7 @@ class SshCommand(object):
         if ticked:
             # final printing
             sys.stdout.write("]\n")
+            sys.stdout.flush()
         if extraSleepSeconds:
             time.sleep(extraSleepSeconds)
 

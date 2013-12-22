@@ -371,7 +371,16 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             # hence we do not
             #testVm.portsFile.setShutdown(command="shutdown -h now", user="cyg_server")
             # instead do something that works
-            testVm.portsFile.setShutdown(command="shutdown -h now", user=regularUser.username)
+            #
+            # important to know difference in Cygwin between PATH when logged in via ssh interactively,
+            # in which case Cygwin directories such as /usr/local/bin and /usr/bin come first,
+            # versus sending a command via ssh command line,
+            # in which case it is Windows system directories only,
+            # also see http://cygwin.com/ml/cygwin/2005-05/msg00012.html ,
+            # which you can verify by remotely viewing
+            #   ssh -l tester 10.123.45.67 echo \$PATH
+            # hence this shutdown command invokes the Windows shutdown command
+            testVm.portsFile.setShutdown(command="shutdown -s -t 20", user=regularUser.username)
             for additionalUser in additionalUsers:
                 testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress,
                                         user=additionalUser.username,
@@ -415,7 +424,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 # an intentionally transient shutdown script
                 IsoImageModificationFromString
                 (shutdownScriptPathOnIso,
-                 r'shutdown -s -t 60 -c "Running shutdown script ' + shutdownScriptPathOnIso +
+                 r'shutdown -s -t 20 -c "Running shutdown script ' + shutdownScriptPathOnIso +
                  r' intended as part of installation process."'),
                 ])
             shutdownScriptPathForCommandLine = shutdownScriptPathOnIso.replace("/", "\\")
@@ -433,56 +442,25 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             # run Cygwin installer, intentionally only while installer disk is present
             cygwinInstallRandomScriptName = ''.join(random.choice(string.letters) for i in xrange(7))
             cygwinInstallScriptPathOnIso = os.path.join(customDirectoryPathOnIso, cygwinInstallRandomScriptName + ".bat")
+            # Cygwin installer
             cygwinInstallCommandLine = \
-                ntpath.join("C:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installer(arch)) + \
+                ntpath.join("D:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installer(arch)) + \
                 r" --local-install" + \
-                r" --local-package-dir " + ntpath.join("C:\\", cygwinPackagesPathForCommandLine) + \
+                r" --local-package-dir " + ntpath.join("D:\\", cygwinPackagesPathForCommandLine) + \
                 r" --root C:\cygwin" + \
                 r" --quiet-mode" + \
                 r" --no-desktop" + \
                 r" --packages openssh,shutdown"
-            modifications.extend([
-                # an intentionally transient install script,
-                # also copies from install medium to C:\,
-                # also pre-makes /etc/setup directory to prevent subtle setup defects
-                IsoImageModificationFromString
-                (cygwinInstallScriptPathOnIso,
-                 "mkdir C:\\" + cygwinPackagesPathForCommandLine + "\n" + \
-                 "xcopy D:\\" + cygwinPackagesPathForCommandLine + " C:\\" + cygwinPackagesPathForCommandLine + " /S /E" + "\n" + \
-                 "mkdir C:\\cygwin\\etc\\setup\n" + \
-                 cygwinInstallCommandLine),
-                ])
-            cygwinInstallScriptPathForCommandLine = cygwinInstallScriptPathOnIso.replace("/", "\\")
-            cygwinInstallScriptInvocationCommandLine = \
-                ntpath.join("D:\\", cygwinInstallScriptPathForCommandLine)
-            autounattendFileContent.addFirstLogonCommand(order=400,
-                                                         commandLine=cygwinInstallScriptInvocationCommandLine,
-                                                         description="Install Cygwin - intentionally transient")
-            # rebaseall may or may not help against: sshd child_info_fork::abort cygwrap-0.dll Loaded to different address;
-            # and that command line must use ash, not bash
-            cygwinRebaseallCommandLine = \
-                r"C:\cygwin\bin\ash -c " '"' + \
-                r"/bin/rebaseall" + \
-                '"'
-            autounattendFileContent.addFirstLogonCommand(order=401,
-                                                         commandLine=cygwinRebaseallCommandLine,
-                                                         description="Rebaseall")
             # ssh-host-config
             cygwinSshdConfigCommandLine = \
                 r"C:\cygwin\bin\bash --login -c " '"' + \
                 r"ssh-host-config --yes --pwd " + cygServerRandomPwd + \
                 '"'
-            autounattendFileContent.addFirstLogonCommand(order=402,
-                                                         commandLine=cygwinSshdConfigCommandLine,
-                                                         description="Configure sshd")
             # in /etc/sshd_config set MaxAuthTries 2, minimum to get prompted, less than default 6
             cygwinSshdFixUpConfigCommandLine = \
                 r"C:\cygwin\bin\bash --login -c " '"' + \
-                r"sed -i -e 's/.*MaxAuthTries\s.*/MaxAuthTries 2/g' /etc/sshd_config" + \
+                r"( sed -i -e 's/.*MaxAuthTries\s.*/MaxAuthTries 2/g' /etc/sshd_config )" + \
                 '"'
-            autounattendFileContent.addFirstLogonCommand(order=403,
-                                                         commandLine=cygwinSshdFixUpConfigCommandLine,
-                                                         description="Fix Up Configuration of sshd")
             # allow incoming ssh
             openFirewallForSshdCommandLine = \
                 r"C:\cygwin\bin\bash --login -c " '"' + \
@@ -490,19 +468,37 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 r"netsh advfirewall firewall add rule name=SSHD dir=in action=allow protocol=tcp localport=22" + \
                 r" ; fi" + \
                 '"'
-            autounattendFileContent.addFirstLogonCommand(order=404,
-                                                         commandLine=openFirewallForSshdCommandLine,
-                                                         description="Open Firewall for sshd")
             # start service
             startSshdCommandLine = \
                 "net start sshd"
-            autounattendFileContent.addFirstLogonCommand(order=405,
-                                                         commandLine=startSshdCommandLine,
-                                                         description="Start sshd")
             modifications.extend([
                 # the Cygwin packages
                 IsoImageModificationFromPath(cygwinPackagesPathOnIso, cygwinPackagesPathOnHost),
+                # an intentionally transient install script;
+                # also pre-makes /etc/setup directory to prevent subtle setup defects,
+                # those defects being caused by not writing files which will be needed to rebase;
+                # also rebaseall in those defective circumstances could not help against:
+                # sshd child_info_fork::abort cygwrap-0.dll Loaded to different address,
+                # and that command line must use ash, not bash,
+                # not doing it for now but would be
+                #   r"C:\cygwin\bin\ash -c " '"' r"/bin/rebaseall" + '"'
+                IsoImageModificationFromString
+                (cygwinInstallScriptPathOnIso,
+                 #"mkdir C:\\" + cygwinPackagesPathForCommandLine + "\n" + \
+                 #"xcopy D:\\" + cygwinPackagesPathForCommandLine + " C:\\" + cygwinPackagesPathForCommandLine + " /S /E" + "\n" + \
+                 "mkdir C:\\cygwin\\etc\\setup\n" + \
+                 cygwinInstallCommandLine + "\n" + \
+                 cygwinSshdConfigCommandLine + "\n" + \
+                 cygwinSshdFixUpConfigCommandLine + "\n" + \
+                 openFirewallForSshdCommandLine + "\n" + \
+                 startSshdCommandLine),
                 ])
+            cygwinInstallScriptPathForCommandLine = cygwinInstallScriptPathOnIso.replace("/", "\\")
+            cygwinInstallScriptInvocationCommandLine = \
+                ntpath.join("D:\\", cygwinInstallScriptPathForCommandLine)
+            autounattendFileContent.addFirstLogonCommand(order=400,
+                                                         commandLine=cygwinInstallScriptInvocationCommandLine,
+                                                         description="Install Cygwin - intentionally transient")
             # pick right temporary directory, ideally same as VM
             modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutounattend \
                 (autounattendFileContent,
