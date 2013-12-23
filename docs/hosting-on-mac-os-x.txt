@@ -18,6 +18,11 @@ To install needed libraries:
 
 Install MacPorts from http://www.macports.org/ .
 
+In case MacPorts had been installed earlier, make sure libcdio is at least 0.92:
+
+sudo port selfupdate
+sudo port upgrade outdated
+
 Then:
 
 sudo port install libcdio
@@ -27,120 +32,7 @@ sudo port install wget
 
 Possibly more to be listed here.
 
-When libcdio version 0.91 comes to MacPorts, this should be it.
+-----------------------------------------------------------------------------
+
+Since libcdio version 0.92 is in MacPorts, this should be it.
 End of host platform specific instructions.
-Below is a workaround you will need meanwhile.
-
------------------------------------------------------------------------------
-
-Alas, following these steps, in OS X at the time of this writing the version of iso-read
-installed via MacPorts, that version being 0.90, cannot read common distro .iso files
-used in examples, and presumbly needed for real use of NrvrCommander.
-
-More about that in an enclosed text file on that topic.
-
-Meanwhile, one possible workaround is provided here.
-
-To see your version enter:
-
-iso-read --version
-
-If 0.90 then, for now only, install an older version libcdio 0.81 per instructions:
-
-http://trac.macports.org/wiki/howto/InstallingOlderPort
-
-First:
-
-sudo port uninstall libcdio
-
-Then using a Portfile downloaded from:
-
-http://trac.macports.org/log/trunk/dports/devel/libcdio
-http://trac.macports.org/browser/trunk/dports/devel/libcdio/Portfile?rev=41757
-
-Try:
-
-mkdir ~/Downloads/libcdio-81-port
-mv ~/Downloads/Portfile ~/Downloads/libcdio-81-port/
-sudo chown -R macports:macports ~/Downloads/libcdio-81-port/Portfile
-cd ~/Downloads/libcdio-81-port/
-sudo port install
-
-It may fail with:
-
-Error: Unable to execute port: Could not open file: ~/Downloads/libcdio-81-port/Portfile
-
-Per various postings found this is probably a permission problem. Not the same but
-similar to http://trac.macports.org/ticket/38472 found workaround:
-
-sudo mkdir /tmp-make-port
-sudo cp ~/Downloads/libcdio-81-port/Portfile /tmp-make-port/
-sudo chown macports:macports /tmp-make-port
-cd /tmp-make-port
-sudo port install
-cd ~
-sudo rm -rf /tmp-make-port
-
-Check with:
-
-iso-read --version
-
-This has been done and has been in continuous use for some time, for making a
-number of Linux machines, mostly 32-bit.
-
-If, however, you would want to work with a distro .iso file >4GB, e.g. for
-making Scientific Linux 6.x, 64-bit machines, then ...
-
-instructions how to build a newer version iso-read that is known to work well
-with NrvrCommander, from the git repository of libcdio, for Mac OS X, could be
-written similarly to an enclosed text file on hosting on Ubuntu ...
-
-if someone would bother to do so, correctly, after figuring it out.  Might be
-better off pushing for a release of a libcdio version 0.91.
-
------------------------------------------------------------------------------
-
-Here are instructions how to build a specific newer version iso-read that is
-known to work well with NrvrCommander, from the git repository of libcdio.
-
-Assuming MacPorts has been installed as described above.
-
-sudo port selfupdate
-sudo port upgrade outdated
-#
-sudo port install automake
-sudo port install autoconf
-#
-sudo port install libcddb
-sudo port install libiconv
-sudo port install gettext
-sudo port install popt
-sudo port install ncurses
-#
-cd ~/Downloads
-git clone git://git.savannah.gnu.org/libcdio.git
-cd libcdio
-git checkout 9c9f9d0
-sed -i -e 's/VERSION_STR,[^)]*/VERSION_STR, 0.$1.git9c9f9d0/' configure.ac
-#
-sh ./autogen.sh
-./configure
-make
-#
-# work around a problem
-touch ./src/cd-drive.1
-touch ./src/cd-info.1
-touch ./src/cd-read.1
-touch ./src/iso-read.1
-touch ./src/iso-info.1
-make
-#
-sudo make install
-
-In case iso-info --version shows a previously installed iso-info still shadows this
-newly installed version then try:
-
-sudo port uninstall libcdio
-
-Be sure to switch to a new terminal, window or tab to see the correct and lasting
-result of installing and uninstalling.

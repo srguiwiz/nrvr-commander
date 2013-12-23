@@ -21,20 +21,26 @@ sudo yum install qemu-img
 
 Possibly more to be listed here.
 
-When libcdio version 0.91 comes to RHEL, this should be it.
-End of host platform specific instructions.
-Below is additional information you may or may not need meanwhile.
-
 -----------------------------------------------------------------------------
 
-As a temporary nuisance that should go away sooner or later, there has
-been a known problem with .iso files >4GB not being read correctly by the
+When libcdio version 0.92 comes to RHEL, this should be it.
+End of host platform specific instructions.
+
+Below is additional information you may need meanwhile.
+
+If you have exact steps how to build libcdio 0.92 from git in RHEL 6.x, or
+how to install it, please let us know.
+
+Why?  As a problem that is going away with such upgrade, there has been
+a known problem with .iso files >4GB not being read correctly by the
 version 0.81 of iso-read (from package libcdio) installed by RHEL 6.x.
+Also that older version cannot read Windows .iso files.
 
 More about that in an enclosed text file on that topic.
 
-That nuisance means, in case your were trying to, examples haven't easily been
-making Scientific Linux 6.x, 64-bit, which comes on a distro .iso file >4GB.
+That problem means, on RHEL 6.x, examples haven't been installing Scientific
+Linux 6.x, 64-bit, which comes on a distro .iso file >4GB.
+It also prevents installing Windows.
 
 Instructions how to build a newer version iso-read that is known to work well
 with NrvrCommander, from the git repository of libcdio, for RHEL 6.x, could be

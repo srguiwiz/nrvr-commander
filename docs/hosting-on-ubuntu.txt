@@ -17,16 +17,17 @@ sudo apt-get install libcdio-utils
 
 Possibly more to be listed here.
 
-When libcdio version 0.91 comes to Ubuntu, this should be it.
-End of host platform specific instructions.
-Below is a workaround you will need meanwhile.
-
 -----------------------------------------------------------------------------
 
-As a temporary nuisance that should go away sooner or later, there has
-been a known problem with .iso files not being read correctly by the
-version of iso-read (from package libcdio-utils) installed by Ubuntu
-at least 12.04 to 13.04, that version being 0.83.
+When libcdio version 0.92 comes to Ubuntu, this should be it.
+End of host platform specific instructions.
+
+Here is a workaround you will need meanwhile:
+
+As a problem that is going away with libcdio 0.92, there has been a known
+problem with .iso files not being read correctly by the version of iso-read
+(from package libcdio-utils) installed by Ubuntu at least 12.04 to 13.04,
+that version being 0.83.
 
 More about that in an enclosed text file on that topic.
 
@@ -44,8 +45,7 @@ sudo apt-get -y install texinfo
 cd ~/Downloads
 git clone git://git.savannah.gnu.org/libcdio.git
 cd libcdio
-git checkout 9c9f9d0
-sed -i -e 's/VERSION_STR,[^)]*/VERSION_STR, 0.$1.git9c9f9d0/' configure.ac
+git checkout release-0.92
 #
 sh ./autogen.sh
 ./configure --disable-shared CFLAGS='-fno-inline -g' --enable-maintainer-mode

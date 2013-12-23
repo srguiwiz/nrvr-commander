@@ -1,13 +1,15 @@
 NrvrCommander for some functionality invokes iso-read.
 
-Version 0.81 of iso-read has worked reasonably well,
-specifically if and because most .iso files are <4GB.
-
-Version 0.91 of iso-read hopefully will work reasonably well,
+A relatively new version 0.92 of iso-read works reasonably well,
 for any size .iso files, even >4GB.
 
+A relatively old version 0.81 [sic] of iso-read has worked reasonably well,
+specifically if and because many .iso files are <4GB.
+That old version was for reading Linux distro .iso files only, it was
+not working for Windows installer .iso files.
+
 Versions 0.83 to 0.90 of iso-read are known not to work for NrvrCommander,
-not for any size .iso files, neither small nor large.
+not for any size .iso files.
 
 To see your version enter:
 
@@ -17,30 +19,25 @@ The iso-read and iso-info command line utilities come from the
 "Compact Disc Input and Control Library" often packaged as "libcdio",
 but also as "libcdio-utils", and available in distros.
 
+MacPorts for Mac OS X at the time of this writing provides version 0.92.
+You may need to tell your MacPorts to selfupdate and upgrade outdated.
+See the enclosed Mac OS X specific documentation file for instructions.
+
 RHEL 6.x and derivatives so far have provided version 0.81,
 hence much use of NrvrCommander has been without problems,
-specifically if and because most .iso files are <4GB.
-One exception has been one distro .iso file >4GB.
-
-Ubuntu 12.04 and 13.04 apparently provide version 0.83,
-See the enclosed Ubuntu specific documentation file for instructions
-how to build from the git repository of libcdio.
-
-MacPorts for Mac OS X at the time of this writing apparently
-provides version 0.90.
-See the enclosed Mac OS X specific documentation file for instructions
-how to downgrade to version 0.81.
+specifically if and because many .iso files are <4GB.
+Unless you install 0.92, however, you cannot install from
+.iso files >4GB, and you cannot install Windows.
 
 A version of libcdio source code that is known to work well with NrvrCommander
-can be retrieved be checking out commit 9c9f9d0 from 2013-09-26, like so:
+can be retrieved be checking out tag release-0.92 , like so:
 
 git clone git://git.savannah.gnu.org/libcdio.git
 cd libcdio
-git checkout 9c9f9d0
-sed -i -e 's/VERSION_STR,[^)]*/VERSION_STR, 0.$1.git9c9f9d0/' configure.ac
+git checkout release-0.92
 
-Relevant defects in iso-read and iso-info may be
-https://savannah.gnu.org/bugs/?39354 - fixed in git of libcdio
-https://savannah.gnu.org/bugs/?39373 - fixed in git of libcdio
-https://savannah.gnu.org/bugs/?40130 - worked around in NrvrCommander
-https://savannah.gnu.org/bugs/?40138 - worked around in NrvrCommander
+The Fedora rawhide repository has started carrying libcdio-0.92.
+
+Ubuntu 12.04 and 13.04 apparently provide version 0.83,
+See the enclosed Ubuntu specific documentation file for instructions
+how to build 0.92 from the git repository of libcdio.
