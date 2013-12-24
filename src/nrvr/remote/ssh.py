@@ -175,9 +175,9 @@ class SshCommand(object):
                             outputTillPrompt += newOutput
                             if SshCommand._acceptPromptRegex.search(outputTillPrompt):
                                 # e.g. "Are you sure you want to continue connecting (yes/no)? "
-                                raise Exception("cannot proceed unless having accepted host key\n" + 
-                                                outputTillPrompt + 
-                                                "\nE.g. invoke SshCommand.acceptKnownHostKey({0}).".format(self._ipaddress))
+                                raise Exception("cannot proceed unless having accepted host key\n" +
+                                                outputTillPrompt +
+                                                '\nE.g. invoke SshCommand.acceptKnownHostKey(SshParameters("{0}",user,pwd)).'.format(self._ipaddress))
                             if SshCommand._pwdPromptRegex.search(outputTillPrompt):
                                 # e.g. "10.123.45.67's password: "
                                 promptedForPassword = True
@@ -412,7 +412,8 @@ class SshCommand(object):
         Will wait until completed."""
         try:
             sshCommand = SshCommand(sshParameters,
-                                    argv=probingCommand)
+                                    argv=probingCommand,
+                                    maxConnectionRetries=1)
             return True
         except Exception as e:
             return False
@@ -430,6 +431,7 @@ class SshCommand(object):
             if not printed:
                 # first time only printing
                 print "waiting for ssh to be available to connect to " + IPAddress.asString(sshParameters.ipaddress)
+                sys.stdout.flush()
                 printed = True
             if ticker:
                 if not ticked:
@@ -476,6 +478,7 @@ class SshCommand(object):
             if not printed:
                 # first time only printing
                 print "waiting for ssh to be available to get host key from " + IPAddress.asString(sshParameters.ipaddress)
+                sys.stdout.flush()
                 printed = True
             if ticker:
                 if not ticked:
@@ -497,7 +500,7 @@ if __name__ == "__main__":
     SystemRequirements.commandsRequiredByImplementations([SshCommand], verbose=True)
     #
     SshCommand.removeKnownHostKey("localhost")
-    SshCommand.acceptKnownHostKey("localhost")
+    SshCommand.acceptKnownHostKey(SshParameters("localhost", "i", "madeitup"))
     # fictional address
     _exampleSshParameters = SshParameters("10.123.45.67", "root", "redwood")
 #    _sshExample1 = SshCommand(_exampleSshParameters, "hostname")
@@ -641,9 +644,9 @@ class ScpCommand(object):
                         outputTillPrompt += newOutput
                         if SshCommand._acceptPromptRegex.search(outputTillPrompt):
                             # e.g. "Are you sure you want to continue connecting (yes/no)? "
-                            raise Exception("cannot proceed unless having accepted host key\n" + 
-                                            outputTillPrompt + 
-                                            "\nE.g. invoke SshCommand.acceptKnownHostKey({0}).".format(self._ipaddress))
+                            raise Exception("cannot proceed unless having accepted host key\n" +
+                                            outputTillPrompt +
+                                            '\nE.g. invoke SshCommand.acceptKnownHostKey(SshParameters("{0}",user,pwd)).'.format(self._ipaddress))
                         if SshCommand._pwdPromptRegex.search(outputTillPrompt):
                             # e.g. "10.123.45.67's password: "
                             promptedForPassword = True

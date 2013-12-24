@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-"""nrvr.distros.common.ssh - Remote commands over ssh to Linux
+"""nrvr.distros.common.ssh - Remote commands over ssh to Cygwin
 
-The main class provided by this module is LinuxSshCommand.
+The main class provided by this module is CygwinSshCommand.
 
-LinuxSshCommand inherits from nrvr.remote.ssh.SshCommand,
+CygwinSshCommand inherits from nrvr.remote.ssh.SshCommand,
 including limitations documented there.
 
 Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
@@ -18,23 +18,22 @@ import re
 import sys
 import time
 
-from nrvr.distros.common.gnome import Gnome
 from nrvr.remote.ssh import SshCommand
 from nrvr.util.classproperty import classproperty
 from nrvr.util.ipaddress import IPAddress
 
-class LinuxSshCommand(SshCommand):
-    """Send a command over ssh to Linux."""
+class CygwinSshCommand(SshCommand):
+    """Send a command over ssh to Cygwin."""
 
     def __init__(self, sshParameters, argv,
                  exceptionIfNotZero=True,
                  maxConnectionRetries=10,
                  connectionRetryIntervalSeconds=5.0,
                  tickerForRetry=True):
-        """Create new LinuxSshCommand instance.
+        """Create new CygwinSshCommand instance.
         
         See nrvr.remote.ssh.SshCommand."""
-        super(LinuxSshCommand, self).__init__ \
+        super(CygwinSshCommand, self).__init__ \
         (sshParameters=sshParameters, \
          argv=argv, \
          exceptionIfNotZero=exceptionIfNotZero, \
@@ -42,7 +41,7 @@ class LinuxSshCommand(SshCommand):
          connectionRetryIntervalSeconds=connectionRetryIntervalSeconds, \
          tickerForRetry=tickerForRetry)
 
-    _isGuiAvailableRegex = re.compile(r"^\s*available")
+    _isGuiAvailableRegex = re.compile(r"[1-9]") # any number larger than 0
 
     @classmethod
     def isGuiAvailable(cls, sshParameters):
@@ -55,10 +54,12 @@ class LinuxSshCommand(SshCommand):
         sshParameters
             an SshParameters instance."""
         try:
-            probingCommand = Gnome.commandToTellWhetherGuiIsAvailable()
-            sshCommand = LinuxSshCommand(sshParameters,
-                                         argv=[probingCommand],
-                                         maxConnectionRetries=1)
+            # see http://cygwin.com/ml/cygwin/2010-01/msg00644.html
+            # see http://blogs.technet.com/b/heyscriptingguy/archive/2011/03/17/use-powershell-to-detect-if-a-workstation-is-in-use.aspx
+            probingCommand = r"ps -u $UID -W | grep -c '\\explorer\.exe'"
+            sshCommand = CygwinSshCommand(sshParameters,
+                                          argv=[probingCommand],
+                                          maxConnectionRetries=1)
             if cls._isGuiAvailableRegex.search(sshCommand.output):
                 return True
             else:
@@ -105,4 +106,4 @@ class LinuxSshCommand(SshCommand):
 
 if __name__ == "__main__":
     from nrvr.util.requirements import SystemRequirements
-    SystemRequirements.commandsRequiredByImplementations([LinuxSshCommand], verbose=True)
+    SystemRequirements.commandsRequiredByImplementations([CygwinSshCommand], verbose=True)

@@ -43,7 +43,16 @@ class CygwinDownload(object):
         return len(filter(None,directoryUrl.split('/'))) - 2;
 
     @classmethod
-    def installer(cls, arch):
+    def basename(cls, arch):
+        """Base name of directory for architecture.
+        
+        Implemented for the purpose of all code using and relying on this
+        one implementation only."""
+        baseName = "cygwin-" + arch
+        return baseName
+
+    @classmethod
+    def installerName(cls, arch):
         """Exact name of installer command.
         
         Implemented for the purpose of all code using and relying on this
@@ -62,7 +71,7 @@ class CygwinDownload(object):
                 noWait=False,
                 dontDownload=False,
                 ticker=True):
-        """Download files or use previously downloaded file.
+        """Download files or use previously downloaded files.
         
         As implemented uses wget.
         That has been a choice of convenience, could be written in Python instead.
@@ -95,7 +104,7 @@ class CygwinDownload(object):
         
         Return directory path."""
         arch = Arch(arch)
-        installer = cls.installer(arch)
+        installerName = cls.installerName(arch)
         if arch == Arch(32):
             archPath = "x86"
         elif arch == Arch(64):
@@ -103,7 +112,7 @@ class CygwinDownload(object):
         else:
             raise Exception("unknown architecture arch=%s" % (arch))
         downloadDir = ScriptUser.loggedIn.userHomeRelative("Downloads")
-        archDir = "cygwin-" + arch
+        archDir = cls.basename(arch)
         downloadDir = os.path.join(downloadDir, archDir)
         semaphorePath = downloadDir + cls.semaphoreExtenstion
         #
@@ -123,6 +132,7 @@ class CygwinDownload(object):
                     if not printed:
                         # first time only printing
                         print "waiting for " + semaphorePath + " to go away on completion"
+                        sys.stdout.flush()
                         printed = True
                     if ticker:
                         if not ticked:
@@ -158,7 +168,7 @@ class CygwinDownload(object):
                     sys.stdout.write("[.")
                     sys.stdout.flush()
                 try:
-                    installerUrl = "http://cygwin.com/" + installer
+                    installerUrl = "http://cygwin.com/" + installerName
                     wget = CommandCapture(
                         ["wget",
                          "--quiet",

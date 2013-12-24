@@ -19,6 +19,7 @@ Modified BSD License"""
 from collections import namedtuple
 import ntpath
 import os.path
+import posixpath
 import random
 import re
 import shutil
@@ -50,6 +51,8 @@ from nrvr.vm.vmware import VmdkFile, VmxFile, VMwareHypervisor, VMwareMachine
 from nrvr.vm.vmwaretemplates import VMwareTemplates
 from nrvr.wins.common.autounattend import WinUdfImage
 from nrvr.wins.common.cygwin import CygwinDownload
+from nrvr.wins.common.javaw import JavawDownload
+from nrvr.wins.common.ssh import CygwinSshCommand
 from nrvr.wins.win7.autounattend import Win7UdfImage, Win7AutounattendFileContent
 from nrvr.wins.win7.autounattendtemplates import Win7AutounattendTemplates
 
@@ -57,7 +60,7 @@ from nrvr.wins.win7.autounattendtemplates import Win7AutounattendTemplates
 SystemRequirements.commandsRequiredByImplementations([IsoImage, WinUdfImage,
                                                       VmdkFile, VMwareHypervisor,
                                                       SshCommand, ScpCommand,
-                                                      CygwinDownload],
+                                                      CygwinDownload, JavawDownload],
                                                      verbose=True)
 # this is a good way to preflight check
 VMwareHypervisor.localRequired()
@@ -444,7 +447,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             cygwinInstallScriptPathOnIso = os.path.join(customDirectoryPathOnIso, cygwinInstallRandomScriptName + ".bat")
             # Cygwin installer
             cygwinInstallCommandLine = \
-                ntpath.join("D:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installer(arch)) + \
+                ntpath.join("D:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installerName(arch)) + \
                 r" --local-install" + \
                 r" --local-package-dir " + ntpath.join("D:\\", cygwinPackagesPathForCommandLine) + \
                 r" --root C:\cygwin" + \
@@ -541,10 +544,50 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
-        LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+        if distro == "el" or distro == "ub":
+            LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+        elif distro == "win":
+            CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         # a necessity on some international version OS
         testVm.sshCommand(["mkdir -p ~/Downloads"], user=testVm.regularUser)
+        if distro == "win":
+            testVm.sshCommand(["mkdir -p `cygpath $USERPROFILE/Downloads`"], user=testVm.regularUser)
+            echo = testVm.sshCommand(["echo `cygpath $USERPROFILE/Downloads`"], user=testVm.regularUser)
+            windowsUserDownloadDirCygwinPath = echo.output.strip()
+            echo = testVm.sshCommand([r"cmd.exe /C 'echo %USERPROFILE%\Downloads'"], user=testVm.regularUser)
+            windowsUserDownloadDirWindowsPath = echo.output.strip()
+        #
+        # install Java
+        if distro == "win":
+            # Java for Windows
+            javawInstallerOnHostPath = JavawDownload.now()
+            javawInstallerBasename = os.path.basename(javawInstallerOnHostPath)
+            javawInstallerOnGuestCygwinPath = posixpath.join(windowsUserDownloadDirCygwinPath, javawInstallerBasename)
+            javawInstallerOnGuestWindowsPath = ntpath.join(windowsUserDownloadDirWindowsPath, javawInstallerBasename)
+            testVm.scpPutCommand(fromHostPath=javawInstallerOnHostPath,
+                                 toGuestPath=javawInstallerOnGuestCygwinPath,
+                                 guestUser=testVm.regularUser)
+            # run installer
+            testVm.sshCommand(["chmod +x " + javawInstallerOnGuestCygwinPath],
+                              user=testVm.regularUser)
+            # see http://java.com/en/download/help/silent_install.xml
+            # also, tolerate like Error opening file C:\Users\tester\AppData\LocalLow\Sun\Java\jre1.7.0_45\Java3BillDevices.jpg
+            # also, tolerate Error: 2
+            # also, work around Java for Windows installer program despite success not exiting if invoked this way
+            testVm.sshCommand(["( nohup cmd.exe /C 'echo dummy | " + javawInstallerOnGuestWindowsPath
+                               + " /s /L " + javawInstallerOnGuestWindowsPath + ".log' &> /dev/null & )"],
+                              user=testVm.regularUser,
+                              exceptionIfNotZero=False)
+            waitingForJavawInstallerSuccess = True
+            while waitingForJavawInstallerSuccess:
+                time.sleep(5.0)
+                javaVersion = testVm.sshCommand(
+                    ["java -version"],
+                    user=testVm.regularUser,
+                    exceptionIfNotZero=False)
+                if not javaVersion.returncode:
+                    waitingForJavawInstallerSuccess = False
         #
         # install Google Chrome
         if browser == "chrome" and distro == "ub":
@@ -630,7 +673,10 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
-        LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+        if distro == "el" or distro == "ub":
+            LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+        elif distro == "win":
+            CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         # copy tests
         scriptDir = os.path.dirname(os.path.abspath(__file__))

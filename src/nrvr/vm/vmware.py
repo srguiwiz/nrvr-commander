@@ -943,6 +943,7 @@ class VMwareHypervisor(object):
             if not printed:
                 # first time only printing
                 print "waiting for " + vmxFilePath + " to stop"
+                sys.stdout.flush()
                 printed = True
             if ticker:
                 if not ticked:

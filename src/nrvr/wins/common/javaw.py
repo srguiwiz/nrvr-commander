@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-"""nrvr.util.download - A download manager
+"""nrvr.wins.common.javaw - A download manager for Java for Windows installs
 
-Class provided by this module is Download.
+Class provided by this module is JavawDownload.
 
-Works in Linux and Windows.
+As implemented works in Linux and Mac OS X, uses wget.
 
 Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
 
@@ -15,45 +15,61 @@ Modified BSD License"""
 
 import os
 import os.path
-import posixpath
-import shutil
 import sys
-import urllib2
-import urlparse
 
+from nrvr.process.commandcapture import CommandCapture
 from nrvr.util.user import ScriptUser
 
-class Download(object):
-    """A download manager."""
+class Arch(str): pass # make sure it is a string to avoid string-number unequality
+
+class JavawDownload(object):
+    """A download manager for Java for Windows installs."""
 
     semaphoreExtenstion = ".wait"
 
     @classmethod
-    def basename(cls, url):
-        """Base name from a dowload URL.
+    def commandsUsedInImplementation(cls):
+        """Return a list to be passed to SystemRequirements.commandsRequired().
         
-        Implemented for the purpose of all code using and relying on this
-        one implementation only."""
-        urlParseResult = urlparse.urlparse(url)
-        baseName = posixpath.basename(urlParseResult.path)
-        return baseName
+        This class can be passed to SystemRequirements.commandsRequiredByImplementations()."""
+        return ["wget", "sed"]
 
     @classmethod
-    def fromUrl(cls, url,
-                force=False,
-                dontDownload=False,
-                ticker=True):
+    def _currentOfflineInstallerUrl(cls):
+        """Auxiliary method."""
+        offlineInstallerPageUrl = r"http://java.com/en/download/windows_offline.jsp"
+        sedToExtractDownloadUrl = r"sed -n -e 's/.*\(http:\/\/.*BundleId=[0-9]*\).*/\1/p'"
+        wget = CommandCapture(
+            ["sh",
+             "-c", "wget -q -O- " + offlineInstallerPageUrl + r" | " + sedToExtractDownloadUrl],
+            copyToStdio=False,
+            forgoPty=True)
+        if not wget.stdout:
+            raise Exception("not able to get offline installer URL from {0}".format(offlineInstallerPageUrl))
+        return wget.stdout.strip()
+
+    @classmethod
+    def now(cls,
+            force=False,
+            dontDownload=False,
+            ticker=True):
         """Download file or use previously downloaded file.
         
-        As implemented uses urllib2.
+        As implemented uses wget.
+        That has been a choice of convenience, could be written in Python instead.
+        
+        force
+            whether to force downloading even if apparently downloaded already.
+            
+            May be useful for programmatically updating at times.
         
         dontDownload
             whether you don't want to start a download, for some reason.
         
         Return file path."""
-        urlFilename = cls.basename(url)
+        simpleFilename = "jre-version-windows-arch.exe"
         downloadDir = ScriptUser.loggedIn.userHomeRelative("Downloads")
-        downloadPath = os.path.join(downloadDir, urlFilename)
+        downloadPath = os.path.join(downloadDir, simpleFilename)
         semaphorePath = downloadPath + cls.semaphoreExtenstion
         #
         if os.path.exists(downloadPath) and not force:
@@ -87,7 +103,7 @@ class Download(object):
                     sys.stdout.write("]\n")
                     sys.stdout.flush()
         elif not dontDownload: # it is normal to download
-            if not os.path.exists(downloadDir): # possibly on an international version OS
+            if not os.path.exists(downloadDir):
                 try:
                     os.makedirs(downloadDir)
                 except OSError:
@@ -103,44 +119,31 @@ class Download(object):
                     # create semaphore file
                     semaphoreFile.write("pid=" + str(pid))
                 #
-                print "looking for " + url
-                # open connection to server
-                urlFileLikeObject = urllib2.urlopen(url)
-                with open(downloadPath, "wb") as downloadFile:
-                    print "starting to download " + url
+                offlineInstallerUrl = cls._currentOfflineInstallerUrl()
+                print "starting to download " + offlineInstallerUrl
+                if ticker:
+                    sys.stdout.write("[.")
+                    sys.stdout.flush()
+                try:
+                    wget = CommandCapture(
+                        ["wget",
+                         "--quiet",
+                         "-O", downloadPath,
+                         offlineInstallerUrl],
+                        forgoPty=True)
                     if ticker:
-                        sys.stdout.write("[")
-                    # was shutil.copyfileobj(urlFileLikeObject, downloadFile)
-                    try:
-                        while True:
-                            data = urlFileLikeObject.read(1000000)
-                            if not data:
-                                break
-                            downloadFile.write(data)
-                            if ticker:
-                                sys.stdout.write(".")
-                                sys.stdout.flush()
-                    finally:
-                        if ticker:
-                            sys.stdout.write("]\n")
-                            sys.stdout.flush()
+                        sys.stdout.write("]")
+                        sys.stdout.flush()
+                finally:
+                    if ticker:
+                        sys.stdout.write("\n")
+                        sys.stdout.flush()
             except: # apparently a problem
-                if os.path.exists(downloadPath):
-                    # don't let a bad file sit around
-                    try:
-                        os.remove(downloadPath)
-                    except:
-                        pass
-                print "problem downloading " + url
+                print "problem downloading " + downloadPath + " from " + offlineInstallerUrl
                 raise
             else:
-                print "done downloading " + url
+                print "done downloading " + downloadPath
             finally:
-                try:
-                    # close connection to server
-                    os.close(urlFileLikeObject)
-                except:
-                    pass
                 try:
                     # delete semaphore file
                     os.remove(semaphorePath)
@@ -154,15 +157,7 @@ class Download(object):
             raise IOError("file not found " + downloadPath)
 
 if __name__ == "__main__":
-    _exampleUrl = "http://www.bbc.co.uk/historyofthebbc/img/logos_blocks.jpg"
-    print Download.basename(_exampleUrl)
-    _exampleFile = Download.fromUrl(_exampleUrl, ticker=False)
-    print _exampleFile
-    os.remove(_exampleFile)
-    _exampleFile = Download.fromUrl(_exampleUrl)
-    print _exampleFile
-    _exampleFile = Download.fromUrl(_exampleUrl)
-    print _exampleFile
-    _exampleFile = Download.fromUrl(_exampleUrl, dontDownload=True)
-    print _exampleFile
-    os.remove(_exampleFile)
+    _exampleDownload = JavawDownload.now()
+    print _exampleDownload
+    _exampleDownload2 = JavawDownload.now(dontDownload=True)
+    print _exampleDownload2
