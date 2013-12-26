@@ -90,6 +90,10 @@ googleChromeUbuntu64InstallerUrl = "https://dl.google.com/linux/direct/google-ch
 chromeDriverLinux32InstallerZipUrl = "https://chromedriver.googlecode.com/files/chromedriver_linux32_2.3.zip"
 chromeDriverLinux64InstallerZipUrl = "https://chromedriver.googlecode.com/files/chromedriver_linux64_2.3.zip"
 
+# from http://www.python.org/download/
+python2xWindows32InstallerMsiUrl = "http://www.python.org/ftp/python/2.7.6/python-2.7.6.msi"
+python2xWindows64InstallerMsiUrl = "http://www.python.org/ftp/python/2.7.6/python-2.7.6.amd64.msi"
+
 # used to be specific to the website you are testing,
 # no probably just the files inside testsDirectory will change
 testsInvokerScript = "tests-invoker.py"
@@ -367,7 +371,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             #testVm.vmxFile.setNumberOfProcessors(2)
             #testVm.vmxFile.setAccelerate3D()
             cygServerRandomPwd = ''.join(random.choice(string.letters) for i in xrange(20))
-            # were considering doing  ssh-host-config --yes --pwd `openssl rand -hex 16`
+            # were considering doing  ssh-host-config --yes --pwd $( openssl rand -hex 16 )
             # and intentionally not knowing how to log in as user cyg_server;
             # but even knowing pwd apparently we cannot log in via ssh, hence for now we do not
             #testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="cyg_server", pwd=cygServerRandomPwd)
@@ -552,8 +556,8 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         # a necessity on some international version OS
         testVm.sshCommand(["mkdir -p ~/Downloads"], user=testVm.regularUser)
         if distro == "win":
-            testVm.sshCommand(["mkdir -p `cygpath $USERPROFILE/Downloads`"], user=testVm.regularUser)
-            echo = testVm.sshCommand(["echo `cygpath $USERPROFILE/Downloads`"], user=testVm.regularUser)
+            testVm.sshCommand(['mkdir -p "$( cygpath -u "$USERPROFILE/Downloads" )"'], user=testVm.regularUser)
+            echo = testVm.sshCommand(['echo "$( cygpath -u "$USERPROFILE/Downloads" )"'], user=testVm.regularUser)
             windowsUserDownloadDirCygwinPath = echo.output.strip()
             echo = testVm.sshCommand([r"cmd.exe /C 'echo %USERPROFILE%\Downloads'"], user=testVm.regularUser)
             windowsUserDownloadDirWindowsPath = echo.output.strip()
@@ -575,7 +579,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             # also, tolerate like Error opening file C:\Users\tester\AppData\LocalLow\Sun\Java\jre1.7.0_45\Java3BillDevices.jpg
             # also, tolerate Error: 2
             # also, work around Java for Windows installer program despite success not exiting if invoked this way
-            testVm.sshCommand(["( nohup cmd.exe /C 'echo dummy | " + javawInstallerOnGuestWindowsPath
+            testVm.sshCommand(["( nohup cmd.exe /C '" + javawInstallerOnGuestWindowsPath
                                + " /s /L " + javawInstallerOnGuestWindowsPath + ".log' &> /dev/null & )"],
                               user=testVm.regularUser,
                               exceptionIfNotZero=False)
@@ -588,6 +592,40 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                     exceptionIfNotZero=False)
                 if not javaVersion.returncode:
                     waitingForJavawInstallerSuccess = False
+            #
+            # Python for Windows
+            if arch == Arch(32):
+                python2xWindowsInstallerMsiUrl = python2xWindows32InstallerMsiUrl
+            elif arch == Arch(64):
+                python2xWindowsInstallerMsiUrl = python2xWindows64InstallerMsiUrl
+            pythonInstallerOnHostPath = Download.fromUrl(python2xWindowsInstallerMsiUrl)
+            pythonInstallerBasename = os.path.basename(pythonInstallerOnHostPath)
+            pythonInstallerOnGuestCygwinPath = posixpath.join(windowsUserDownloadDirCygwinPath, pythonInstallerBasename)
+            pythonInstallerOnGuestWindowsPath = ntpath.join(windowsUserDownloadDirWindowsPath, pythonInstallerBasename)
+            testVm.scpPutCommand(fromHostPath=pythonInstallerOnHostPath,
+                                 toGuestPath=pythonInstallerOnGuestCygwinPath,
+                                 guestUser=testVm.regularUser)
+            # run installer
+            # see http://www.python.org/download/releases/2.4/msi/
+            testVm.sshCommand(["cmd.exe /C 'msiexec.exe /i " + pythonInstallerOnGuestWindowsPath
+                               + " ALLUSERS=1 /qb! /log " + pythonInstallerOnGuestWindowsPath + ".log'"],
+                              user=testVm.regularUser)
+            # add to PATH for system
+            # Cygwin regtool syntax see http://cygwin.com/cygwin-ug-net/using-utils.html
+            machineWidePathRegistryKeyValue = "/HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Session Manager/Environment/Path"
+            # assuming python.exe is in C:\Python27 or so
+            testVm.sshCommand(['PYDIR="$( cygpath -w "$( echo /cygdrive/c/Py* )" )"'
+                               + ' && '
+                               + 'regtool --wow64 --expand-string set "' + machineWidePathRegistryKeyValue
+                               + '" "$( regtool --wow64 get "' + machineWidePathRegistryKeyValue + '" );$PYDIR"'],
+                              user=testVm.regularUser)
+            # must restart for change of PATH to be effective
+            # shut down
+            testVm.shutdownCommand()
+            VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
+            # start up until successful login into GUI
+            VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
+            CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         # install Google Chrome
         if browser == "chrome" and distro == "ub":
@@ -610,7 +648,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                                + " google-chrome --cancel-first-run --no-default-browser-check about:blank"
                                + " &> /dev/null & )"
                                + " && sleep 5"
-                               + " && kill `pidof chrome`"],
+                               + " && kill $( pidof chrome )"],
                               user=testVm.regularUser)
         #
         # install Selenium Server standalone
