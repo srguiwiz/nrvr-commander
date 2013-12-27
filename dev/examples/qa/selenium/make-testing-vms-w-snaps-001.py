@@ -83,6 +83,8 @@ windows7ProInstaller64EnIsoUrl = "http://msft.digitalrivercontent.net/win/X17-59
 seleniumServerStandaloneJarUrl = "http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar"
 # from https://pypi.python.org/pypi/selenium/
 seleniumPythonBindingsTarUrl = "https://pypi.python.org/packages/source/s/selenium/selenium-2.35.0.tar.gz"
+# from https://pypi.python.org/pypi/setuptools
+pythonSetuptoolsTarUrl = "https://pypi.python.org/packages/source/s/setuptools/setuptools-2.0.1.tar.gz"
 #
 googleChromeUbuntu32InstallerUrl = "https://dl.google.com/linux/direct/google-chrome-stable_current_i386.deb"
 googleChromeUbuntu64InstallerUrl = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
@@ -156,6 +158,18 @@ def vmIdentifiersForNumber(number, index):
 testVmsIdentifiers = []
 for index, number in enumerate(testVmsRange):
     testVmsIdentifiers.append(vmIdentifiersForNumber(number, index))
+
+# this example use of NrvrCommander makes use of features provided of different components
+# of NrvrCommander,
+# it may be important to understand that other uses (use patterns) are possible and reasonable
+#
+# specifically this example use has first been written for and maybe with better understanding
+# of Linux operating systems,
+# therefore this example use probably has (shows) a different, maybe better, style of
+# separation between root and additional (regular) users in Linux than in Windows
+#
+# it should be possible to spend some time on making it do things differently in Windows,
+# not saying this is bad, just saying different styles are possible
 
 def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
     """Make a single virtual machine.
@@ -457,7 +471,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 r" --root C:\cygwin" + \
                 r" --quiet-mode" + \
                 r" --no-desktop" + \
-                r" --packages openssh,shutdown"
+                r" --packages " + CygwinDownload.usablePackageList001
             # ssh-host-config
             cygwinSshdConfigCommandLine = \
                 r"C:\cygwin\bin\bash --login -c " '"' + \
@@ -537,6 +551,11 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
     arch = vmIdentifiers.mapas.arch
     browser = vmIdentifiers.mapas.browser
     #
+    if distro == "el" or distro == "ub":
+        rootOrAnAdministrator = "root"
+    elif distro == "win":
+        rootOrAnAdministrator = testVm.regularUser
+    #
     snapshots = VMwareHypervisor.local.listSnapshots(vmIdentifiers.vmxFilePath)
     snapshotExists = "tools installed" in snapshots
     if not snapshotExists or forceThisStep:
@@ -561,6 +580,8 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             windowsUserDownloadDirCygwinPath = echo.output.strip()
             echo = testVm.sshCommand([r"cmd.exe /C 'echo %USERPROFILE%\Downloads'"], user=testVm.regularUser)
             windowsUserDownloadDirWindowsPath = echo.output.strip()
+        # for symmetry and comprehensibility
+        testVm.sshCommand(["mkdir -p ~/Downloads"], user=rootOrAnAdministrator)
         #
         # install Java
         if distro == "win":
@@ -634,12 +655,12 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             elif arch == Arch(64):
                 googleChromeUbuntuInstallerUrl = googleChromeUbuntu64InstallerUrl
             chromeInstallerOnHostPath = Download.fromUrl(googleChromeUbuntuInstallerUrl)
-            chromeInstallerOnGuestPath = "~/" + Download.basename(googleChromeUbuntuInstallerUrl)
+            chromeInstallerOnGuestPath = posixpath.join("~/Downloads", Download.basename(googleChromeUbuntuInstallerUrl))
             testVm.scpPutCommand(fromHostPath=chromeInstallerOnHostPath,
                                  toGuestPath=chromeInstallerOnGuestPath,
                                  guestUser="root")
             # install
-            testVm.sshCommand(["cd ~/"
+            testVm.sshCommand(["cd ~/Downloads"
                                + " && dpkg -i " + chromeInstallerOnGuestPath],
                               user="root")
             # run once, wait, terminate
@@ -664,31 +685,49 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                 chromeDriverLinuxInstallerZipUrl = chromeDriverLinux32InstallerZipUrl
             elif arch == Arch(64):
                 chromeDriverLinuxInstallerZipUrl = chromeDriverLinux64InstallerZipUrl
-            chromeDriverInstallerZipPath = Download.fromUrl(chromeDriverLinuxInstallerZipUrl)
+            chromeDriverInstallerZipOnHostPath = Download.fromUrl(chromeDriverLinuxInstallerZipUrl)
             chromeDriverInstallerZipBaseName = Download.basename(chromeDriverLinuxInstallerZipUrl)
-            testVm.scpPutCommand(fromHostPath=chromeDriverInstallerZipPath,
-                                 toGuestPath="~/" + chromeDriverInstallerZipBaseName,
+            chromeDriverInstallerZipOnGuestPath = posixpath.join("~/Downloads", chromeDriverInstallerZipBaseName)
+            testVm.scpPutCommand(fromHostPath=chromeDriverInstallerZipOnHostPath,
+                                 toGuestPath=chromeDriverInstallerZipOnGuestPath,
                                  guestUser="root")
             chromeDriverInstallerExtracted = re.match(r"^(\S+)(?:\.zip)$", chromeDriverInstallerZipBaseName).group(1)
-            testVm.sshCommand(["cd ~/"
-                               + " && unzip -o ~/" + chromeDriverInstallerZipBaseName + " -d ~/" + chromeDriverInstallerExtracted
-                               + " && chmod +x ~/" + chromeDriverInstallerExtracted + "/chromedriver"
-                               + " && cp ~/" + chromeDriverInstallerExtracted + "/chromedriver /usr/local/bin/chromedriver"],
+            chromeDriverInstallerExtractedPath = posixpath.join("~/Downloads", chromeDriverInstallerExtracted)
+            testVm.sshCommand(["cd ~/Downloads"
+                               + " && unzip -o " + chromeDriverInstallerZipOnGuestPath + " -d " + chromeDriverInstallerExtractedPath
+                               + " && chmod +x " + chromeDriverInstallerExtractedPath + "/chromedriver"
+                               + " && cp " + chromeDriverInstallerExtractedPath + "/chromedriver /usr/local/bin/chromedriver"],
                               user="root")
         #
         # install Python bindings
-        seleniumPythonBindingsTarPath = Download.fromUrl(seleniumPythonBindingsTarUrl)
+        if distro == "win":
+            # first an auxiliary tool
+            pythonSetuptoolsTarOnHostPath = Download.fromUrl(pythonSetuptoolsTarUrl)
+            pythonSetuptoolsTarBaseName = Download.basename(pythonSetuptoolsTarUrl)
+            pythonSetuptoolsTarOnGuestPath = posixpath.join("~/Downloads", pythonSetuptoolsTarBaseName)
+            testVm.scpPutCommand(fromHostPath=pythonSetuptoolsTarOnHostPath,
+                                 toGuestPath=pythonSetuptoolsTarOnGuestPath,
+                                 guestUser=rootOrAnAdministrator)
+            pythonSetuptoolsExtracted = re.match(r"^(\S+)(?:\.tar\.gz)$", pythonSetuptoolsTarBaseName).group(1)
+            testVm.sshCommand(["cd ~/Downloads"
+                               + " && tar -xf " + pythonSetuptoolsTarOnGuestPath
+                               + " && cd " + pythonSetuptoolsExtracted + "/"
+                               + " && chmod +x setup.py"
+                               + " && python ./setup.py install"],
+                              user=rootOrAnAdministrator)
+        seleniumPythonBindingsTarOnHostPath = Download.fromUrl(seleniumPythonBindingsTarUrl)
         seleniumPythonBindingsTarBaseName = Download.basename(seleniumPythonBindingsTarUrl)
-        testVm.scpPutCommand(fromHostPath=seleniumPythonBindingsTarPath,
-                             toGuestPath="~/" + seleniumPythonBindingsTarBaseName,
-                             guestUser="root")
+        seleniumPythonBindingsTarOnGuestPath = posixpath.join("~/Downloads", seleniumPythonBindingsTarBaseName)
+        testVm.scpPutCommand(fromHostPath=seleniumPythonBindingsTarOnHostPath,
+                             toGuestPath=seleniumPythonBindingsTarOnGuestPath,
+                             guestUser=rootOrAnAdministrator)
         seleniumPythonBindingsExtracted = re.match(r"^(\S+)(?:\.tar\.gz)$", seleniumPythonBindingsTarBaseName).group(1)
-        testVm.sshCommand(["cd ~/"
-                           + " && tar -xf ~/" + seleniumPythonBindingsTarBaseName
+        testVm.sshCommand(["cd ~/Downloads"
+                           + " && tar -xf " + seleniumPythonBindingsTarOnGuestPath
                            + " && cd " + seleniumPythonBindingsExtracted + "/"
                            + " && chmod +x setup.py"
-                           + " && ./setup.py install"],
-                          user="root")
+                           + " && python ./setup.py install"],
+                          user=rootOrAnAdministrator)
         #
         # shut down for snapshot
         testVm.shutdownCommand()

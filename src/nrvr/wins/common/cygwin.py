@@ -259,6 +259,7 @@ class CygwinDownload(object):
 
     # a list of directories which at the time of this writing has been known to work well
     # for installing Cygwin with base packages and with packages openssh and shutdown
+    usablePackageList001 = "openssh,shutdown,tar,unzip,wget,curl"
     usablePackageDirs001 = [
         "_autorebase",
         "_update-info-dir",
@@ -271,9 +272,12 @@ class CygwinDownload(object):
         "coreutils",
         "crypt",
         "csih",
+        "curl",
         "cygrunsrv",
         "cygutils",
         "cygwin",
+        "cyrus-sasl",
+        "db",
         "dash",
         "diffutils",
         "dos2unix",
@@ -300,8 +304,9 @@ class CygwinDownload(object):
         "man",
         "mintty",
         "mpfr/libmpfr4",
-        "ncurses/libncurses10",
+        "ncurses",
         "ncursesw/libncursesw10",
+        "openldap",
         "openssh",
         ("openssl", 2),
         "pcre/libpcre0",
@@ -318,7 +323,10 @@ class CygwinDownload(object):
         "terminfo",
         "texinfo",
         "tzcode",
+        "unzip",
+        "util-linux",
         "vim/vim-minimal",
+        "wget",
         "which",
         ("xz", 2),
         "zlib/zlib0",
