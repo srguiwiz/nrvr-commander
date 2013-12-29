@@ -92,6 +92,10 @@ googleChromeUbuntu64InstallerUrl = "https://dl.google.com/linux/direct/google-ch
 chromeDriverLinux32InstallerZipUrl = "https://chromedriver.googlecode.com/files/chromedriver_linux32_2.3.zip"
 chromeDriverLinux64InstallerZipUrl = "https://chromedriver.googlecode.com/files/chromedriver_linux64_2.3.zip"
 
+# from http://code.google.com/p/selenium/downloads/list
+seleniumIeDriverServer32ZipUrl = "http://selenium.googlecode.com/files/IEDriverServer_Win32_2.39.0.zip"
+seleniumIeDriverServer64ZipUrl = "http://selenium.googlecode.com/files/IEDriverServer_x64_2.39.0.zip"
+
 # from http://www.python.org/download/
 python2xWindows32InstallerMsiUrl = "http://www.python.org/ftp/python/2.7.6/python-2.7.6.msi"
 python2xWindows64InstallerMsiUrl = "http://www.python.org/ftp/python/2.7.6/python-2.7.6.amd64.msi"
@@ -188,7 +192,11 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         raise Exception("unknown distro %s" % (distro))
     if not arch in [Arch(32), Arch(64)]:
         raise Exception("unknown architecture arch=%s" % (arch))
+    if not browser in ["firefox", "chrome", "iexplorer"]:
+        raise Exception("unknown distro %s" % (distro))
     if distro == "el" and browser == "chrome":
+        raise Exception("cannot run browser %s in distro %s" % (browser, distro))
+    if (distro == "el" or distro == "ub") and browser == "iexplorer":
         raise Exception("cannot run browser %s in distro %s" % (browser, distro))
     #
     if distro == "el":
@@ -438,7 +446,8 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             # additional modifications
             modifications = []
             customDirectoryPathOnIso = "custom"
-            # shutdown only while installer dike is present
+            #
+            # shutdown only while installer disk is present
             shutdownRandomScriptName = ''.join(random.choice(string.letters) for i in xrange(8))
             shutdownScriptPathOnIso = os.path.join(customDirectoryPathOnIso, shutdownRandomScriptName + ".bat")
             modifications.extend([
@@ -454,6 +463,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             autounattendFileContent.addLogonCommand(order=490,
                                                     commandLine=shutdownScriptInvocationCommandLine,
                                                     description="Shutdown - intentionally transient")
+            #
             # locally downloaded Cygwin packages directory
             # see http://www.cygwin.com/install.html
             # see http://www.cygwin.com/faq/faq.html#faq.setup.cli
@@ -520,6 +530,30 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             autounattendFileContent.addFirstLogonCommand(order=400,
                                                          commandLine=cygwinInstallScriptInvocationCommandLine,
                                                          description="Install Cygwin - intentionally transient")
+            #
+            # a detached instance of screen (per logged in user) to be able to start GUI programs from ssh,
+            # basic idea from http://superuser.com/questions/531787/starting-windows-gui-program-in-windows-through-cygwin-sshd-from-ssh-client
+            # and then needed more exploration and experimentation;
+            # also to expand variable out of registry before command line gets it,
+            # first must get % into registry value,
+            # see http://stackoverflow.com/questions/3620388/how-to-use-reg-expand-sz-from-the-commandline
+            runDetachedScreenRegistryValueCommandLine = \
+                r"""cmd.exe /c reg.exe add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run """ + \
+                r"""/v CygwinScreen /t REG_EXPAND_SZ """ + \
+                r"""/d "C:\cygwin\bin\bash.exe --login -c 'screen -wipe ; screen -d -m -S for_"^%USERNAME^%"'" """ + \
+                r"""/f"""
+            autounattendFileContent.addFirstLogonCommand(order=401,
+                                                         commandLine=runDetachedScreenRegistryValueCommandLine,
+                                                         description="Add registry value for running detached screen")
+            #
+            # various
+            disableIExplorerFirstRunWizardCommandLine = \
+                r"""reg.exe add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" """ + \
+                r"""/v DisableFirstRunCustomize /t REG_DWORD /d 1 /f"""
+            autounattendFileContent.addFirstLogonCommand(order=410,
+                                                         commandLine=disableIExplorerFirstRunWizardCommandLine,
+                                                         description="Disable Internet Explorer first run wizard")
+            #
             # pick right temporary directory, ideally same as VM
             modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutounattend \
                 (autounattendFileContent,
@@ -690,14 +724,38 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             chromeDriverInstallerZipOnGuestPath = posixpath.join("~/Downloads", chromeDriverInstallerZipBaseName)
             testVm.scpPutCommand(fromHostPath=chromeDriverInstallerZipOnHostPath,
                                  toGuestPath=chromeDriverInstallerZipOnGuestPath,
-                                 guestUser="root")
+                                 guestUser=rootOrAnAdministrator)
             chromeDriverInstallerExtracted = re.match(r"^(\S+)(?:\.zip)$", chromeDriverInstallerZipBaseName).group(1)
             chromeDriverInstallerExtractedPath = posixpath.join("~/Downloads", chromeDriverInstallerExtracted)
+            # unzip and copy to where it is on PATH
             testVm.sshCommand(["cd ~/Downloads"
                                + " && unzip -o " + chromeDriverInstallerZipOnGuestPath + " -d " + chromeDriverInstallerExtractedPath
                                + " && chmod +x " + chromeDriverInstallerExtractedPath + "/chromedriver"
-                               + " && cp " + chromeDriverInstallerExtractedPath + "/chromedriver /usr/local/bin/chromedriver"],
-                              user="root")
+                               + " && cp " + chromeDriverInstallerExtractedPath + "/chromedriver /usr/local/bin"],
+                              user=rootOrAnAdministrator)
+        #
+        if browser == "iexplorer":
+            # install IeDriver
+            # see http://code.google.com/p/selenium/wiki/InternetExplorerDriver
+            if arch == Arch(32):
+                seleniumIeDriverServerZipUrl = seleniumIeDriverServer32ZipUrl
+            elif arch == Arch(64):
+                seleniumIeDriverServerZipUrl = seleniumIeDriverServer64ZipUrl
+            seleniumIeDriverServerZipOnHostPath = Download.fromUrl(seleniumIeDriverServerZipUrl)
+            seleniumIeDriverServerZipBaseName = Download.basename(seleniumIeDriverServerZipUrl)
+            seleniumIeDriverServerZipOnGuestPath = posixpath.join("~/Downloads", seleniumIeDriverServerZipBaseName)
+            testVm.scpPutCommand(fromHostPath=seleniumIeDriverServerZipOnHostPath,
+                                 toGuestPath=seleniumIeDriverServerZipOnGuestPath,
+                                 guestUser=rootOrAnAdministrator)
+            seleniumIeDriverServerExtracted = re.match(r"^(\S+)(?:\.zip)$", seleniumIeDriverServerZipBaseName).group(1)
+            seleniumIeDriverServerExtractedPath = posixpath.join("~/Downloads", seleniumIeDriverServerExtracted)
+            # unzip and copy to where it is on PATH, e.g. /cygdrive/c/Windows/system32
+            testVm.sshCommand(["cd ~/Downloads"
+                               + " && unzip -o " + seleniumIeDriverServerZipOnGuestPath + " -d " + seleniumIeDriverServerExtractedPath
+                               + " && chmod +x " + seleniumIeDriverServerExtractedPath + "/IEDriverServer.exe"
+                               + " && cp " + seleniumIeDriverServerExtractedPath + "/IEDriverServer.exe"
+                               + " `echo $PATH | grep -o -i '/cyg[^:]*Win[^:]*' | grep -m1 ''`"],
+                              user=rootOrAnAdministrator)
         #
         # install Python bindings
         if distro == "win":
@@ -768,6 +826,11 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
             testVm.sshCommand(["sed -i -e 's/webdriver\.Firefox/webdriver.Chrome/'"
                                + " ~/Downloads/" + testsDirectory + "/*.py"],
                               user=testVm.regularUser)
+        elif browser == "iexplorer":
+            # switch from webdriver.Firefox() to webdriver.Ie()
+            testVm.sshCommand(["sed -i -e 's/webdriver\.Firefox/webdriver.Ie/'"
+                               + " ~/Downloads/" + testsDirectory + "/*.py"],
+                              user=testVm.regularUser)
         #
         # apparently on some virtual machines the NAT interface takes some time to come up
         SshCommand(userSshParameters,
@@ -782,12 +845,20 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         time.sleep(5)
         #
         # run tests
-        testVm.sshCommand(["export DISPLAY=:0.0 ; "
-                           + "cd ~/Downloads/"
-                           + " && chmod +x " + testsInvokerScript
-                           + " && chmod +x " + testsDirectory + "/*.py"
-                           + " && ( nohup ./" + testsInvokerScript + " &> ./" + testsInvokerScript + ".log & )"],
-                          user=testVm.regularUser)
+        if distro == "el" or distro == "ub":
+            testVm.sshCommand(["export DISPLAY=:0.0 ; "
+                               + "cd ~/Downloads/"
+                               + " && chmod +x " + testsInvokerScript
+                               + " && chmod +x " + testsDirectory + "/*.py"
+                               + " && ( nohup python ./" + testsInvokerScript + " &> ./" + testsInvokerScript + ".log & )"],
+                              user=testVm.regularUser)
+        elif distro == "win":
+            testVm.sshCommand(["screen -wipe ; screen -S for_$USERNAME -X stuff '"
+                               + "cd ~/Downloads/"
+                               + " && chmod +x " + testsInvokerScript
+                               + " && chmod +x " + testsDirectory + "/*.py"
+                               + " && ( nohup python ./" + testsInvokerScript + " &> ./" + testsInvokerScript + ".log & )\n'"],
+                              user=testVm.regularUser)
         #time.sleep(60)
         #
         # shut down for snapshot
