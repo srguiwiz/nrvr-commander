@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="190" height="150" transform="scale(0.2)">
+	<rect width="190" height="150" fill="none"/>
+	<path stroke="black" stroke-width="11" stroke-linecap="round" fill="none" d="
+	M 15,130
+	c 0,-10 0,-90 0,-100
+	s 5,-15 15,-15
+	s 30,0 40,0
+	s 15,5 15,15
+	s 0,90 0,100
+	m 90,0
+	c -10,0 -45,0 -55,0
+	s -15,-5 -15,-15
+	s 0,-75 0,-85
+	s 5,-15 15,-15
+	s 45,0 55,0
+	"/>
+</svg>
