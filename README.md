@@ -1,6 +1,5 @@
 # NrvrCommander - Repository README
 
-![NrvrCommander logo](http://raw.github.com/srguiwiz/nrvr-commander/master/nrvr-commander-logo.svg)
 NrvrCommander is a Python package for devops and QA automation around
 virtual machines, VMware, Enterprise Linux 6.x, Ubuntu LTS, enabling
 work with Firefox, Chrome, Selenium, and more.  Also runs on Mac OS X.
