@@ -107,7 +107,7 @@ testsDirectory = "tests"
 
 # will modulo over machinesPattern,
 # customize as needed
-testVmsRange = range(181, 183) #189) # or more
+testVmsRange = range(181, 184) #191) # or more
 
 # customize as needed
 rootpw = "redwood"
@@ -123,14 +123,14 @@ class Arch(str): pass # make sure it is a string to avoid string-number unequali
 # customize as needed
 machinesPattern = [MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
                    MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
-                   MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
-                   MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
-                   MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
-                   MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
-                   MachineParameters(distro="el", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
-                   MachineParameters(distro="ub", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
-                   #MachineParameters(distro="win", arch=Arch(32), browser="ie", lang="en-US", memsize=1020),
-                   #MachineParameters(distro="win", arch=Arch(64), browser="ie", lang="en-US", memsize=1520),
+                   #MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
+                   #MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
+                   #MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
+                   #MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
+                   #MachineParameters(distro="el", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
+                   #MachineParameters(distro="ub", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
+                   MachineParameters(distro="win", arch=Arch(32), browser="iexplorer", lang="en-US", memsize=1020),
+                   #MachineParameters(distro="win", arch=Arch(64), browser="iexplorer", lang="en-US", memsize=1520),
                    ]
 
 # trying to approximate the order in which identifiers are used from this tuple
