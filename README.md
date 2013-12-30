@@ -13,7 +13,7 @@ For what is provided in the package, see **src/README.txt**.
 
 Other than src/, files in dev/ are NOT going into the Python package.
 
-Details for hosting on different operating systems are kept in docs/.
+Details for hosting on different operating systems are kept in **docs/**.
 
 Good example uses (demonstrating utility) are
 
