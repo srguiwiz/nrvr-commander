@@ -647,6 +647,13 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                     exceptionIfNotZero=False)
                 if not javaVersion.returncode:
                     waitingForJavawInstallerSuccess = False
+            # suppress scheduled check for Java updates
+            testVm.sshCommand(
+                [r"cmd.exe /C "
+                 + r"""reg.exe delete 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'"""
+                 + r""" /v SunJavaUpdateSched /f"""],
+                user=rootOrAnAdministrator,
+                exceptionIfNotZero=True)
             #
             # Python for Windows
             if arch == Arch(32):
