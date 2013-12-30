@@ -539,7 +539,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             runDetachedScreenRegistryValueCommandLine = \
                 r"""cmd.exe /c reg.exe add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run """ + \
                 r"""/v CygwinScreen /t REG_EXPAND_SZ """ + \
-                r"""/d "C:\cygwin\bin\bash.exe --login -c 'screen -wipe ; screen -d -m -S for_"^%USERNAME^%"'" """ + \
+                r"""/d "C:\cygwin\bin\bash.exe --login -c 'screen -wipe ; screen -d -m -S wguifor_"^%USERNAME^%"'" """ + \
                 r"""/f"""
             autounattendFileContent.addFirstLogonCommand(order=401,
                                                          commandLine=runDetachedScreenRegistryValueCommandLine,
@@ -828,7 +828,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         if distro == "el" or distro == "ub":
             LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         elif distro == "win":
-            CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+            CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, alsoNeedsScreen=True, ticker=True)
         #
         # copy tests
         scriptDir = os.path.dirname(os.path.abspath(__file__))
@@ -870,7 +870,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
                                + " && ( nohup python ./" + testsInvokerScript + " &> ./" + testsInvokerScript + ".log & )"],
                               user=testVm.regularUser)
         elif distro == "win":
-            testVm.sshCommand(["screen -wipe ; screen -S for_$USERNAME -X stuff '"
+            testVm.sshCommand(["screen -wipe ; screen -S wguifor_$USERNAME -X stuff '"
                                + "cd ~/Downloads/"
                                + " && chmod +x " + testsInvokerScript
                                + " && chmod +x " + testsDirectory + "/*.py"

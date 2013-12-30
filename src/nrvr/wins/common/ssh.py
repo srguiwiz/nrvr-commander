@@ -42,9 +42,10 @@ class CygwinSshCommand(SshCommand):
          tickerForRetry=tickerForRetry)
 
     _isGuiAvailableRegex = re.compile(r"[1-9]") # any number larger than 0
+    _isScreenAvailableRegex = re.compile(r"[1-9]") # any number larger than 0
 
     @classmethod
-    def isGuiAvailable(cls, sshParameters):
+    def isGuiAvailable(cls, sshParameters, alsoNeedsScreen=False):
         """Return whether GUI is available.
         
         Should be user to be meaningful.
@@ -56,12 +57,22 @@ class CygwinSshCommand(SshCommand):
         try:
             # see http://cygwin.com/ml/cygwin/2010-01/msg00644.html
             # see http://blogs.technet.com/b/heyscriptingguy/archive/2011/03/17/use-powershell-to-detect-if-a-workstation-is-in-use.aspx
-            probingCommand = r"ps -u $UID -W | grep -c '\\explorer\.exe'"
-            sshCommand = CygwinSshCommand(sshParameters,
-                                          argv=[probingCommand],
-                                          maxConnectionRetries=1)
-            if cls._isGuiAvailableRegex.search(sshCommand.output):
-                return True
+            guiProbingCommand = r"ps -u $UID -W | grep -c '\\explorer\.exe'"
+            guiSshCommand = CygwinSshCommand(sshParameters,
+                                             argv=[guiProbingCommand],
+                                             maxConnectionRetries=1)
+            if cls._isGuiAvailableRegex.search(guiSshCommand.output):
+                if not alsoNeedsScreen:
+                    return True
+                else:
+                    screenProbingCommand = r"""screen -wipe | grep -c 'wguifor_'"$USERNAME"'\s\s*(Detached'"""
+                    screenSshCommand = CygwinSshCommand(sshParameters,
+                                                        argv=[screenProbingCommand],
+                                                        maxConnectionRetries=1)
+                    if cls._isScreenAvailableRegex.search(screenSshCommand.output):
+                        return True
+                    else:
+                        return False
             else:
                 return False
         except Exception as e:
@@ -69,6 +80,7 @@ class CygwinSshCommand(SshCommand):
 
     @classmethod
     def sleepUntilIsGuiAvailable(cls, sshParameters,
+                                 alsoNeedsScreen=False,
                                  checkIntervalSeconds=3.0, ticker=False,
                                  extraSleepSeconds=5.0):
         """If GUI available return, else loop sleeping for checkIntervalSeconds.
@@ -84,10 +96,14 @@ class CygwinSshCommand(SshCommand):
         printed = False
         ticked = False
         # check the essential condition, initially and then repeatedly
-        while not cls.isGuiAvailable(sshParameters):
+        while not cls.isGuiAvailable(sshParameters, alsoNeedsScreen=alsoNeedsScreen):
             if not printed:
                 # first time only printing
-                print "waiting for GUI to be available to connect to " + IPAddress.asString(sshParameters.ipaddress)
+                if not alsoNeedsScreen:
+                    message = "waiting for GUI to be available to connect to {0}"
+                else: # alsoNeedsScreen
+                    message = "waiting for GUI and screen to be available to connect to {0}"
+                print message.format(IPAddress.asString(sshParameters.ipaddress))
                 sys.stdout.flush()
                 printed = True
             if ticker:
