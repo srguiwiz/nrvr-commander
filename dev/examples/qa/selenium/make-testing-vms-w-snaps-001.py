@@ -424,10 +424,6 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             ethernetAdapter1MacAddress = testVm.vmxFile.getEthernetMacAddress(1)
             # autounattend file content
             autounattendFileContent = Win7AutounattendFileContent(Win7AutounattendTemplates.usableWin7AutounattendTemplate001)
-            if arch == Arch(32):
-                autounattendFileContent.adjustFor32Bit()
-            elif arch == Arch(64):
-                autounattendFileContent.adjustFor64Bit()
             autounattendFileContent.replaceLanguageAndLocale(vmIdentifiers.mapas.lang)
             autounattendFileContent.replaceAdminPw(rootpw)
             autounattendFileContent.replaceComputerName(testVm.basenameStem)
@@ -464,10 +460,13 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                                                     commandLine=shutdownScriptInvocationCommandLine,
                                                     description="Shutdown - intentionally transient")
             #
+            # install Cygwin 32-bit even in Windows 64-bit
+            # see http://stackoverflow.com/questions/18329233/is-it-advisable-to-switch-from-cygwin-32bit-to-cygwin-64bit
+            cygwinArch = Arch(32)
             # locally downloaded Cygwin packages directory
             # see http://www.cygwin.com/install.html
             # see http://www.cygwin.com/faq/faq.html#faq.setup.cli
-            cygwinPackagesPathOnHost = CygwinDownload.forArch(arch, CygwinDownload.usablePackageDirs001)
+            cygwinPackagesPathOnHost = CygwinDownload.forArch(cygwinArch, CygwinDownload.usablePackageDirs001)
             cygwinPackagesPathOnIso = os.path.join(customDirectoryPathOnIso, os.path.basename(cygwinPackagesPathOnHost))
             cygwinPackagesPathForCommandLine = cygwinPackagesPathOnIso.replace("/", "\\")
             # run Cygwin installer, intentionally only while installer disk is present
@@ -475,7 +474,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             cygwinInstallScriptPathOnIso = os.path.join(customDirectoryPathOnIso, cygwinInstallRandomScriptName + ".bat")
             # Cygwin installer
             cygwinInstallCommandLine = \
-                ntpath.join("D:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installerName(arch)) + \
+                ntpath.join("D:\\", cygwinPackagesPathForCommandLine, CygwinDownload.installerName(cygwinArch)) + \
                 r" --local-install" + \
                 r" --local-package-dir " + ntpath.join("D:\\", cygwinPackagesPathForCommandLine) + \
                 r" --root C:\cygwin" + \
@@ -554,6 +553,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                                                          commandLine=disableIExplorerFirstRunWizardCommandLine,
                                                          description="Disable Internet Explorer first run wizard")
             #
+            if arch == Arch(32):
+                autounattendFileContent.adjustFor32Bit()
+            elif arch == Arch(64):
+                autounattendFileContent.adjustFor64Bit()
             # pick right temporary directory, ideally same as VM
             modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutounattend \
                 (autounattendFileContent,
@@ -620,6 +623,8 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         # install Java
         if distro == "win":
             # Java for Windows
+            # install Java 32-bit even in Windows 64-bit
+            # see http://www.java.com/en/download/faq/java_win64bit.xml
             javawInstallerOnHostPath = JavawDownload.now()
             javawInstallerBasename = os.path.basename(javawInstallerOnHostPath)
             javawInstallerOnGuestCygwinPath = posixpath.join(windowsUserDownloadDirCygwinPath, javawInstallerBasename)
