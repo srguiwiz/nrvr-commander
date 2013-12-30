@@ -749,13 +749,18 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                                  guestUser=rootOrAnAdministrator)
             seleniumIeDriverServerExtracted = re.match(r"^(\S+)(?:\.zip)$", seleniumIeDriverServerZipBaseName).group(1)
             seleniumIeDriverServerExtractedPath = posixpath.join("~/Downloads", seleniumIeDriverServerExtracted)
-            # unzip and copy to where it is on PATH, e.g. /cygdrive/c/Windows/system32
+            # unzip and copy to where it is on PATH, e.g. SYSTEMROOT could be /cygdrive/c/Windows
             testVm.sshCommand(["cd ~/Downloads"
                                + " && unzip -o " + seleniumIeDriverServerZipOnGuestPath + " -d " + seleniumIeDriverServerExtractedPath
                                + " && chmod +x " + seleniumIeDriverServerExtractedPath + "/IEDriverServer.exe"
-                               + " && cp " + seleniumIeDriverServerExtractedPath + "/IEDriverServer.exe"
-                               + " `echo $PATH | grep -o -i '/cyg[^:]*Win[^:]*' | grep -m1 ''`"],
+                               + " && cp " + seleniumIeDriverServerExtractedPath + "/IEDriverServer.exe $SYSTEMROOT"],
                               user=rootOrAnAdministrator)
+            # prevent firewall dialog on screen, regarding IeDriver
+            testVm.sshCommand(
+                [r'if ! netsh advfirewall firewall show rule name=IEDriverServer ; then '
+                 + r'netsh advfirewall firewall add rule program="$SYSTEMROOT\IEDriverServer.exe" name=IEDriverServer dir=in action=allow protocol=tcp localport=any'
+                 + r' ; fi'],
+                user=rootOrAnAdministrator)
         #
         # install Python bindings
         if distro == "win":
