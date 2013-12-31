@@ -171,7 +171,9 @@ class WinUdfImage(nrvr.diskimage.isoimage.IsoImage):
         isoinfo = CommandCapture([
             "isoinfo",
             "-d",
-            "-j", "UTF-8", # avoid stderr "Setting input-charset to 'UTF-8' from locale."
+            # on Mac got stderr "Setting input-charset to 'UTF-8' from locale." hence -j UTF-8
+            # then on Ubuntu got stderr "Unknown charset: UTF-8" hence -j iso8859-1
+            "-j", "iso8859-1",
             "-i", self._isoImagePath],
             copyToStdio=False)
         info = isoinfo.stdout
