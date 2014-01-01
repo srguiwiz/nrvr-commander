@@ -58,5 +58,5 @@ setup(name="NrvrCommander",
                 "nrvr.xml"],
       maintainer='Nirvana Research',
       maintainer_email='nrvr.commander.python@nrvr.com',
-      license="Copyright (c) Nirvana Research 2006-2013, Modified BSD License",
+      license="Copyright (c) Nirvana Research 2006-2014, Modified BSD License",
       )

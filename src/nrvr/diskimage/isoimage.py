@@ -20,7 +20,7 @@ Contributor - Nora Baschy
 
 Public repository - https://github.com/srguiwiz/nrvr-commander
 
-Copyright (c) Nirvana Research 2006-2013.
+Copyright (c) Nirvana Research 2006-2014.
 Modified BSD License"""
 
 import codecs
