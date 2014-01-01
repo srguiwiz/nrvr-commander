@@ -19,15 +19,22 @@ The iso-read and iso-info command line utilities come from the
 "Compact Disc Input and Control Library" often packaged as "libcdio",
 but also as "libcdio-utils", and available in distros.
 
+Mac host:
+
 MacPorts for Mac OS X at the time of this writing provides version 0.92.
 You may need to tell your MacPorts to selfupdate and upgrade outdated.
 See the enclosed Mac OS X specific documentation file for instructions.
+
+RHEL host:
 
 RHEL 6.x and derivatives so far have provided version 0.81,
 hence much use of NrvrCommander has been without problems,
 specifically if and because many .iso files are <4GB.
 Unless you install 0.92, however, you cannot install from
 .iso files >4GB, and you cannot install Windows.
+
+See the enclosed RHEL specific documentation file for instructions
+how to build 0.92 from the git repository of libcdio.
 
 A version of libcdio source code that is known to work well with NrvrCommander
 can be retrieved be checking out tag release-0.92 , like so:
@@ -37,6 +44,8 @@ cd libcdio
 git checkout release-0.92
 
 The Fedora rawhide repository has started carrying libcdio-0.92.
+
+Ubuntu host:
 
 Ubuntu 12.04 and 13.04 apparently provide version 0.83,
 See the enclosed Ubuntu specific documentation file for instructions

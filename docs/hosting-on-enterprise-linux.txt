@@ -26,14 +26,11 @@ Possibly more to be listed here.
 When libcdio version 0.92 comes to RHEL, this should be it.
 End of host platform specific instructions.
 
-Below is additional information you may need meanwhile.
+Here is a workaround you may need meanwhile:
 
-If you have exact steps how to build libcdio 0.92 from git in RHEL 6.x, or
-how to install it, please let us know.
-
-Why?  As a problem that is going away with such upgrade, there has been
-a known problem with .iso files >4GB not being read correctly by the
-version 0.81 of iso-read (from package libcdio) installed by RHEL 6.x.
+As a problem that is going away with libcdio 0.92, there has been a known
+problem with .iso files >4GB not being read correctly by version 0.81 of
+iso-read (from package libcdio) installed by RHEL 6.x.
 Also that older version cannot read Windows .iso files.
 
 More about that in an enclosed text file on that topic.
@@ -42,6 +39,33 @@ That problem means, on RHEL 6.x, examples haven't been installing Scientific
 Linux 6.x, 64-bit, which comes on a distro .iso file >4GB.
 It also prevents installing Windows.
 
-Instructions how to build a newer version iso-read that is known to work well
-with NrvrCommander, from the git repository of libcdio, for RHEL 6.x, could be
-written similarly to an enclosed text file on hosting on Ubuntu.
+Here are instructions how to build a specific newer version iso-read that is
+known to work well with NrvrCommander, from the git repository of libcdio:
+
+sudo yum -y install git
+#
+sudo yum -y install make
+sudo yum -y install autoconf
+sudo yum -y install automake
+sudo yum -y install libtool
+sudo yum -y install m4
+sudo yum -y install texinfo
+sudo yum -y install help2man
+sudo yum -y install gcc-c++
+#
+cd ~/Downloads
+git clone git://git.savannah.gnu.org/libcdio.git
+cd libcdio
+git checkout release-0.92
+#
+sh ./autogen.sh
+./configure --disable-shared CFLAGS='-fno-inline -g' --enable-maintainer-mode
+make
+#
+touch src/cd-drive.1
+touch src/cd-info.1
+touch src/cd-read.1
+touch src/iso-read.1
+touch src/iso-info.1
+#
+sudo make install
