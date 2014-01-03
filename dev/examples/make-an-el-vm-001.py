@@ -60,35 +60,10 @@ exists = exampleVm.vmxFile.exists()
 if exists == False:
     exampleVm.mkdir()
     #
-    # long comment solely regarding .iso files larger than exactly 4GB, e.g. x86_64 Install-DVD
-    #
-    # this has been a nuisance that is about to go away with a fixed newer version iso-read
-    #
-    # since 2013-09-15 there is a fix in the git master branch of libcdio (which provides iso-read),
-    # which should make it into the next release of libcdio, i.e. newer than version 0.90
-    #
-    # had some issues with some files in the original .iso not coming through right with iso-read,
-    # test with
-    # iso-read -i ~/Downloads/SL-61-x86_64-2011-07-27-Install-DVD.iso -e isolinux/isolinux.cfg -o ~/test.txt ; more ~/test.txt ; ls ~/test.txt -al
-    # iso-read -i ~/Downloads/SL-61-x86_64-2011-11-09-Install-DVD.iso -e repodata/repomd.xml -o ~/test.txt ; more ~/test.txt ; ls ~/test.txt -al
-    # trying workaround with expanding in GNOME
-    # TODO document command line for it from comment at
-    #   http://rwmj.wordpress.com/2010/05/05/tip-ways-to-extract-an-iso-without-needing-root/
-    # then because problem is with > 4GB .iso file size
-    #   http://lists.gnu.org/archive/html/libcdio-help/2011-12/msg00001.html
-    #   http://savannah.gnu.org/bugs/?39373
-    # a solution is to make a smaller .iso file by removing large package which will not be used
-    # find ~/Downloads/tmp-SL61-64bit-iso/ -name 'kdegames-*' -exec rm {} \;
-    # find ~/Downloads/tmp-SL61-64bit-iso/ -name 'kdebase-workspace-wallpapers-*' -exec rm {} \;
-    # find ~/Downloads/tmp-SL61-64bit-iso/ -name 'scenery-backgrounds-*' -exec rm {} \;
-    # find ~/Downloads/tmp-SL61-64bit-iso/ -name 'gimp-help-[0-9]' -exec rm {} \;
-    # possibly to avoid time consuming confusion, explain in a top level file REMOVED.TXT
-    # and some more cleanup
-    # find ~/Downloads/tmp-SL61-64bit-iso/ -name 'TRANS.TBL'
-    # find ~/Downloads/tmp-SL61-64bit-iso/ -name 'TRANS.TBL' -exec rm -rf {} \;
-    # and make the new .iso image
-    # genisoimage -r -J -T -f -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat -V remastered -o ~/Downloads/SL-61-x86_64-2011-11-09-Install-DVD-less-some.iso ~/Downloads/tmp-SL61-64bit-iso/
-    # and you might want to check it is smaller than 2^32 == 4294967296 bytes
+    # comment solely regarding .iso files larger than 4GB, e.g. x86_64 Install-DVD,
+    # there had been issues that almost have gone away with a fixed newer version iso-read,
+    # there is a fix in libcdio (which provides iso-read) 0.92,
+    # the remaining issue is you need to make sure you have libcdio 0.92 installed
     #
     #downloadedDistroIsoImage = ElIsoImage(ScriptUser.loggedIn.userHomeRelative \
     #                                      ("Downloads/SL-64-i386-2013-03-18-Install-DVD.iso"))
