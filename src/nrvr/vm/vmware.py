@@ -784,7 +784,7 @@ class VmxFile(object):
             video RAM size in megabytes.  E.g. 64."""
         # recommended safe wrapper
         self.modify(lambda vmxFileContent:
-            vmxFileContent. setVideoMemorySize(vramSizeMegabytes = vramSizeMegabytes))
+            vmxFileContent.setVideoMemorySize(vramSizeMegabytes=vramSizeMegabytes))
 
 if __name__ == "__main__":
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
