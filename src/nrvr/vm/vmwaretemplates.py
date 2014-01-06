@@ -44,7 +44,7 @@ ethernet0.allowGuestConnectionControl = "FALSE" # if off then safer
 ethernet0.disableMorphToVmxnet = "TRUE" # if off then less surprises
 
 svga.autodetect = "FALSE" # means only one screen in VM
-svga.vramSize = "16384000" # apparently allows up to 2560x1600
+svga.vramSize = "16384000" # 16384000 apparently allows up to 2560x1600
 
 usb.present = "TRUE" # enable USB 1.1
 ehci.present = "TRUE" # enable USB 2.0

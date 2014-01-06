@@ -535,18 +535,30 @@ class VmxFileContent(object):
             whether to accelerate 3D graphics."""
         self.setSettingValue("mks.enable3d", "TRUE" if accelerate3D else "FALSE")
 
+    def setVideoMemorySize(self, vramSizeMegabytes):
+        """Set .vmx file parameter for video RAM size.
+        
+        vramSizeMegabytes
+            video RAM size in megabytes.  E.g. 64."""
+        if vramSizeMegabytes < 1:
+            raise Exception("Memory size must be >= 1 [megabytes], cannot be {0}".format(vramSizeMegabytes))
+        self.setSettingValue("svga.vramSize", vramSizeMegabytes * 1048576)
+
 if __name__ == "__main__":
     _vmxFileContent1 = VmxFileContent(VMwareTemplates.usableVMwareVmxTemplate001)
     _vmxFileContent1.setIdeDiskVmdkFile("test1-disk0.vmdk", 0, 0)
     _vmxFileContent1.setIdeDiskVmdkFile("test1-disk1.vmdk", 0, 1)
     _vmxFileContent1.removeSetting("vmci0.present")
-    _vmxFileContent1.removeSetting("svga.vramSize")
     _vmxFileContent1.removeSetting("usb.present")
     _vmxFileContent1.removeIdeDrive(0, 1)
     _vmxFileContent1.setEthernetAdapter(1, "hostonly")
     _vmxFileContent1.setEthernetAdapter(2, "nat")
     _vmxFileContent1.setEthernetAdapter(3, "nat")
     _vmxFileContent1.setEthernetAdapter(3, change="remove")
+    _vmxFileContent1.setMemorySize(640)
+    _vmxFileContent1.setNumberOfProcessors(2)
+    _vmxFileContent1.setAccelerate3D()
+    _vmxFileContent1.setVideoMemorySize(32)
     print _vmxFileContent1.string
 
 
@@ -764,6 +776,15 @@ class VmxFile(object):
         # recommended safe wrapper
         self.modify(lambda vmxFileContent:
             vmxFileContent.setAccelerate3D(accelerate3D=accelerate3D))
+
+    def setVideoMemorySize(self, vramSizeMegabytes):
+        """Set .vmx file parameter for video RAM size.
+        
+        vramSizeMegabytes
+            video RAM size in megabytes.  E.g. 64."""
+        # recommended safe wrapper
+        self.modify(lambda vmxFileContent:
+            vmxFileContent. setVideoMemorySize(vramSizeMegabytes = vramSizeMegabytes))
 
 if __name__ == "__main__":
     _testDir = os.path.join(tempfile.gettempdir(), Timestamp.microsecondTimestamp())
