@@ -7,7 +7,7 @@ Also runs on Mac OS X.
 
 If you got this from the source repository
 (at [github](https://github.com/srguiwiz/nrvr-commander))
-and just want to use it, run **./installlocally.py**.
+and just want to use it, run **sudo ./installlocally.py**.
 
 For what is provided in the package, see **src/README.txt**.
 
