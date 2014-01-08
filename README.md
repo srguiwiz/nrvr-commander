@@ -22,9 +22,9 @@ Good example uses (demonstrating utility) are
 - **dev/examples/make-an-ub-vm-002.py** (guest command line Ubuntu), and
 
 - the grand **dev/examples/qa/selenium/make-testing-vms-w-snaps-001.py**
-(guest GUI Linux and Windows running Selenium, although this example as
-implemented uses VM snapshots and hence needs VMware Workstation or Fusion,
-but one could use most of its techniques without snapshots in VMware Player).
+(guest GUI Linux and Windows running Selenium, this example as implemented
+uses VM snapshots and hence needs VMware Workstation or Fusion, but one
+could use most of its techniques without snapshots in VMware Player).
 
 Initially made with some brand Linux distributions, and
 with VMware "personal desktop" machine virtualization,
