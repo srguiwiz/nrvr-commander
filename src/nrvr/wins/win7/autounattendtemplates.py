@@ -88,6 +88,8 @@ class Win7AutounattendTemplates(object):
                 </ProductKey>
             </UserData>
             <EnableFirewall>true</EnableFirewall>
+            <RunSynchronous>
+            </RunSynchronous>
         </component>
     </settings>
     <settings pass="generalize">
@@ -132,6 +134,11 @@ class Win7AutounattendTemplates(object):
                     <Order>1</Order>
                     <Description>Disable Auto Updates</Description>
                     <CommandLine>reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 1 /f</CommandLine>
+                </SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <Description>Disable Hibernate</Description>
+                    <CommandLine>powercfg -h off</CommandLine>
                 </SynchronousCommand>
             </FirstLogonCommands>
             <LogonCommands>
