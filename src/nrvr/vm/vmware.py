@@ -1001,7 +1001,7 @@ class VMwareHypervisor(object):
     def startAndStopWithIdeDrivesDisabled(self, vmxFilePath, gui=False, extraSleepSeconds=3.0):
         u"""Start and stop virtual machine while all virtual IDE drives are disabled.
         
-        The raison d'être of this method is,
+        The raison d'etre of this method is,
         generated MAC addresses are available only after first start of a virtual machine.
         
         extraSleepSeconds
