@@ -1,3 +1,3 @@
 #!/usr/bin/python
 
-"""Does nothing for now."""
+"""See nested packages."""
