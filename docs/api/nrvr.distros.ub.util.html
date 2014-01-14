@@ -1,0 +1,100 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.distros.ub.util</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.distros.html"><font color="#ffffff">distros</font></a>.<a href="nrvr.distros.ub.html"><font color="#ffffff">ub</font></a>.util</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/distros/ub/util.py">/usr/lib/python2.6/site-packages/nrvr/distros/ub/util.py</a></font></td></tr></table>
+    <p><tt>nrvr.distros.el.util&nbsp;-&nbsp;Utilities&nbsp;for&nbsp;manipulating&nbsp;Ubuntu<br>
+&nbsp;<br>
+Class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;ElUtil.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="nrvr.html">nrvr</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="nrvr.distros.common.util.html#LinuxUtil">nrvr.distros.common.util.LinuxUtil</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.distros.ub.util.html#UbUtil">UbUtil</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="UbUtil">class <strong>UbUtil</strong></a>(<a href="nrvr.distros.common.util.html#LinuxUtil">nrvr.distros.common.util.LinuxUtil</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Utilities&nbsp;for&nbsp;manipulating&nbsp;an&nbsp;Ubuntu&nbsp;installation.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Class methods defined here:<br>
+<dl><dt><a name="UbUtil-ubCommandToOpenFirewallPort"><strong>ubCommandToOpenFirewallPort</strong></a>(cls, port)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;open&nbsp;a&nbsp;firewall&nbsp;TCP&nbsp;port.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;does&nbsp;not&nbsp;check&nbsp;whether&nbsp;firewall&nbsp;is&nbsp;enabled.<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;open&nbsp;a&nbsp;firewall&nbsp;TCP&nbsp;port.</tt></dd></dl>
+
+<hr>
+Class methods inherited from <a href="nrvr.distros.common.util.html#LinuxUtil">nrvr.distros.common.util.LinuxUtil</a>:<br>
+<dl><dt><a name="UbUtil-commandToAppendAddressNameLineToEtcHosts"><strong>commandToAppendAddressNameLineToEtcHosts</strong></a>(cls, ipaddress, name)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;append&nbsp;an&nbsp;ipaddress&nbsp;hostname&nbsp;line&nbsp;to&nbsp;/etc/hosts.<br>
+&nbsp;<br>
+Only&nbsp;if&nbsp;no&nbsp;line&nbsp;yet.<br>
+As&nbsp;implemented&nbsp;any&nbsp;fgrep&nbsp;match&nbsp;of&nbsp;name&nbsp;in&nbsp;/etc/hosts&nbsp;prevents&nbsp;addition.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;append&nbsp;an&nbsp;ipaddress&nbsp;hostname&nbsp;line&nbsp;to&nbsp;/etc/hosts.</tt></dd></dl>
+
+<dl><dt><a name="UbUtil-commandToEnableSudo"><strong>commandToEnableSudo</strong></a>(cls, username<font color="#909090">=None</font>)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;enable&nbsp;sudo.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;in&nbsp;/etc/sudoers&nbsp;duplicates&nbsp;any&nbsp;(presumably&nbsp;only&nbsp;one)&nbsp;line<br>
+starting&nbsp;with&nbsp;"root&nbsp;"&nbsp;and&nbsp;replaces&nbsp;"root"&nbsp;with&nbsp;the&nbsp;username.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;enable&nbsp;sudo.</tt></dd></dl>
+
+<dl><dt><a name="UbUtil-commandToWaitForNetworkDevice"><strong>commandToWaitForNetworkDevice</strong></a>(cls, device<font color="#909090">='eth0'</font>, maxSeconds<font color="#909090">='100'</font>)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;wait&nbsp;for&nbsp;a&nbsp;network&nbsp;device&nbsp;to&nbsp;connect.<br>
+&nbsp;<br>
+Only&nbsp;waits&nbsp;if&nbsp;not&nbsp;connected&nbsp;yet.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;depends&nbsp;on&nbsp;NetworkManager&nbsp;tabular&nbsp;mode&nbsp;outputting&nbsp;"connected".<br>
+&nbsp;<br>
+Need&nbsp;not&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+device<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;"eth0".<br>
+&nbsp;<br>
+maxSeconds<br>
+&nbsp;&nbsp;&nbsp;&nbsp;maximum&nbsp;number&nbsp;of&nbsp;seconds&nbsp;to&nbsp;wait.<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;wait&nbsp;for&nbsp;a&nbsp;network&nbsp;device&nbsp;to&nbsp;connect.</tt></dd></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

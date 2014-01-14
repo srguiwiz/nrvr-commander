@@ -1,0 +1,410 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.remote.ssh</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.remote.html"><font color="#ffffff">remote</font></a>.ssh</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/remote/ssh.py">/usr/lib/python2.6/site-packages/nrvr/remote/ssh.py</a></font></td></tr></table>
+    <p><tt>nrvr.remote.ssh&nbsp;-&nbsp;Remote&nbsp;commands&nbsp;over&nbsp;ssh<br>
+&nbsp;<br>
+Classes&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;include<br>
+*&nbsp;<a href="#SshCommandException">SshCommandException</a><br>
+*&nbsp;<a href="#SshParameters">SshParameters</a><br>
+*&nbsp;<a href="#SshCommand">SshCommand</a><br>
+&nbsp;<br>
+The&nbsp;main&nbsp;class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#SshCommand">SshCommand</a>.<br>
+&nbsp;<br>
+On&nbsp;the&nbsp;downside,&nbsp;for&nbsp;now&nbsp;it<br>
+*&nbsp;reports&nbsp;back&nbsp;indistinguishably&nbsp;the&nbsp;same&nbsp;way&nbsp;stdout&nbsp;and&nbsp;stderr,<br>
+*&nbsp;doesn't&nbsp;report&nbsp;back&nbsp;the&nbsp;command's&nbsp;returncode.<br>
+&nbsp;<br>
+Works&nbsp;only&nbsp;if&nbsp;module&nbsp;pty&nbsp;is&nbsp;available&nbsp;(e.g.&nbsp;in&nbsp;Python&nbsp;2.6&nbsp;on&nbsp;Linux,&nbsp;but&nbsp;not&nbsp;on&nbsp;Windows).<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;works&nbsp;in&nbsp;Linux.<br>
+As&nbsp;implemented&nbsp;requires&nbsp;ssh&nbsp;command.<br>
+Nevertheless&nbsp;essential.&nbsp;&nbsp;To&nbsp;be&nbsp;improved&nbsp;as&nbsp;needed.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="pty.html">pty</a><br>
+</td><td width="25%" valign=top><a href="re.html">re</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.remote.ssh.html#ScpCommand">ScpCommand</a>
+</font></dt><dt><font face="helvetica, arial"><a href="nrvr.remote.ssh.html#SshCommand">SshCommand</a>
+</font></dt><dt><font face="helvetica, arial"><a href="nrvr.remote.ssh.html#SshParameters">SshParameters</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="exceptions.html#Exception">exceptions.Exception</a>(<a href="exceptions.html#BaseException">exceptions.BaseException</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.remote.ssh.html#SshCommandException">SshCommandException</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.remote.ssh.html#ScpCommandException">ScpCommandException</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ScpCommand">class <strong>ScpCommand</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Copy&nbsp;a&nbsp;file&nbsp;or&nbsp;files&nbsp;via&nbsp;scp.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ScpCommand-__init__"><strong>__init__</strong></a>(self, fromPath, toPath, fromSshParameters<font color="#909090">=None</font>, toSshParameters<font color="#909090">=None</font>, recurseDirectories<font color="#909090">=False</font>, preserveTimes<font color="#909090">=True</font>)</dt><dd><tt>Create&nbsp;new&nbsp;<a href="#ScpCommand">ScpCommand</a>&nbsp;instance.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+Either&nbsp;fromPath&nbsp;or&nbsp;toPath&nbsp;is&nbsp;expected&nbsp;to&nbsp;be&nbsp;local,&nbsp;i.e.&nbsp;without&nbsp;user&nbsp;and&nbsp;without&nbsp;IP&nbsp;address.<br>
+Correspondingly&nbsp;either&nbsp;fromSshParameters&nbsp;or&nbsp;toSshParameters&nbsp;must&nbsp;NOT&nbsp;be&nbsp;assigned&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a><br>
+instance&nbsp;and&nbsp;remain&nbsp;default&nbsp;None.<br>
+&nbsp;<br>
+fromPath<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;path&nbsp;or&nbsp;a&nbsp;list&nbsp;of&nbsp;paths.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Absolute&nbsp;paths&nbsp;strongly&nbsp;recommended.<br>
+&nbsp;<br>
+toPath<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;path.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Absolute&nbsp;path&nbsp;strongly&nbsp;recommended.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Must&nbsp;be&nbsp;directory&nbsp;if&nbsp;more&nbsp;than&nbsp;one&nbsp;fromPath.<br>
+&nbsp;<br>
+fromSshParameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a>&nbsp;instance.<br>
+&nbsp;<br>
+toSshParameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a>&nbsp;instance.<br>
+&nbsp;<br>
+recurseDirectories<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;hint&nbsp;for&nbsp;when&nbsp;fromSshParameters.</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="ScpCommand-commandsUsedInImplementation"><strong>commandsUsedInImplementation</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequired().<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;captures&nbsp;returncode,&nbsp;and&nbsp;output.<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;can&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequiredByImplementations().</tt></dd></dl>
+
+<dl><dt><a name="ScpCommand-get"><strong>get</strong></a>(cls, fromSshParameters, fromRemotePath, toLocalPath, recurseDirectories<font color="#909090">=False</font>, preserveTimes<font color="#909090">=True</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;an&nbsp;<a href="#ScpCommand">ScpCommand</a>&nbsp;instance.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+fromSshParameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a>&nbsp;instance&nbsp;for&nbsp;remote.<br>
+&nbsp;<br>
+fromRemotePath<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;path&nbsp;or&nbsp;a&nbsp;list&nbsp;of&nbsp;paths.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Absolute&nbsp;paths&nbsp;strongly&nbsp;recommended.</tt></dd></dl>
+
+<dl><dt><a name="ScpCommand-put"><strong>put</strong></a>(cls, fromLocalPath, toSshParameters, toRemotePath, preserveTimes<font color="#909090">=True</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;an&nbsp;<a href="#ScpCommand">ScpCommand</a>&nbsp;instance.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+fromLocalPath<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;path&nbsp;or&nbsp;a&nbsp;list&nbsp;of&nbsp;paths.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Absolute&nbsp;paths&nbsp;strongly&nbsp;recommended.<br>
+&nbsp;<br>
+toSshParameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a>&nbsp;instance&nbsp;for&nbsp;remote.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>output</strong></dt>
+<dd><tt>Collected&nbsp;output&nbsp;string&nbsp;of&nbsp;scp&nbsp;command.<br>
+&nbsp;<br>
+May&nbsp;contain&nbsp;extraneous&nbsp;leading&nbsp;or&nbsp;trailing&nbsp;newlines&nbsp;and&nbsp;whitespace.</tt></dd>
+</dl>
+<dl><dt><strong>returncode</strong></dt>
+<dd><tt>Returncode&nbsp;of&nbsp;command&nbsp;or&nbsp;255&nbsp;if&nbsp;an&nbsp;scp&nbsp;error&nbsp;occurred.<br>
+&nbsp;<br>
+Could&nbsp;be&nbsp;None.</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ScpCommandException">class <strong>ScpCommandException</strong></a>(<a href="nrvr.remote.ssh.html#SshCommandException">SshCommandException</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="nrvr.remote.ssh.html#ScpCommandException">ScpCommandException</a></dd>
+<dd><a href="nrvr.remote.ssh.html#SshCommandException">SshCommandException</a></dd>
+<dd><a href="exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ScpCommandException-__init__"><strong>__init__</strong></a>(self, message)</dt></dl>
+
+<hr>
+Methods inherited from <a href="nrvr.remote.ssh.html#SshCommandException">SshCommandException</a>:<br>
+<dl><dt><a name="ScpCommandException-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="nrvr.remote.ssh.html#SshCommandException">SshCommandException</a>:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>message</strong></dt>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#ScpCommandException-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="ScpCommandException-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScpCommandException-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ScpCommandException-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ScpCommandException-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ScpCommandException-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ScpCommandException-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="ScpCommandException-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ScpCommandException-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="ScpCommandException-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ScpCommandException-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScpCommandException-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="ScpCommandException-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScpCommandException-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="ScpCommandException-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ScpCommandException-__unicode__"><strong>__unicode__</strong></a>(...)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SshCommand">class <strong>SshCommand</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Send&nbsp;a&nbsp;command&nbsp;over&nbsp;ssh.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="SshCommand-__init__"><strong>__init__</strong></a>(self, sshParameters, argv, exceptionIfNotZero<font color="#909090">=True</font>, maxConnectionRetries<font color="#909090">=10</font>, connectionRetryIntervalSeconds<font color="#909090">=5.0</font>, tickerForRetry<font color="#909090">=True</font>)</dt><dd><tt>Create&nbsp;new&nbsp;<a href="#SshCommand">SshCommand</a>&nbsp;instance.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+Output&nbsp;may&nbsp;contain&nbsp;extraneous&nbsp;leading&nbsp;or&nbsp;trailing&nbsp;newlines&nbsp;and&nbsp;whitespace.<br>
+&nbsp;<br>
+Example&nbsp;use::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;example&nbsp;=&nbsp;<a href="#SshCommand">SshCommand</a>(exampleSshParameters,&nbsp;["ls",&nbsp;"-al"])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"returncode="&nbsp;+&nbsp;str(example.returncode)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"output="&nbsp;+&nbsp;example.output<br>
+&nbsp;<br>
+sshParameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a>&nbsp;instance.<br>
+&nbsp;<br>
+argv<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;of&nbsp;command&nbsp;and&nbsp;arguments&nbsp;passed&nbsp;to&nbsp;ssh.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;given&nbsp;a&nbsp;string&nbsp;instead&nbsp;of&nbsp;a&nbsp;list&nbsp;then&nbsp;fixed&nbsp;by&nbsp;argv=argv.split()&nbsp;making&nbsp;a&nbsp;list.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;That&nbsp;may&nbsp;only&nbsp;work&nbsp;as&nbsp;expected&nbsp;for&nbsp;some&nbsp;commands&nbsp;on&nbsp;some&nbsp;platforms.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;It&nbsp;should&nbsp;work&nbsp;for&nbsp;a&nbsp;command&nbsp;without&nbsp;arguments.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Hence&nbsp;if&nbsp;you&nbsp;don't&nbsp;want&nbsp;a&nbsp;string&nbsp;split,&nbsp;pass&nbsp;it&nbsp;in&nbsp;wrapped&nbsp;as&nbsp;sole&nbsp;item&nbsp;of&nbsp;a&nbsp;list.</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="SshCommand-acceptKnownHostKey"><strong>acceptKnownHostKey</strong></a>(cls, sshParameters)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Accept&nbsp;host's&nbsp;key.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+ipaddress<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IP&nbsp;address&nbsp;or&nbsp;domain&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="SshCommand-commandsUsedInImplementation"><strong>commandsUsedInImplementation</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequired().<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;can&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequiredByImplementations().</tt></dd></dl>
+
+<dl><dt><a name="SshCommand-hasAcceptedKnownHostKey"><strong>hasAcceptedKnownHostKey</strong></a>(cls, sshParameters)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;whether&nbsp;an&nbsp;attempt&nbsp;to&nbsp;<a href="#SshCommand-acceptKnownHostKey">acceptKnownHostKey</a>()&nbsp;succeeds.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed&nbsp;with&nbsp;success&nbsp;or&nbsp;failure.<br>
+&nbsp;<br>
+sshParameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a>&nbsp;instance&nbsp;to&nbsp;use&nbsp;in&nbsp;the&nbsp;attempt.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;success.</tt></dd></dl>
+
+<dl><dt><a name="SshCommand-isAvailable"><strong>isAvailable</strong></a>(cls, sshParameters, probingCommand<font color="#909090">='hostname'</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;whether&nbsp;probingCommand&nbsp;succeeds.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.</tt></dd></dl>
+
+<dl><dt><a name="SshCommand-removeKnownHostKey"><strong>removeKnownHostKey</strong></a>(cls, ipaddress)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Remove&nbsp;line&nbsp;from&nbsp;~/.ssh/known_hosts&nbsp;file.</tt></dd></dl>
+
+<dl><dt><a name="SshCommand-sleepUntilHasAcceptedKnownHostKey"><strong>sleepUntilHasAcceptedKnownHostKey</strong></a>(cls, sshParameters, checkIntervalSeconds<font color="#909090">=3.0</font>, ticker<font color="#909090">=False</font>, extraSleepSeconds<font color="#909090">=5.0</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>If&nbsp;available&nbsp;return,&nbsp;else&nbsp;loop&nbsp;sleeping&nbsp;for&nbsp;checkIntervalSeconds.<br>
+&nbsp;<br>
+sshParameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a>&nbsp;instance&nbsp;to&nbsp;use&nbsp;in&nbsp;the&nbsp;attempts.</tt></dd></dl>
+
+<dl><dt><a name="SshCommand-sleepUntilIsAvailable"><strong>sleepUntilIsAvailable</strong></a>(cls, sshParameters, checkIntervalSeconds<font color="#909090">=5.0</font>, ticker<font color="#909090">=False</font>, probingCommand<font color="#909090">='hostname'</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>If&nbsp;available&nbsp;return,&nbsp;else&nbsp;loop&nbsp;sleeping&nbsp;for&nbsp;checkIntervalSeconds.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>output</strong></dt>
+<dd><tt>Collected&nbsp;output&nbsp;string&nbsp;of&nbsp;command.<br>
+&nbsp;<br>
+May&nbsp;contain&nbsp;extraneous&nbsp;leading&nbsp;or&nbsp;trailing&nbsp;newlines&nbsp;and&nbsp;whitespace.</tt></dd>
+</dl>
+<dl><dt><strong>returncode</strong></dt>
+<dd><tt>Returncode&nbsp;of&nbsp;command&nbsp;or&nbsp;255&nbsp;if&nbsp;an&nbsp;ssh&nbsp;error&nbsp;occurred.<br>
+&nbsp;<br>
+Could&nbsp;be&nbsp;None.</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SshCommandException">class <strong>SshCommandException</strong></a>(<a href="exceptions.html#Exception">exceptions.Exception</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="nrvr.remote.ssh.html#SshCommandException">SshCommandException</a></dd>
+<dd><a href="exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="SshCommandException-__init__"><strong>__init__</strong></a>(self, message)</dt></dl>
+
+<dl><dt><a name="SshCommandException-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>message</strong></dt>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#SshCommandException-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="SshCommandException-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#SshCommandException-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="SshCommandException-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#SshCommandException-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="SshCommandException-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#SshCommandException-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="SshCommandException-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#SshCommandException-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="SshCommandException-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="SshCommandException-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#SshCommandException-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="SshCommandException-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#SshCommandException-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="SshCommandException-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="SshCommandException-__unicode__"><strong>__unicode__</strong></a>(...)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SshParameters">class <strong>SshParameters</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Parameters&nbsp;needed&nbsp;to&nbsp;connect&nbsp;to&nbsp;an&nbsp;ssh&nbsp;host.<br>
+&nbsp;<br>
+Implemented&nbsp;to&nbsp;avoid&nbsp;verbosity&nbsp;and&nbsp;complexity&nbsp;of&nbsp;passing&nbsp;same&nbsp;information<br>
+many&nbsp;times&nbsp;across&nbsp;several&nbsp;uses&nbsp;each&nbsp;time&nbsp;in&nbsp;separate&nbsp;arguments.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="SshParameters-__init__"><strong>__init__</strong></a>(self, ipaddress, user, pwd)</dt><dd><tt>Create&nbsp;new&nbsp;<a href="#SshParameters">SshParameters</a>&nbsp;instance.<br>
+&nbsp;<br>
+Example&nbsp;use::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;exampleSshParameters&nbsp;=&nbsp;<a href="#SshParameters">SshParameters</a>("10.123.45.67",&nbsp;"joe",&nbsp;"redwood")<br>
+&nbsp;<br>
+ipaddress<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IP&nbsp;address&nbsp;or&nbsp;domain&nbsp;name.<br>
+&nbsp;<br>
+user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.<br>
+&nbsp;<br>
+pwd<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string&nbsp;or&nbsp;None.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

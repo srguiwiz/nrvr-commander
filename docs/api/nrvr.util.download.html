@@ -1,0 +1,89 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.util.download</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.util.html"><font color="#ffffff">util</font></a>.download</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/util/download.py">/usr/lib/python2.6/site-packages/nrvr/util/download.py</a></font></td></tr></table>
+    <p><tt>nrvr.util.download&nbsp;-&nbsp;A&nbsp;download&nbsp;manager<br>
+&nbsp;<br>
+Class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#Download">Download</a>.<br>
+&nbsp;<br>
+Works&nbsp;in&nbsp;Linux&nbsp;and&nbsp;Windows.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="posixpath.html">posixpath</a><br>
+</td><td width="25%" valign=top><a href="shutil.html">shutil</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="urllib2.html">urllib2</a><br>
+<a href="urlparse.html">urlparse</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.util.download.html#Download">Download</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Download">class <strong>Download</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;download&nbsp;manager.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Class methods defined here:<br>
+<dl><dt><a name="Download-basename"><strong>basename</strong></a>(cls, url)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Base&nbsp;name&nbsp;from&nbsp;a&nbsp;dowload&nbsp;URL.<br>
+&nbsp;<br>
+Implemented&nbsp;for&nbsp;the&nbsp;purpose&nbsp;of&nbsp;all&nbsp;code&nbsp;using&nbsp;and&nbsp;relying&nbsp;on&nbsp;this<br>
+one&nbsp;implementation&nbsp;only.</tt></dd></dl>
+
+<dl><dt><a name="Download-fromUrl"><strong>fromUrl</strong></a>(cls, url, force<font color="#909090">=False</font>, dontDownload<font color="#909090">=False</font>, ticker<font color="#909090">=True</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt><a href="#Download">Download</a>&nbsp;file&nbsp;or&nbsp;use&nbsp;previously&nbsp;downloaded&nbsp;file.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;uses&nbsp;urllib2.<br>
+&nbsp;<br>
+dontDownload<br>
+&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;you&nbsp;don't&nbsp;want&nbsp;to&nbsp;start&nbsp;a&nbsp;download,&nbsp;for&nbsp;some&nbsp;reason.<br>
+&nbsp;<br>
+Return&nbsp;file&nbsp;path.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>semaphoreExtenstion</strong> = '.wait'</dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

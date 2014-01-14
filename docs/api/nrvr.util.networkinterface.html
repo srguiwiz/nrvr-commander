@@ -1,0 +1,220 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.util.networkinterface</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.util.html"><font color="#ffffff">util</font></a>.networkinterface</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/util/networkinterface.py">/usr/lib/python2.6/site-packages/nrvr/util/networkinterface.py</a></font></td></tr></table>
+    <p><tt>nrvr.util.networkinterface&nbsp;-&nbsp;Utilities&nbsp;regarding&nbsp;network&nbsp;interfaces<br>
+&nbsp;<br>
+Classes&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;include<br>
+*&nbsp;<a href="#NetworkInterface">NetworkInterface</a><br>
+*&nbsp;<a href="#NetworkConfigurationStaticParameters">NetworkConfigurationStaticParameters</a><br>
+&nbsp;<br>
+Works&nbsp;in&nbsp;Linux&nbsp;and&nbsp;Mac&nbsp;OS&nbsp;X.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="math.html">math</a><br>
+</td><td width="25%" valign=top><a href="re.html">re</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.util.networkinterface.html#NetworkInterface">NetworkInterface</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial">NetworkConfigurationStaticParameters(<a href="__builtin__.html#tuple">__builtin__.tuple</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.util.networkinterface.html#NetworkConfigurationStaticParameters">NetworkConfigurationStaticParameters</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="NetworkConfigurationStaticParameters">class <strong>NetworkConfigurationStaticParameters</strong></a>(NetworkConfigurationStaticParameters)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Static&nbsp;IP&nbsp;options&nbsp;for&nbsp;network&nbsp;configuration.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;only&nbsp;supports&nbsp;IPv4.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="nrvr.util.networkinterface.html#NetworkConfigurationStaticParameters">NetworkConfigurationStaticParameters</a></dd>
+<dd>NetworkConfigurationStaticParameters</dd>
+<dd><a href="__builtin__.html#tuple">__builtin__.tuple</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="NetworkConfigurationStaticParameters-normalizeStaticIp"><strong>normalizeStaticIp</strong></a>(self, ipaddress, netmask<font color="#909090">='255.255.255.0'</font>, gateway<font color="#909090">=None</font>, nameservers<font color="#909090">=None</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Normalize&nbsp;static&nbsp;IP&nbsp;options&nbsp;for&nbsp;network&nbsp;configuration.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;only&nbsp;supports&nbsp;IPv4.<br>
+&nbsp;<br>
+ipaddress<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IP&nbsp;address.<br>
+&nbsp;<br>
+netmask<br>
+&nbsp;&nbsp;&nbsp;&nbsp;netmask.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;255.255.255.0.<br>
+&nbsp;<br>
+gateway<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gateway.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;ip.1.<br>
+&nbsp;<br>
+nameservers<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;nameserver&nbsp;or&nbsp;a&nbsp;list&nbsp;of&nbsp;nameservers.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;gateway.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;empty&nbsp;list&nbsp;then&nbsp;remove&nbsp;option.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;<a href="#NetworkConfigurationStaticParameters">NetworkConfigurationStaticParameters</a>&nbsp;instance.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>localprefix</strong></dt>
+</dl>
+<dl><dt><strong>routingprefixlength</strong></dt>
+<dd><tt>Return&nbsp;an&nbsp;integer.</tt></dd>
+</dl>
+<hr>
+Methods inherited from NetworkConfigurationStaticParameters:<br>
+<dl><dt><a name="NetworkConfigurationStaticParameters-__getnewargs__"><strong>__getnewargs__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<hr>
+Static methods inherited from NetworkConfigurationStaticParameters:<br>
+<dl><dt><a name="NetworkConfigurationStaticParameters-__new__"><strong>__new__</strong></a>(_cls, ipaddress, netmask, gateway, nameservers)</dt></dl>
+
+<hr>
+Data descriptors inherited from NetworkConfigurationStaticParameters:<br>
+<dl><dt><strong>gateway</strong></dt>
+<dd><tt>itemgetter(item,&nbsp;...)&nbsp;--&gt;&nbsp;itemgetter&nbsp;object<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;callable&nbsp;object&nbsp;that&nbsp;fetches&nbsp;the&nbsp;given&nbsp;item(s)&nbsp;from&nbsp;its&nbsp;operand.<br>
+After,&nbsp;f=itemgetter(2),&nbsp;the&nbsp;call&nbsp;f(r)&nbsp;returns&nbsp;r[2].<br>
+After,&nbsp;g=itemgetter(2,5,3),&nbsp;the&nbsp;call&nbsp;g(r)&nbsp;returns&nbsp;(r[2],&nbsp;r[5],&nbsp;r[3])</tt></dd>
+</dl>
+<dl><dt><strong>ipaddress</strong></dt>
+<dd><tt>itemgetter(item,&nbsp;...)&nbsp;--&gt;&nbsp;itemgetter&nbsp;object<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;callable&nbsp;object&nbsp;that&nbsp;fetches&nbsp;the&nbsp;given&nbsp;item(s)&nbsp;from&nbsp;its&nbsp;operand.<br>
+After,&nbsp;f=itemgetter(2),&nbsp;the&nbsp;call&nbsp;f(r)&nbsp;returns&nbsp;r[2].<br>
+After,&nbsp;g=itemgetter(2,5,3),&nbsp;the&nbsp;call&nbsp;g(r)&nbsp;returns&nbsp;(r[2],&nbsp;r[5],&nbsp;r[3])</tt></dd>
+</dl>
+<dl><dt><strong>nameservers</strong></dt>
+<dd><tt>itemgetter(item,&nbsp;...)&nbsp;--&gt;&nbsp;itemgetter&nbsp;object<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;callable&nbsp;object&nbsp;that&nbsp;fetches&nbsp;the&nbsp;given&nbsp;item(s)&nbsp;from&nbsp;its&nbsp;operand.<br>
+After,&nbsp;f=itemgetter(2),&nbsp;the&nbsp;call&nbsp;f(r)&nbsp;returns&nbsp;r[2].<br>
+After,&nbsp;g=itemgetter(2,5,3),&nbsp;the&nbsp;call&nbsp;g(r)&nbsp;returns&nbsp;(r[2],&nbsp;r[5],&nbsp;r[3])</tt></dd>
+</dl>
+<dl><dt><strong>netmask</strong></dt>
+<dd><tt>itemgetter(item,&nbsp;...)&nbsp;--&gt;&nbsp;itemgetter&nbsp;object<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;callable&nbsp;object&nbsp;that&nbsp;fetches&nbsp;the&nbsp;given&nbsp;item(s)&nbsp;from&nbsp;its&nbsp;operand.<br>
+After,&nbsp;f=itemgetter(2),&nbsp;the&nbsp;call&nbsp;f(r)&nbsp;returns&nbsp;r[2].<br>
+After,&nbsp;g=itemgetter(2,5,3),&nbsp;the&nbsp;call&nbsp;g(r)&nbsp;returns&nbsp;(r[2],&nbsp;r[5],&nbsp;r[3])</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="__builtin__.html#tuple">__builtin__.tuple</a>:<br>
+<dl><dt><a name="NetworkConfigurationStaticParameters-__add__"><strong>__add__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__add__">__add__</a>(y)&nbsp;&lt;==&gt;&nbsp;x+y</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__contains__"><strong>__contains__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__contains__">__contains__</a>(y)&nbsp;&lt;==&gt;&nbsp;y&nbsp;in&nbsp;x</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__eq__"><strong>__eq__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__eq__">__eq__</a>(y)&nbsp;&lt;==&gt;&nbsp;x==y</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__ge__"><strong>__ge__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__ge__">__ge__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;=y</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__gt__"><strong>__gt__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__gt__">__gt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;y</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__hash__"><strong>__hash__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__hash__">__hash__</a>()&nbsp;&lt;==&gt;&nbsp;hash(x)</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__iter__"><strong>__iter__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__iter__">__iter__</a>()&nbsp;&lt;==&gt;&nbsp;iter(x)</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__le__"><strong>__le__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__le__">__le__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;=y</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__len__"><strong>__len__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__len__">__len__</a>()&nbsp;&lt;==&gt;&nbsp;len(x)</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__lt__"><strong>__lt__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__lt__">__lt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;y</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__mul__"><strong>__mul__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__mul__">__mul__</a>(n)&nbsp;&lt;==&gt;&nbsp;x*n</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__ne__"><strong>__ne__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__ne__">__ne__</a>(y)&nbsp;&lt;==&gt;&nbsp;x!=y</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__rmul__"><strong>__rmul__</strong></a>(...)</dt><dd><tt>x.<a href="#NetworkConfigurationStaticParameters-__rmul__">__rmul__</a>(n)&nbsp;&lt;==&gt;&nbsp;n*x</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-__sizeof__"><strong>__sizeof__</strong></a>(...)</dt><dd><tt>T.<a href="#NetworkConfigurationStaticParameters-__sizeof__">__sizeof__</a>()&nbsp;--&nbsp;size&nbsp;of&nbsp;T&nbsp;in&nbsp;memory,&nbsp;in&nbsp;bytes</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-count"><strong>count</strong></a>(...)</dt><dd><tt>T.<a href="#NetworkConfigurationStaticParameters-count">count</a>(value)&nbsp;-&gt;&nbsp;integer&nbsp;--&nbsp;return&nbsp;number&nbsp;of&nbsp;occurrences&nbsp;of&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="NetworkConfigurationStaticParameters-index"><strong>index</strong></a>(...)</dt><dd><tt>T.<a href="#NetworkConfigurationStaticParameters-index">index</a>(value,&nbsp;[start,&nbsp;[stop]])&nbsp;-&gt;&nbsp;integer&nbsp;--&nbsp;return&nbsp;first&nbsp;index&nbsp;of&nbsp;value.<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;present.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="NetworkInterface">class <strong>NetworkInterface</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Utilities&nbsp;regarding&nbsp;network&nbsp;interfaces.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;only&nbsp;supports&nbsp;IPv4.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Class methods defined here:<br>
+<dl><dt><a name="NetworkInterface-commandsUsedInImplementation"><strong>commandsUsedInImplementation</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequired().<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;can&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequiredByImplementations().</tt></dd></dl>
+
+<dl><dt><a name="NetworkInterface-ipAddressOf"><strong>ipAddressOf</strong></a>(cls, networkInterfaceName)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>For&nbsp;networkInterfaceName="lo"&nbsp;return&nbsp;"127.0.0.1".<br>
+&nbsp;<br>
+networkInterfaceName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;interface.<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;IP&nbsp;address&nbsp;of&nbsp;the&nbsp;interface,&nbsp;or&nbsp;None.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

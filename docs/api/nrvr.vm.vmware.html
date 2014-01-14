@@ -1,0 +1,751 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.vm.vmware</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.vm.html"><font color="#ffffff">vm</font></a>.vmware</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/vm/vmware.py">/usr/lib/python2.6/site-packages/nrvr/vm/vmware.py</a></font></td></tr></table>
+    <p><tt>nrvr.vm.vmware&nbsp;-&nbsp;Create&nbsp;and&nbsp;manipulate&nbsp;VMware&nbsp;virtual&nbsp;machines<br>
+&nbsp;<br>
+Classes&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;include<br>
+*&nbsp;<a href="#VmdkFile">VmdkFile</a><br>
+*&nbsp;<a href="#VmxFileContent">VmxFileContent</a><br>
+*&nbsp;<a href="#VmxFile">VmxFile</a><br>
+*&nbsp;<a href="#VMwareHypervisor">VMwareHypervisor</a><br>
+*&nbsp;<a href="#VMwareMachine">VMwareMachine</a><br>
+&nbsp;<br>
+The&nbsp;file&nbsp;path&nbsp;of&nbsp;the&nbsp;.vmx&nbsp;file&nbsp;is&nbsp;used&nbsp;as&nbsp;identifier,<br>
+which&nbsp;seems&nbsp;reasonably&nbsp;consistent&nbsp;with&nbsp;VMware&nbsp;APIs.<br>
+What&nbsp;really&nbsp;is&nbsp;used&nbsp;is&nbsp;the&nbsp;normalized,&nbsp;absolutized,&nbsp;possibly&nbsp;expanded::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;os.path.abspath(os.path.expanduser(vmxFilePath))<br>
+&nbsp;<br>
+Files&nbsp;related&nbsp;to&nbsp;a&nbsp;machine&nbsp;are&nbsp;essentially&nbsp;expected&nbsp;to&nbsp;be&nbsp;in&nbsp;the&nbsp;same&nbsp;directory.<br>
+&nbsp;<br>
+The&nbsp;purpose&nbsp;is&nbsp;automation.<br>
+The&nbsp;purpose&nbsp;isn't&nbsp;to&nbsp;support&nbsp;all&nbsp;features&nbsp;of&nbsp;the&nbsp;hypervisor.<br>
+As&nbsp;implemented&nbsp;only&nbsp;known&nbsp;to&nbsp;support&nbsp;VMware&nbsp;Workstation&nbsp;9,&nbsp;VMware&nbsp;Player&nbsp;5,&nbsp;and&nbsp;VMware&nbsp;Fusion&nbsp;5.<br>
+As&nbsp;implemented&nbsp;requires&nbsp;vmrun,&nbsp;which&nbsp;is&nbsp;known&nbsp;to&nbsp;be&nbsp;available&nbsp;when&nbsp;installing&nbsp;VMware&nbsp;VIX&nbsp;1.12.<br>
+As&nbsp;implemented&nbsp;only&nbsp;tested&nbsp;with&nbsp;VMware&nbsp;Workstation&nbsp;9.0.2,&nbsp;VMware&nbsp;Player&nbsp;5.0.2,&nbsp;VIX&nbsp;1.12.2,&nbsp;and&nbsp;VMware&nbsp;Fusion&nbsp;5.0.3.<br>
+Should&nbsp;work&nbsp;with&nbsp;newer&nbsp;versions&nbsp;VMware&nbsp;Workstation,&nbsp;VMware&nbsp;Player,&nbsp;and&nbsp;VIX.<br>
+Other&nbsp;hypervisors&nbsp;may&nbsp;be&nbsp;added&nbsp;as&nbsp;needed.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;works&nbsp;in&nbsp;Linux.<br>
+As&nbsp;implemented&nbsp;requires&nbsp;vmrun,&nbsp;and&nbsp;vmware-vdiskmanager&nbsp;or&nbsp;qemu-img&nbsp;commands.<br>
+Nevertheless&nbsp;essential.&nbsp;&nbsp;To&nbsp;be&nbsp;improved&nbsp;as&nbsp;needed.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Contributor&nbsp;-&nbsp;Nora&nbsp;Baschy<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="codecs.html">codecs</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="re.html">re</a><br>
+<a href="shutil.html">shutil</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="tempfile.html">tempfile</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.vm.vmware.html#VMwareHypervisor">VMwareHypervisor</a>
+</font></dt><dt><font face="helvetica, arial"><a href="nrvr.vm.vmware.html#VMwareMachine">VMwareMachine</a>
+</font></dt><dt><font face="helvetica, arial"><a href="nrvr.vm.vmware.html#VmdkFile">VmdkFile</a>
+</font></dt><dt><font face="helvetica, arial"><a href="nrvr.vm.vmware.html#VmxFile">VmxFile</a>
+</font></dt><dt><font face="helvetica, arial"><a href="nrvr.vm.vmware.html#VmxFileContent">VmxFileContent</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VMwareHypervisor">class <strong>VMwareHypervisor</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;VMware&nbsp;hypervisor.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VMwareHypervisor-__init__"><strong>__init__</strong></a>(self, hostType)</dt><dd><tt>Create&nbsp;new&nbsp;VMware&nbsp;hypervisor&nbsp;descriptor.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-cloneSnapshot"><strong>cloneSnapshot</strong></a>(self, vmxFilePath, snapshot, clonedVmxFilePath, linked<font color="#909090">=True</font>, tolerateRunning<font color="#909090">=False</font>)</dt><dd><tt>Create&nbsp;clone&nbsp;of&nbsp;virtual&nbsp;machine&nbsp;at&nbsp;snapshot.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;raises&nbsp;exception&nbsp;if&nbsp;running,&nbsp;unless&nbsp;asked&nbsp;to&nbsp;tolerate.<br>
+&nbsp;<br>
+linked<br>
+&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;to&nbsp;create&nbsp;a&nbsp;linked&nbsp;clone&nbsp;or&nbsp;a&nbsp;full&nbsp;clone.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-createSnapshot"><strong>createSnapshot</strong></a>(self, vmxFilePath, snapshot, tolerateRunning<font color="#909090">=False</font>, tolerateDuplicate<font color="#909090">=False</font>)</dt><dd><tt>Create&nbsp;new&nbsp;snapshot&nbsp;of&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;raises&nbsp;exception&nbsp;if&nbsp;running&nbsp;or&nbsp;if&nbsp;duplicate&nbsp;name,<br>
+unless&nbsp;asked&nbsp;to&nbsp;tolerate.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;omits&nbsp;leading&nbsp;and&nbsp;trailing&nbsp;whitespace&nbsp;if&nbsp;any.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-deleteDescendantsOfSnapshot"><strong>deleteDescendantsOfSnapshot</strong></a>(self, vmxFilePath, snapshot)</dt><dd><tt>Delete&nbsp;descendants&nbsp;of&nbsp;snapshot&nbsp;of&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+Keeps&nbsp;snapshot.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;raises&nbsp;exception&nbsp;if&nbsp;running.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-deleteSnapshot"><strong>deleteSnapshot</strong></a>(self, vmxFilePath, snapshot, andDeleteChildren<font color="#909090">=False</font>, tolerateRunning<font color="#909090">=False</font>)</dt><dd><tt>Delete&nbsp;snapshot&nbsp;of&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;raises&nbsp;exception&nbsp;if&nbsp;running,&nbsp;unless&nbsp;asked&nbsp;to&nbsp;tolerate.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-isRunning"><strong>isRunning</strong></a>(self, vmxFilePath)</dt><dd><tt>Return&nbsp;whether&nbsp;.vmx&nbsp;file&nbsp;listed&nbsp;as&nbsp;running.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-listRunning"><strong>listRunning</strong></a>(self)</dt><dd><tt>Return&nbsp;list&nbsp;of&nbsp;paths&nbsp;of&nbsp;.vmx&nbsp;files&nbsp;of&nbsp;all&nbsp;running&nbsp;virtual&nbsp;machines.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-listSnapshots"><strong>listSnapshots</strong></a>(self, vmxFilePath)</dt><dd><tt>Return&nbsp;list&nbsp;of&nbsp;snapshots&nbsp;of&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;omits&nbsp;leading&nbsp;and&nbsp;trailing&nbsp;whitespace&nbsp;if&nbsp;any.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-notRunningRequired"><strong>notRunningRequired</strong></a>(self, vmxFilePath)</dt><dd><tt>Raises&nbsp;exception&nbsp;if&nbsp;.vmx&nbsp;file&nbsp;listed&nbsp;as&nbsp;running.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-revertToSnapshot"><strong>revertToSnapshot</strong></a>(self, vmxFilePath, snapshot, tolerateRunning<font color="#909090">=False</font>)</dt><dd><tt>Revert&nbsp;to&nbsp;snapshot&nbsp;of&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;raises&nbsp;exception&nbsp;if&nbsp;running,&nbsp;unless&nbsp;asked&nbsp;to&nbsp;tolerate.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-revertToSnapshotAndDeleteDescendants"><strong>revertToSnapshotAndDeleteDescendants</strong></a>(self, vmxFilePath, snapshot)</dt><dd><tt>Revert&nbsp;to&nbsp;snapshot&nbsp;of&nbsp;virtual&nbsp;machine&nbsp;and&nbsp;delete&nbsp;any&nbsp;and&nbsp;all&nbsp;descendants&nbsp;of&nbsp;snapshot.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;raises&nbsp;exception&nbsp;if&nbsp;running.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-sleepUntilNotRunning"><strong>sleepUntilNotRunning</strong></a>(self, vmxFilePath, checkIntervalSeconds<font color="#909090">=5.0</font>, ticker<font color="#909090">=False</font>)</dt><dd><tt>If&nbsp;not&nbsp;running&nbsp;return,&nbsp;else&nbsp;loop&nbsp;sleeping&nbsp;for&nbsp;checkIntervalSeconds.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-start"><strong>start</strong></a>(self, vmxFilePath, gui<font color="#909090">=False</font>, extraSleepSeconds<font color="#909090">=10.0</font>)</dt><dd><tt>Start&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+extraSleepSeconds<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;time&nbsp;for&nbsp;this&nbsp;process&nbsp;to&nbsp;sleep&nbsp;while&nbsp;virtual&nbsp;machine&nbsp;is&nbsp;starting&nbsp;up,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unless&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-startAndStopWithIdeDrivesDisabled"><strong>startAndStopWithIdeDrivesDisabled</strong></a>(self, vmxFilePath, gui<font color="#909090">=False</font>, extraSleepSeconds<font color="#909090">=3.0</font>)</dt><dd><tt>Start&nbsp;and&nbsp;stop&nbsp;virtual&nbsp;machine&nbsp;while&nbsp;all&nbsp;virtual&nbsp;IDE&nbsp;drives&nbsp;are&nbsp;disabled.<br>
+&nbsp;<br>
+The&nbsp;raison&nbsp;d'etre&nbsp;of&nbsp;this&nbsp;method&nbsp;is,<br>
+generated&nbsp;MAC&nbsp;addresses&nbsp;are&nbsp;available&nbsp;only&nbsp;after&nbsp;first&nbsp;start&nbsp;of&nbsp;a&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+extraSleepSeconds<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;time&nbsp;for&nbsp;this&nbsp;process&nbsp;to&nbsp;sleep&nbsp;while&nbsp;virtual&nbsp;machine&nbsp;is&nbsp;starting&nbsp;up,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unless&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-stop"><strong>stop</strong></a>(self, vmxFilePath, hard<font color="#909090">=False</font>, tolerateNotRunning<font color="#909090">=True</font>, extraSleepSeconds<font color="#909090">=7.0</font>)</dt><dd><tt>Stop&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+Ideally&nbsp;virtual&nbsp;machines&nbsp;would&nbsp;stop&nbsp;from&nbsp;shutting&nbsp;down&nbsp;from&nbsp;within&nbsp;the&nbsp;virtual&nbsp;machine<br>
+to&nbsp;ensure&nbsp;proper&nbsp;shutdown.<br>
+If&nbsp;VMware&nbsp;Tools&nbsp;are&nbsp;installed&nbsp;then&nbsp;a&nbsp;soft&nbsp;stop&nbsp;should&nbsp;effect&nbsp;such&nbsp;shutting&nbsp;down&nbsp;from&nbsp;within.<br>
+&nbsp;<br>
+If&nbsp;VMware&nbsp;Tools&nbsp;isn't&nbsp;installed&nbsp;then&nbsp;other&nbsp;mechanisms,&nbsp;e.g.&nbsp;issuing&nbsp;a&nbsp;command&nbsp;over&nbsp;ssh<br>
+would&nbsp;seem&nbsp;appropriate.<br>
+&nbsp;<br>
+After&nbsp;some&nbsp;tasks,&nbsp;e.g.&nbsp;after&nbsp;a&nbsp;properly&nbsp;configured&nbsp;operating&nbsp;system&nbsp;install&nbsp;with&nbsp;kickstart,<br>
+a&nbsp;machine&nbsp;should&nbsp;shut&nbsp;down&nbsp;by&nbsp;itself.<br>
+&nbsp;<br>
+A&nbsp;hard&nbsp;stop&nbsp;appears&nbsp;to&nbsp;be&nbsp;the&nbsp;least&nbsp;desirable&nbsp;option,&nbsp;even&nbsp;though&nbsp;it&nbsp;has&nbsp;the&nbsp;highest<br>
+probability&nbsp;of&nbsp;succeeding&nbsp;at&nbsp;stopping&nbsp;the&nbsp;virtual&nbsp;machine&nbsp;it&nbsp;also&nbsp;has&nbsp;the&nbsp;highest<br>
+probability&nbsp;of&nbsp;leaving&nbsp;behind&nbsp;virtual&nbsp;disk&nbsp;content&nbsp;as&nbsp;if&nbsp;after&nbsp;a&nbsp;crash.<br>
+&nbsp;<br>
+extraSleepSeconds<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;time&nbsp;for&nbsp;this&nbsp;process&nbsp;to&nbsp;sleep&nbsp;after&nbsp;stopping&nbsp;virtual&nbsp;machine,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unless&nbsp;None.</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="VMwareHypervisor-commandsUsedInImplementation"><strong>commandsUsedInImplementation</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequired().<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;can&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequiredByImplementations().</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-localHostType"><strong>localHostType</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Determine&nbsp;and&nbsp;return&nbsp;host&nbsp;type&nbsp;of&nbsp;VMware&nbsp;hypervisor&nbsp;available&nbsp;locally.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-localNotRunningRequired"><strong>localNotRunningRequired</strong></a>(cls, vmxFilePath)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>May&nbsp;raise&nbsp;exception&nbsp;if&nbsp;.vmx&nbsp;file&nbsp;locally&nbsp;listed&nbsp;as&nbsp;running.<br>
+&nbsp;<br>
+Only&nbsp;checks::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#VMwareHypervisor">VMwareHypervisor</a>.local.<a href="#VMwareHypervisor-notRunningRequired">notRunningRequired</a>(vmxFilePath)<br>
+&nbsp;<br>
+Not&nbsp;perfect.&nbsp;&nbsp;Nevertheless&nbsp;can&nbsp;help&nbsp;avoid&nbsp;trouble.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-localRequired"><strong>localRequired</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Raises&nbsp;exception&nbsp;if&nbsp;no&nbsp;supported&nbsp;VMware&nbsp;hypervisor&nbsp;available&nbsp;locally.</tt></dd></dl>
+
+<dl><dt><a name="VMwareHypervisor-snapshotsRequired"><strong>snapshotsRequired</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Raises&nbsp;exception&nbsp;if&nbsp;not&nbsp;supporting&nbsp;snapshots&nbsp;in&nbsp;VMware&nbsp;hypervisor&nbsp;available&nbsp;locally.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>hostCapabilities</strong></dt>
+<dd><tt>Host&nbsp;list&nbsp;of&nbsp;capabilities&nbsp;of&nbsp;VMware&nbsp;hypervisor.<br>
+&nbsp;<br>
+As&nbsp;little&nbsp;as&nbsp;an&nbsp;empty&nbsp;list&nbsp;for&nbsp;VMware&nbsp;Player.<br>
+As&nbsp;much&nbsp;as&nbsp;[VMwareHypervisor.SNAPSHOTS,&nbsp;VMwareHypervisor.CLONING]&nbsp;for&nbsp;VMware&nbsp;Workstation.<br>
+Regrettably&nbsp;[VMwareHypervisor.SNAPSHOTS]&nbsp;only&nbsp;for&nbsp;VMware&nbsp;Fusion.</tt></dd>
+</dl>
+<dl><dt><strong>hostType</strong></dt>
+<dd><tt>Host&nbsp;type&nbsp;of&nbsp;VMware&nbsp;hypervisor.</tt></dd>
+</dl>
+<dl><dt><strong>suggestedDirectory</strong></dt>
+<dd><tt>Suggest&nbsp;a&nbsp;parent&nbsp;directory&nbsp;for&nbsp;virtual&nbsp;machine&nbsp;directories.<br>
+&nbsp;<br>
+For&nbsp;those&nbsp;who&nbsp;don't&nbsp;want&nbsp;to&nbsp;decide&nbsp;themselves.</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>CLONING</strong> = 'cloning'</dl>
+
+<dl><dt><strong>PLAYER</strong> = 'player'</dl>
+
+<dl><dt><strong>SNAPSHOTS</strong> = 'snapshots'</dl>
+
+<dl><dt><strong>UNKNOWN</strong> = 'unknown'</dl>
+
+<dl><dt><strong>WORKSTATION</strong> = 'ws'</dl>
+
+<dl><dt><strong>local</strong> = &lt;nrvr.vm.vmware.VMwareHypervisor object&gt;</dl>
+
+<dl><dt><strong>localHostOnlyIPAddress</strong> = '192.168.87.1'</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VMwareMachine">class <strong>VMwareMachine</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;VMware&nbsp;virtual&nbsp;machine.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VMwareMachine-__init__"><strong>__init__</strong></a>(self, vmxFilePath)</dt><dd><tt>Create&nbsp;new&nbsp;VMware&nbsp;virtual&nbsp;machine&nbsp;descriptor.<br>
+&nbsp;<br>
+A&nbsp;descriptor&nbsp;can&nbsp;describe&nbsp;a&nbsp;VMware&nbsp;virtual&nbsp;machine&nbsp;that&nbsp;does&nbsp;or&nbsp;doesn't&nbsp;yet&nbsp;exist&nbsp;on&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-acceptKnownHostKey"><strong>acceptKnownHostKey</strong></a>(self, user<font color="#909090">=None</font>)</dt><dd><tt>Accept&nbsp;host's&nbsp;key.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;at&nbsp;least&nbsp;one&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+Needs&nbsp;virtual&nbsp;machine&nbsp;to&nbsp;be&nbsp;running&nbsp;already,&nbsp;ready&nbsp;to&nbsp;accept&nbsp;ssh&nbsp;connections,&nbsp;duh.<br>
+&nbsp;<br>
+user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;any.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-create"><strong>create</strong></a>(self, memsizeMegabytes<font color="#909090">=512</font>, guestOS<font color="#909090">='centos'</font>, ideDrives<font color="#909090">=None</font>, template<font color="#909090">='#!/usr/bin/vmware<font color="#c040c0">\n</font>.encoding = "UTF-8"<font color="#c040c0">\n</font>config.ver... automatically answer all questions when booting<font color="#c040c0">\n</font>'</font>)</dt><dd><tt>Create&nbsp;a&nbsp;VMware&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+For&nbsp;some&nbsp;parameters&nbsp;see&nbsp;documentation&nbsp;of&nbsp;class&nbsp;<a href="#VmxFile">VmxFile</a>&nbsp;method&nbsp;create.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;only&nbsp;supports&nbsp;a&nbsp;limited&nbsp;number&nbsp;of&nbsp;features.<br>
+Nevertheless&nbsp;essential.&nbsp;&nbsp;To&nbsp;be&nbsp;improved&nbsp;as&nbsp;needed.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-hasAcceptedKnownHostKey"><strong>hasAcceptedKnownHostKey</strong></a>(self, user<font color="#909090">=None</font>)</dt><dd><tt>Return&nbsp;whether&nbsp;attempts&nbsp;to&nbsp;<a href="#VMwareMachine-acceptKnownHostKey">acceptKnownHostKey</a>()&nbsp;succeed.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed&nbsp;with&nbsp;success&nbsp;or&nbsp;failure.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;at&nbsp;least&nbsp;one&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;any.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;success.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-listOfSshParametersForAcceptingKnownHostKey"><strong>listOfSshParametersForAcceptingKnownHostKey</strong></a>(self, user<font color="#909090">='root'</font>)</dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;to&nbsp;use&nbsp;for&nbsp;accepting&nbsp;host's&nbsp;key.<br>
+&nbsp;<br>
+No&nbsp;duplicates.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;at&nbsp;least&nbsp;one&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;any.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;list&nbsp;of&nbsp;SshParameters&nbsp;instances.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-mkdir"><strong>mkdir</strong></a>(self, mode<font color="#909090">=493</font>)</dt><dd><tt>Create&nbsp;directory&nbsp;.vmx&nbsp;file&nbsp;will&nbsp;be&nbsp;in.<br>
+&nbsp;<br>
+Useful&nbsp;to&nbsp;have&nbsp;directory&nbsp;to&nbsp;put&nbsp;other&nbsp;files&nbsp;into&nbsp;early.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-remove"><strong>remove</strong></a>(self)</dt><dd><tt>Remove&nbsp;(delete)&nbsp;VMware&nbsp;virtual&nbsp;machine&nbsp;from&nbsp;the&nbsp;host&nbsp;disk.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;completely&nbsp;deletes&nbsp;the&nbsp;directory&nbsp;containing&nbsp;the&nbsp;.vmx&nbsp;file,<br>
+which&nbsp;often&nbsp;is&nbsp;correct&nbsp;but&nbsp;not&nbsp;necessarily&nbsp;always.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-scpGetCommand"><strong>scpGetCommand</strong></a>(self, fromGuestPath, toHostPath, guestUser<font color="#909090">='root'</font>, recurseDirectories<font color="#909090">=False</font>, preserveTimes<font color="#909090">=True</font>)</dt><dd><tt>Return&nbsp;an&nbsp;ScpCommand&nbsp;instance.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+Needs&nbsp;virtual&nbsp;machine&nbsp;to&nbsp;be&nbsp;running&nbsp;already,&nbsp;ready&nbsp;to&nbsp;accept&nbsp;ssh&nbsp;connections,&nbsp;duh.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-scpPutCommand"><strong>scpPutCommand</strong></a>(self, fromHostPath, toGuestPath, guestUser<font color="#909090">='root'</font>, preserveTimes<font color="#909090">=True</font>)</dt><dd><tt>Return&nbsp;an&nbsp;ScpCommand&nbsp;instance.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+Needs&nbsp;virtual&nbsp;machine&nbsp;to&nbsp;be&nbsp;running&nbsp;already,&nbsp;ready&nbsp;to&nbsp;accept&nbsp;ssh&nbsp;connections,&nbsp;duh.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-shutdownCommand"><strong>shutdownCommand</strong></a>(self, extraSleepSeconds<font color="#909090">=7.0</font>, ignoreException<font color="#909090">=False</font>)</dt><dd><tt>Send&nbsp;shutdown&nbsp;command.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;shutdown.<br>
+&nbsp;<br>
+Needs&nbsp;virtual&nbsp;machine&nbsp;to&nbsp;be&nbsp;running&nbsp;already,&nbsp;ready&nbsp;to&nbsp;accept&nbsp;ssh&nbsp;connections,&nbsp;duh.<br>
+&nbsp;<br>
+Example&nbsp;use::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vmwareMachine1.<a href="#VMwareMachine-shutdownCommand">shutdownCommand</a>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#VMwareHypervisor">VMwareHypervisor</a>.local.sleepUntilNotRunning(vmwareMachine1.vmxFilePath,&nbsp;ticker=True)<br>
+&nbsp;<br>
+extraSleepSeconds<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;time&nbsp;for&nbsp;this&nbsp;process&nbsp;to&nbsp;sleep&nbsp;after&nbsp;shutting&nbsp;down&nbsp;virtual&nbsp;machine,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unless&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-sleepUntilHasAcceptedKnownHostKey"><strong>sleepUntilHasAcceptedKnownHostKey</strong></a>(self, user<font color="#909090">=None</font>, checkIntervalSeconds<font color="#909090">=3.0</font>, ticker<font color="#909090">=False</font>, extraSleepSeconds<font color="#909090">=5.0</font>)</dt><dd><tt>If&nbsp;available&nbsp;return,&nbsp;else&nbsp;loop&nbsp;sleeping&nbsp;for&nbsp;checkIntervalSeconds.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;at&nbsp;least&nbsp;one&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;any.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-sleepUntilSshIsAvailable"><strong>sleepUntilSshIsAvailable</strong></a>(self, checkIntervalSeconds<font color="#909090">=3.0</font>, ticker<font color="#909090">=False</font>, user<font color="#909090">='root'</font>, probingCommand<font color="#909090">='hostname'</font>, extraSleepSeconds<font color="#909090">=5.0</font>)</dt><dd><tt>If&nbsp;available&nbsp;return,&nbsp;else&nbsp;loop&nbsp;sleeping&nbsp;for&nbsp;checkIntervalSeconds.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-sshCommand"><strong>sshCommand</strong></a>(self, argv, user<font color="#909090">='root'</font>, exceptionIfNotZero<font color="#909090">=True</font>, maxConnectionRetries<font color="#909090">=10</font>, connectionRetryIntervalSeconds<font color="#909090">=5.0</font>, tickerForRetry<font color="#909090">=True</font>)</dt><dd><tt>Return&nbsp;an&nbsp;SshCommand&nbsp;instance.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+Output&nbsp;may&nbsp;contain&nbsp;extraneous&nbsp;leading&nbsp;or&nbsp;trailing&nbsp;newlines&nbsp;and&nbsp;whitespace.<br>
+&nbsp;<br>
+Example&nbsp;use::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sshCommand1&nbsp;=&nbsp;vmwareMachine.<a href="#VMwareMachine-sshCommand">sshCommand</a>(["ls",&nbsp;"-al"])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"output="&nbsp;+&nbsp;sshCommand1.output<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+Needs&nbsp;virtual&nbsp;machine&nbsp;to&nbsp;be&nbsp;running&nbsp;already,&nbsp;ready&nbsp;to&nbsp;accept&nbsp;ssh&nbsp;connections,&nbsp;duh.<br>
+&nbsp;<br>
+argv<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;of&nbsp;command&nbsp;and&nbsp;arguments&nbsp;passed&nbsp;to&nbsp;ssh.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Can&nbsp;accept&nbsp;a&nbsp;string&nbsp;instead&nbsp;of&nbsp;a&nbsp;list.<br>
+&nbsp;<br>
+user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-sshIsAvailable"><strong>sshIsAvailable</strong></a>(self, user<font color="#909090">=None</font>, probingCommand<font color="#909090">='hostname'</font>)</dt><dd><tt>Return&nbsp;whether&nbsp;probingCommand&nbsp;succeeds.<br>
+&nbsp;<br>
+Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;any.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;success.</tt></dd></dl>
+
+<dl><dt><a name="VMwareMachine-sshParameters"><strong>sshParameters</strong></a>(self, user<font color="#909090">='root'</font>)</dt><dd><tt>Return&nbsp;SshParameters&nbsp;instance&nbsp;for&nbsp;user.<br>
+&nbsp;<br>
+Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>basenameStem</strong></dt>
+<dd><tt>Stem&nbsp;of&nbsp;basename&nbsp;of&nbsp;.vmx&nbsp;file.<br>
+&nbsp;<br>
+Used&nbsp;as&nbsp;default&nbsp;for&nbsp;displayName.<br>
+Useful&nbsp;for&nbsp;making&nbsp;names&nbsp;of&nbsp;related&nbsp;files.</tt></dd>
+</dl>
+<dl><dt><strong>directory</strong></dt>
+<dd><tt>Directory&nbsp;.vmx&nbsp;file&nbsp;is&nbsp;in.</tt></dd>
+</dl>
+<dl><dt><strong>portsFile</strong></dt>
+<dd><tt>A&nbsp;PortsFile&nbsp;instance.<br>
+&nbsp;<br>
+If&nbsp;needed.</tt></dd>
+</dl>
+<dl><dt><strong>regularUser</strong></dt>
+<dd><tt>A&nbsp;regular&nbsp;user.<br>
+Often&nbsp;the&nbsp;main&nbsp;user.<br>
+&nbsp;<br>
+Can&nbsp;be&nbsp;None.</tt></dd>
+</dl>
+<dl><dt><strong>vmxFile</strong></dt>
+<dd><tt>A&nbsp;VmxFile&nbsp;instance.<br>
+&nbsp;<br>
+If&nbsp;needed.</tt></dd>
+</dl>
+<dl><dt><strong>vmxFilePath</strong></dt>
+<dd><tt>Path&nbsp;of&nbsp;the&nbsp;.vmx&nbsp;file.</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VmdkFile">class <strong>VmdkFile</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;.vmdk&nbsp;file&nbsp;for&nbsp;VMware.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VmdkFile-__init__"><strong>__init__</strong></a>(self, vmdkFilePath)</dt><dd><tt>Create&nbsp;new&nbsp;.vmdk&nbsp;file&nbsp;descriptor.<br>
+&nbsp;<br>
+A&nbsp;descriptor&nbsp;can&nbsp;describe&nbsp;a&nbsp;.vmdk&nbsp;file&nbsp;that&nbsp;does&nbsp;or&nbsp;doesn't&nbsp;yet&nbsp;exist&nbsp;on&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
+
+<dl><dt><a name="VmdkFile-compliantDiskSize"><strong>compliantDiskSize</strong></a>(self, megabytes<font color="#909090">=1000</font>)</dt><dd><tt>Disk&nbsp;size&nbsp;must&nbsp;be&nbsp;a&nbsp;multiple&nbsp;of&nbsp;4.<br>
+&nbsp;<br>
+If&nbsp;necessary&nbsp;rounds&nbsp;up&nbsp;to&nbsp;next&nbsp;multiple&nbsp;of&nbsp;4.<br>
+&nbsp;<br>
+Is&nbsp;megabytes.</tt></dd></dl>
+
+<dl><dt><a name="VmdkFile-create"><strong>create</strong></a>(self, megabytes<font color="#909090">=1000</font>, preallocated<font color="#909090">=False</font>)</dt><dd><tt>Create&nbsp;a&nbsp;.vmdk&nbsp;file.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;only&nbsp;supports&nbsp;a&nbsp;limited&nbsp;number&nbsp;of&nbsp;features.<br>
+Nevertheless&nbsp;essential.&nbsp;&nbsp;To&nbsp;be&nbsp;improved&nbsp;as&nbsp;needed.</tt></dd></dl>
+
+<dl><dt><a name="VmdkFile-exists"><strong>exists</strong></a>(self)</dt><dd><tt>Return&nbsp;True&nbsp;if&nbsp;file&nbsp;exists&nbsp;on&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="VmdkFile-commandsUsedInImplementation"><strong>commandsUsedInImplementation</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequired().<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;can&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequiredByImplementations().</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>vmdkFilePath</strong></dt>
+<dd><tt>Path&nbsp;of&nbsp;the&nbsp;.vmdk&nbsp;file.</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VmxFile">class <strong>VmxFile</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;.vmx&nbsp;file&nbsp;for&nbsp;VMware.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VmxFile-__init__"><strong>__init__</strong></a>(self, vmxFilePath)</dt><dd><tt>Create&nbsp;new&nbsp;.vmx&nbsp;file&nbsp;descriptor.<br>
+&nbsp;<br>
+A&nbsp;descriptor&nbsp;can&nbsp;describe&nbsp;a&nbsp;.vmx&nbsp;file&nbsp;that&nbsp;does&nbsp;or&nbsp;doesn't&nbsp;yet&nbsp;exist&nbsp;on&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-create"><strong>create</strong></a>(self, memsizeMegabytes<font color="#909090">=512</font>, guestOS<font color="#909090">='centos'</font>, ideDrives<font color="#909090">=None</font>, displayName<font color="#909090">=None</font>, template<font color="#909090">='#!/usr/bin/vmware<font color="#c040c0">\n</font>.encoding = "UTF-8"<font color="#c040c0">\n</font>config.ver... automatically answer all questions when booting<font color="#c040c0">\n</font>'</font>)</dt><dd><tt>Create&nbsp;a&nbsp;.vmx&nbsp;file.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;only&nbsp;supports&nbsp;a&nbsp;limited&nbsp;number&nbsp;of&nbsp;features.<br>
+Nevertheless&nbsp;essential.&nbsp;&nbsp;To&nbsp;be&nbsp;improved&nbsp;as&nbsp;needed.<br>
+&nbsp;<br>
+ideDrives<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;list&nbsp;of&nbsp;at&nbsp;most&nbsp;four&nbsp;<a href="#VmdkFile">VmdkFile</a>&nbsp;or&nbsp;IsoImage.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;given&nbsp;a&nbsp;number&nbsp;as&nbsp;an&nbsp;element&nbsp;then&nbsp;make&nbsp;a&nbsp;<a href="#VmdkFile">VmdkFile</a>&nbsp;with&nbsp;that&nbsp;many&nbsp;megabytes&nbsp;capactiy.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;one&nbsp;<a href="#VmdkFile">VmdkFile</a>&nbsp;with&nbsp;20000&nbsp;megabytes&nbsp;capacity.<br>
+&nbsp;<br>
+displayName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;defaults&nbsp;to&nbsp;self.<strong>basenameStem</strong>.<br>
+&nbsp;<br>
+template<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-disableAllIdeDrives"><strong>disableAllIdeDrives</strong></a>(self)</dt><dd><tt>Disable&nbsp;all&nbsp;virtual&nbsp;IDE&nbsp;drives,&nbsp;while&nbsp;keeping&nbsp;them&nbsp;for&nbsp;later&nbsp;enabling&nbsp;again.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-enableAllIdeDrives"><strong>enableAllIdeDrives</strong></a>(self)</dt><dd><tt>Enable&nbsp;all&nbsp;virtual&nbsp;IDE&nbsp;drives&nbsp;again.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-exists"><strong>exists</strong></a>(self)</dt><dd><tt>Return&nbsp;True&nbsp;if&nbsp;file&nbsp;exists&nbsp;on&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-getEthernetMacAddress"><strong>getEthernetMacAddress</strong></a>(self, adapter<font color="#909090">=0</font>)</dt><dd><tt>Get&nbsp;MAC&nbsp;address&nbsp;of&nbsp;a&nbsp;virtual&nbsp;Ethernet&nbsp;adapter.<br>
+&nbsp;<br>
+Generated&nbsp;MAC&nbsp;addresses&nbsp;are&nbsp;available&nbsp;only&nbsp;after&nbsp;first&nbsp;start&nbsp;of&nbsp;a&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;forces&nbsp;reading&nbsp;of&nbsp;vmxFile,&nbsp;in&nbsp;case&nbsp;of&nbsp;change&nbsp;after&nbsp;first&nbsp;start&nbsp;of&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;"01:23:45:67:89:ab",&nbsp;or&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-modify"><strong>modify</strong></a>(self, vmxFileContentModifyingMethod)</dt><dd><tt>Recommended&nbsp;safe&nbsp;wrapper&nbsp;to&nbsp;modify&nbsp;.vmx&nbsp;file.<br>
+&nbsp;<br>
+May&nbsp;raise&nbsp;exception&nbsp;if&nbsp;.vmx&nbsp;file&nbsp;locally&nbsp;listed&nbsp;as&nbsp;running.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-removeAllIdeCdromImages"><strong>removeAllIdeCdromImages</strong></a>(self)</dt><dd><tt>Remove&nbsp;all&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;all&nbsp;virtual&nbsp;IDE&nbsp;CD-ROM&nbsp;drives&nbsp;served&nbsp;from&nbsp;image&nbsp;files.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-setAccelerate3D"><strong>setAccelerate3D</strong></a>(self, accelerate3D<font color="#909090">=True</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;enabling&nbsp;accelerated&nbsp;3D&nbsp;graphics.<br>
+&nbsp;<br>
+accelerate3D<br>
+&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;to&nbsp;accelerate&nbsp;3D&nbsp;graphics.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-setEthernetAdapter"><strong>setEthernetAdapter</strong></a>(self, adapter<font color="#909090">=0</font>, connectionType<font color="#909090">='bridged'</font>, change<font color="#909090">='enable'</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;a&nbsp;virtual&nbsp;Ethernet&nbsp;adapter.<br>
+&nbsp;<br>
+connectionType<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"bridged",&nbsp;"hostonly",&nbsp;or&nbsp;"nat".<br>
+&nbsp;<br>
+change<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"enable",&nbsp;"disable",&nbsp;or&nbsp;"remove".</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-setIdeCdromIsoFile"><strong>setIdeCdromIsoFile</strong></a>(self, pathOnHost, bus<font color="#909090">=0</font>, device<font color="#909090">=0</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;a&nbsp;virtual&nbsp;IDE&nbsp;CD-ROM&nbsp;drive&nbsp;served&nbsp;from&nbsp;an&nbsp;.iso&nbsp;image&nbsp;file.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-setMemorySize"><strong>setMemorySize</strong></a>(self, memsizeMegabytes)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;memory&nbsp;size.<br>
+&nbsp;<br>
+memsizeMegabytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;memory&nbsp;size&nbsp;in&nbsp;megabytes.&nbsp;&nbsp;E.g.&nbsp;1000.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Will&nbsp;be&nbsp;rounded&nbsp;up&nbsp;to&nbsp;a&nbsp;multiple&nbsp;of&nbsp;4,&nbsp;if&nbsp;necessary.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-setNumberOfProcessors"><strong>setNumberOfProcessors</strong></a>(self, number<font color="#909090">=1</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;number&nbsp;of&nbsp;processors.<br>
+&nbsp;<br>
+number<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;number.</tt></dd></dl>
+
+<dl><dt><a name="VmxFile-setVideoMemorySize"><strong>setVideoMemorySize</strong></a>(self, vramSizeMegabytes)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;video&nbsp;RAM&nbsp;size.<br>
+&nbsp;<br>
+vramSizeMegabytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;video&nbsp;RAM&nbsp;size&nbsp;in&nbsp;megabytes.&nbsp;&nbsp;E.g.&nbsp;64.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>basenameStem</strong></dt>
+<dd><tt>Stem&nbsp;of&nbsp;basename&nbsp;of&nbsp;.vmx&nbsp;file.<br>
+&nbsp;<br>
+Used&nbsp;as&nbsp;default&nbsp;for&nbsp;displayName.<br>
+Useful&nbsp;for&nbsp;making&nbsp;names&nbsp;of&nbsp;related&nbsp;files.</tt></dd>
+</dl>
+<dl><dt><strong>directory</strong></dt>
+<dd><tt>Directory&nbsp;.vmx&nbsp;file&nbsp;is&nbsp;in.</tt></dd>
+</dl>
+<dl><dt><strong>vmxFileContent</strong></dt>
+<dd><tt>A&nbsp;VmxFileContent&nbsp;instance.<br>
+&nbsp;<br>
+If&nbsp;not&nbsp;exists()&nbsp;may&nbsp;be&nbsp;None.<br>
+&nbsp;<br>
+Auxiliary.</tt></dd>
+</dl>
+<dl><dt><strong>vmxFilePath</strong></dt>
+<dd><tt>Path&nbsp;of&nbsp;the&nbsp;.vmx&nbsp;file.</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VmxFileContent">class <strong>VmxFileContent</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;text&nbsp;content&nbsp;of&nbsp;a&nbsp;.vmx&nbsp;file&nbsp;for&nbsp;VMware.<br>
+&nbsp;<br>
+VMware&nbsp;describes&nbsp;the&nbsp;.vmx&nbsp;file&nbsp;as&nbsp;the&nbsp;primary&nbsp;configuration&nbsp;file.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VmxFileContent-__init__"><strong>__init__</strong></a>(self, string)</dt><dd><tt>Create&nbsp;new&nbsp;.vmx&nbsp;file&nbsp;content&nbsp;container.<br>
+&nbsp;<br>
+Does&nbsp;unicode(string),&nbsp;as&nbsp;befits&nbsp;the&nbsp;21st&nbsp;century.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-disableAllIdeDrives"><strong>disableAllIdeDrives</strong></a>(self)</dt><dd><tt>Disable&nbsp;all&nbsp;virtual&nbsp;IDE&nbsp;drives,&nbsp;while&nbsp;keeping&nbsp;them&nbsp;for&nbsp;later&nbsp;enabling&nbsp;again.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;sets&nbsp;all&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;ide*:*.present="FALSE".</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-enableAllIdeDrives"><strong>enableAllIdeDrives</strong></a>(self)</dt><dd><tt>Enable&nbsp;all&nbsp;virtual&nbsp;IDE&nbsp;drives&nbsp;again.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;sets&nbsp;all&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;ide*:*.present="TRUE".</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-getEthernetMacAddress"><strong>getEthernetMacAddress</strong></a>(self, adapter<font color="#909090">=0</font>)</dt><dd><tt>Get&nbsp;MAC&nbsp;address&nbsp;of&nbsp;a&nbsp;virtual&nbsp;Ethernet&nbsp;adapter.<br>
+&nbsp;<br>
+Generated&nbsp;MAC&nbsp;addresses&nbsp;are&nbsp;available&nbsp;only&nbsp;after&nbsp;first&nbsp;start&nbsp;of&nbsp;a&nbsp;virtual&nbsp;machine.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;"01:23:45:67:89:ab",&nbsp;or&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-getSettingValue"><strong>getSettingValue</strong></a>(self, name)</dt><dd><tt>Get&nbsp;setting&nbsp;value.<br>
+&nbsp;<br>
+If&nbsp;no&nbsp;setting&nbsp;by&nbsp;that&nbsp;name&nbsp;then&nbsp;return&nbsp;None.<br>
+&nbsp;<br>
+If&nbsp;double&nbsp;quoted&nbsp;then&nbsp;return&nbsp;without&nbsp;double&nbsp;quotes.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;as&nbsp;string,&nbsp;or&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-normalizeLineRuns"><strong>normalizeLineRuns</strong></a>(self)</dt><dd><tt>Normalize&nbsp;empty&nbsp;line&nbsp;runs.<br>
+&nbsp;<br>
+One&nbsp;empty&nbsp;line&nbsp;is&nbsp;made&nbsp;from&nbsp;two&nbsp;newlines.&nbsp;&nbsp;Reduce&nbsp;any&nbsp;more&nbsp;than&nbsp;two&nbsp;down&nbsp;to&nbsp;two.<br>
+&nbsp;<br>
+At&nbsp;the&nbsp;end&nbsp;make&nbsp;exactly&nbsp;two&nbsp;newlines,&nbsp;so&nbsp;that&nbsp;lines&nbsp;added&nbsp;by&nbsp;VMware&nbsp;will&nbsp;be&nbsp;separated.<br>
+&nbsp;<br>
+Auxiliary.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-removeAllIdeCdromImages"><strong>removeAllIdeCdromImages</strong></a>(self)</dt><dd><tt>Remove&nbsp;all&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;all&nbsp;virtual&nbsp;IDE&nbsp;CD-ROM&nbsp;drives&nbsp;served&nbsp;from&nbsp;image&nbsp;files.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-removeIdeDrive"><strong>removeIdeDrive</strong></a>(self, bus<font color="#909090">=0</font>, device<font color="#909090">=0</font>)</dt><dd><tt>Remove&nbsp;all&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;a&nbsp;virtual&nbsp;IDE&nbsp;drive.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-removeSetting"><strong>removeSetting</strong></a>(self, name)</dt><dd><tt>Remove&nbsp;a&nbsp;setting.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-removeSettingsStartingWith"><strong>removeSettingsStartingWith</strong></a>(self, prefix)</dt><dd><tt>Remove&nbsp;settings&nbsp;having&nbsp;prefix&nbsp;in&nbsp;front&nbsp;of&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-replaceSettingValue"><strong>replaceSettingValue</strong></a>(self, name, newValue, placeholder<font color="#909090">=None</font>)</dt><dd><tt>Replace&nbsp;one&nbsp;setting&nbsp;value.<br>
+&nbsp;<br>
+Tolerates&nbsp;string&nbsp;or&nbsp;number&nbsp;for&nbsp;newValue&nbsp;because&nbsp;it&nbsp;does&nbsp;unicode(newValue).<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;would&nbsp;have&nbsp;problems&nbsp;with&nbsp;backslash&nbsp;escapes&nbsp;in&nbsp;newValue.<br>
+Don't&nbsp;use&nbsp;\&nbsp;in&nbsp;newValue.<br>
+&nbsp;<br>
+E.g.&nbsp;if&nbsp;original&nbsp;containts&nbsp;a&nbsp;line::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;memsize="_MEMSIZE_"&nbsp;#&nbsp;megabytes,&nbsp;must&nbsp;be&nbsp;multiple&nbsp;of&nbsp;4<br>
+&nbsp;<br>
+then&nbsp;would&nbsp;call::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vmxFile.<a href="#VmxFileContent-replaceSettingValue">replaceSettingValue</a>("memsize",&nbsp;256,&nbsp;"_MEMSIZE_")</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setAccelerate3D"><strong>setAccelerate3D</strong></a>(self, accelerate3D<font color="#909090">=True</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;enabling&nbsp;accelerated&nbsp;3D&nbsp;graphics.<br>
+&nbsp;<br>
+accelerate3D<br>
+&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;to&nbsp;accelerate&nbsp;3D&nbsp;graphics.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setEthernetAdapter"><strong>setEthernetAdapter</strong></a>(self, adapter<font color="#909090">=0</font>, connectionType<font color="#909090">='bridged'</font>, change<font color="#909090">='enable'</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;a&nbsp;virtual&nbsp;Ethernet&nbsp;adapter.<br>
+&nbsp;<br>
+connectionType<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"bridged",&nbsp;"hostonly",&nbsp;or&nbsp;"nat".<br>
+&nbsp;<br>
+change<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"enable",&nbsp;"disable",&nbsp;or&nbsp;"remove".<br>
+&nbsp;<br>
+E.g.::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ethernet0.present&nbsp;=&nbsp;"TRUE"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ethernet0.connectionType&nbsp;=&nbsp;"bridged"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ethernet0.virtualDev&nbsp;=&nbsp;"e1000"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ethernet0.startConnected&nbsp;=&nbsp;"TRUE"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ethernet0.wakeOnPcktRcv&nbsp;=&nbsp;"FALSE"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ethernet0.allowGuestConnectionControl&nbsp;=&nbsp;"FALSE"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ethernet0.disableMorphToVmxnet&nbsp;=&nbsp;"TRUE"</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setIdeCdromIsoFile"><strong>setIdeCdromIsoFile</strong></a>(self, pathOnHost, bus<font color="#909090">=0</font>, device<font color="#909090">=0</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;a&nbsp;virtual&nbsp;IDE&nbsp;CD-ROM&nbsp;drive&nbsp;served&nbsp;from&nbsp;an&nbsp;.iso&nbsp;image&nbsp;file.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setIdeDiskVmdkFile"><strong>setIdeDiskVmdkFile</strong></a>(self, pathOnHost, bus<font color="#909090">=0</font>, device<font color="#909090">=0</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;a&nbsp;virtual&nbsp;IDE&nbsp;hard&nbsp;disk&nbsp;drive&nbsp;served&nbsp;from&nbsp;a&nbsp;.vmdk&nbsp;disk&nbsp;file.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setIdeDrive"><strong>setIdeDrive</strong></a>(self, pathOnHost, deviceType, bus<font color="#909090">=0</font>, device<font color="#909090">=0</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;a&nbsp;virtual&nbsp;IDE&nbsp;drive&nbsp;served&nbsp;from&nbsp;a&nbsp;file.<br>
+&nbsp;<br>
+pathOnHost<br>
+&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;relative.<br>
+&nbsp;<br>
+E.g.::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ide0:0.present&nbsp;=&nbsp;"TRUE"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ide0:0.deviceType&nbsp;=&nbsp;"disk"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ide0:0.fileName&nbsp;=&nbsp;"demomachine01-0.vmdk"</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setMemorySize"><strong>setMemorySize</strong></a>(self, memsizeMegabytes)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;memory&nbsp;size.<br>
+&nbsp;<br>
+memsizeMegabytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;memory&nbsp;size&nbsp;in&nbsp;megabytes.&nbsp;&nbsp;E.g.&nbsp;1000.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Will&nbsp;be&nbsp;rounded&nbsp;up&nbsp;to&nbsp;a&nbsp;multiple&nbsp;of&nbsp;4,&nbsp;if&nbsp;necessary.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setNumberOfProcessors"><strong>setNumberOfProcessors</strong></a>(self, number<font color="#909090">=1</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;number&nbsp;of&nbsp;processors.<br>
+&nbsp;<br>
+number<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;2.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setSettingValue"><strong>setSettingValue</strong></a>(self, name, newValue, extraEmptyLine<font color="#909090">=False</font>)</dt><dd><tt>Replace&nbsp;one&nbsp;setting&nbsp;value&nbsp;or&nbsp;create&nbsp;and&nbsp;append&nbsp;that&nbsp;setting.<br>
+&nbsp;<br>
+See&nbsp;method&nbsp;replaceSettingValue.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-setVideoMemorySize"><strong>setVideoMemorySize</strong></a>(self, vramSizeMegabytes)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;video&nbsp;RAM&nbsp;size.<br>
+&nbsp;<br>
+vramSizeMegabytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;video&nbsp;RAM&nbsp;size&nbsp;in&nbsp;megabytes.&nbsp;&nbsp;E.g.&nbsp;64.</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="VmxFileContent-compliantMemsize"><strong>compliantMemsize</strong></a>(cls, given)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>.vmx&nbsp;file&nbsp;parameter&nbsp;memsize&nbsp;must&nbsp;be&nbsp;a&nbsp;multiple&nbsp;of&nbsp;4.<br>
+&nbsp;<br>
+If&nbsp;necessary&nbsp;rounds&nbsp;up&nbsp;to&nbsp;next&nbsp;multiple&nbsp;of&nbsp;4.<br>
+&nbsp;<br>
+Unit&nbsp;is&nbsp;megabytes.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-ethernetSettingPrefix"><strong>ethernetSettingPrefix</strong></a>(cls, adapter<font color="#909090">=0</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;Ethernet&nbsp;adapters&nbsp;have&nbsp;a&nbsp;naming&nbsp;convention.<br>
+&nbsp;<br>
+Return&nbsp;e.g.&nbsp;"ethernet0"&nbsp;for&nbsp;adapter=0.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-ideBusDevice"><strong>ideBusDevice</strong></a>(cls, driveNumber)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;IDE&nbsp;bus&nbsp;0&nbsp;or&nbsp;1&nbsp;device&nbsp;0&nbsp;or&nbsp;1&nbsp;for&nbsp;IDE&nbsp;drive&nbsp;number&nbsp;0,&nbsp;1,&nbsp;2&nbsp;or&nbsp;3.<br>
+&nbsp;<br>
+Return&nbsp;e.g.&nbsp;(0,0).</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-ideDriveNumber"><strong>ideDriveNumber</strong></a>(cls, bus, device)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>For&nbsp;IDE&nbsp;bus&nbsp;0&nbsp;or&nbsp;1&nbsp;device&nbsp;0&nbsp;or&nbsp;1&nbsp;return&nbsp;IDE&nbsp;drive&nbsp;number&nbsp;0,&nbsp;1,&nbsp;2&nbsp;or&nbsp;3.<br>
+&nbsp;<br>
+Return&nbsp;e.g.&nbsp;0.</tt></dd></dl>
+
+<dl><dt><a name="VmxFileContent-ideSettingPrefix"><strong>ideSettingPrefix</strong></a>(cls, bus<font color="#909090">=0</font>, device<font color="#909090">=0</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;IDE&nbsp;drives&nbsp;have&nbsp;a&nbsp;naming&nbsp;convention.<br>
+&nbsp;<br>
+Return&nbsp;e.g.&nbsp;"ide0:0"&nbsp;for&nbsp;bus=0&nbsp;and&nbsp;device=0.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>newline</strong></dt>
+<dd><tt>Sample&nbsp;which&nbsp;kind&nbsp;of&nbsp;newline.</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>newlineRegex</strong> = &lt;_sre.SRE_Pattern object&gt;</dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

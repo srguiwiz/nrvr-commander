@@ -1,0 +1,106 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.xml.etree</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.xml.html"><font color="#ffffff">xml</font></a>.etree</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/xml/etree.py">/usr/lib/python2.6/site-packages/nrvr/xml/etree.py</a></font></td></tr></table>
+    <p><tt>nrvr.xml.etree&nbsp;-&nbsp;Utilities&nbsp;for&nbsp;xml.etree.ElementTree<br>
+&nbsp;<br>
+The&nbsp;main&nbsp;class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#ElementTreeUtil">ElementTreeUtil</a>.<br>
+&nbsp;<br>
+To&nbsp;be&nbsp;expanded&nbsp;as&nbsp;needed.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="copy.html">copy</a><br>
+</td><td width="25%" valign=top><a href="xml.html">xml</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.xml.etree.html#ElementTreeUtil">ElementTreeUtil</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ElementTreeUtil">class <strong>ElementTreeUtil</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Utilities&nbsp;for&nbsp;xml.etree.ElementTree.<br>
+&nbsp;<br>
+Written&nbsp;for&nbsp;Python&nbsp;2.6.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Class methods defined here:<br>
+<dl><dt><a name="ElementTreeUtil-indent"><strong>indent</strong></a>(cls, element, indent<font color="#909090">='  '</font>, level<font color="#909090">=0</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Set&nbsp;whitespace&nbsp;for&nbsp;indentation.<br>
+&nbsp;<br>
+element<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;xml.etree.ElementTree.Element&nbsp;instance.<br>
+&nbsp;<br>
+indent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;additional&nbsp;indent&nbsp;for&nbsp;each&nbsp;level&nbsp;down.<br>
+&nbsp;<br>
+level<br>
+&nbsp;&nbsp;&nbsp;&nbsp;increases&nbsp;on&nbsp;recursive&nbsp;calls.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Need&nbsp;not&nbsp;be&nbsp;set&nbsp;on&nbsp;regular&nbsp;use.</tt></dd></dl>
+
+<dl><dt><a name="ElementTreeUtil-simpledict"><strong>simpledict</strong></a>(cls, element)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Generate&nbsp;a&nbsp;dictionary&nbsp;from&nbsp;child&nbsp;element&nbsp;tags&nbsp;and&nbsp;text.<br>
+&nbsp;<br>
+element<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;xml.etree.ElementTree.Element&nbsp;instance.</tt></dd></dl>
+
+<dl><dt><a name="ElementTreeUtil-tostring"><strong>tostring</strong></a>(cls, element, indent<font color="#909090">='  '</font>, xml_declaration<font color="#909090">=True</font>, encoding<font color="#909090">='utf-8'</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Generate&nbsp;a&nbsp;string&nbsp;representation.<br>
+&nbsp;<br>
+element<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;xml.etree.ElementTree.Element&nbsp;instance.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Tolerates&nbsp;xml.etree.ElementTree.ElementTree.<br>
+&nbsp;<br>
+indent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;additional&nbsp;indent&nbsp;for&nbsp;each&nbsp;level&nbsp;down.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;unindented.<br>
+&nbsp;<br>
+xml_declaration<br>
+&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;with&nbsp;XML&nbsp;declaration&nbsp;&lt;?xml&nbsp;version="1.0"&nbsp;encoding="utf-8"?&gt;.</tt></dd></dl>
+
+<dl><dt><a name="ElementTreeUtil-unindent"><strong>unindent</strong></a>(cls, element)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Remove&nbsp;whitespace&nbsp;from&nbsp;indentation.<br>
+&nbsp;<br>
+element<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;xml.etree.ElementTree.Element&nbsp;instance.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

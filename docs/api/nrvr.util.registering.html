@@ -1,0 +1,151 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.util.registering</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.util.html"><font color="#ffffff">util</font></a>.registering</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/util/registering.py">/usr/lib/python2.6/site-packages/nrvr/util/registering.py</a></font></td></tr></table>
+    <p><tt>nrvr.util.networkinterface&nbsp;-&nbsp;Utilities&nbsp;regarding&nbsp;registering&nbsp;operating&nbsp;system&nbsp;users<br>
+&nbsp;<br>
+Class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#RegisteringUser">RegisteringUser</a>.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial">RegisteringUser(<a href="__builtin__.html#tuple">__builtin__.tuple</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.util.registering.html#RegisteringUser">RegisteringUser</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="RegisteringUser">class <strong>RegisteringUser</strong></a>(RegisteringUser)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;user&nbsp;who&nbsp;is&nbsp;being&nbsp;registered.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="nrvr.util.registering.html#RegisteringUser">RegisteringUser</a></dd>
+<dd>RegisteringUser</dd>
+<dd><a href="__builtin__.html#tuple">__builtin__.tuple</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="RegisteringUser-__new__"><strong>__new__</strong></a>(cls, username, pwd<font color="#909090">=None</font>, fullname<font color="#909090">=None</font>, organization<font color="#909090">=None</font>)</dt><dd><tt>Create&nbsp;new&nbsp;user&nbsp;who&nbsp;is&nbsp;being&nbsp;registered.<br>
+&nbsp;<br>
+username<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username.<br>
+&nbsp;<br>
+pwd<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;May&nbsp;be&nbsp;None&nbsp;or&nbsp;empty&nbsp;string.<br>
+&nbsp;<br>
+fullname<br>
+&nbsp;&nbsp;&nbsp;&nbsp;full&nbsp;name.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;a&nbsp;copy&nbsp;of&nbsp;username,&nbsp;with&nbsp;the&nbsp;first&nbsp;letter&nbsp;of&nbsp;each&nbsp;word&nbsp;capitalized.<br>
+&nbsp;<br>
+organization<br>
+&nbsp;&nbsp;&nbsp;&nbsp;organization&nbsp;name.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;fullname.</tt></dd></dl>
+
+<hr>
+Methods inherited from RegisteringUser:<br>
+<dl><dt><a name="RegisteringUser-__getnewargs__"><strong>__getnewargs__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="RegisteringUser-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from RegisteringUser:<br>
+<dl><dt><strong>fullname</strong></dt>
+<dd><tt>itemgetter(item,&nbsp;...)&nbsp;--&gt;&nbsp;itemgetter&nbsp;object<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;callable&nbsp;object&nbsp;that&nbsp;fetches&nbsp;the&nbsp;given&nbsp;item(s)&nbsp;from&nbsp;its&nbsp;operand.<br>
+After,&nbsp;f=itemgetter(2),&nbsp;the&nbsp;call&nbsp;f(r)&nbsp;returns&nbsp;r[2].<br>
+After,&nbsp;g=itemgetter(2,5,3),&nbsp;the&nbsp;call&nbsp;g(r)&nbsp;returns&nbsp;(r[2],&nbsp;r[5],&nbsp;r[3])</tt></dd>
+</dl>
+<dl><dt><strong>organization</strong></dt>
+<dd><tt>itemgetter(item,&nbsp;...)&nbsp;--&gt;&nbsp;itemgetter&nbsp;object<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;callable&nbsp;object&nbsp;that&nbsp;fetches&nbsp;the&nbsp;given&nbsp;item(s)&nbsp;from&nbsp;its&nbsp;operand.<br>
+After,&nbsp;f=itemgetter(2),&nbsp;the&nbsp;call&nbsp;f(r)&nbsp;returns&nbsp;r[2].<br>
+After,&nbsp;g=itemgetter(2,5,3),&nbsp;the&nbsp;call&nbsp;g(r)&nbsp;returns&nbsp;(r[2],&nbsp;r[5],&nbsp;r[3])</tt></dd>
+</dl>
+<dl><dt><strong>pwd</strong></dt>
+<dd><tt>itemgetter(item,&nbsp;...)&nbsp;--&gt;&nbsp;itemgetter&nbsp;object<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;callable&nbsp;object&nbsp;that&nbsp;fetches&nbsp;the&nbsp;given&nbsp;item(s)&nbsp;from&nbsp;its&nbsp;operand.<br>
+After,&nbsp;f=itemgetter(2),&nbsp;the&nbsp;call&nbsp;f(r)&nbsp;returns&nbsp;r[2].<br>
+After,&nbsp;g=itemgetter(2,5,3),&nbsp;the&nbsp;call&nbsp;g(r)&nbsp;returns&nbsp;(r[2],&nbsp;r[5],&nbsp;r[3])</tt></dd>
+</dl>
+<dl><dt><strong>username</strong></dt>
+<dd><tt>itemgetter(item,&nbsp;...)&nbsp;--&gt;&nbsp;itemgetter&nbsp;object<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;callable&nbsp;object&nbsp;that&nbsp;fetches&nbsp;the&nbsp;given&nbsp;item(s)&nbsp;from&nbsp;its&nbsp;operand.<br>
+After,&nbsp;f=itemgetter(2),&nbsp;the&nbsp;call&nbsp;f(r)&nbsp;returns&nbsp;r[2].<br>
+After,&nbsp;g=itemgetter(2,5,3),&nbsp;the&nbsp;call&nbsp;g(r)&nbsp;returns&nbsp;(r[2],&nbsp;r[5],&nbsp;r[3])</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="__builtin__.html#tuple">__builtin__.tuple</a>:<br>
+<dl><dt><a name="RegisteringUser-__add__"><strong>__add__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__add__">__add__</a>(y)&nbsp;&lt;==&gt;&nbsp;x+y</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__contains__"><strong>__contains__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__contains__">__contains__</a>(y)&nbsp;&lt;==&gt;&nbsp;y&nbsp;in&nbsp;x</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__eq__"><strong>__eq__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__eq__">__eq__</a>(y)&nbsp;&lt;==&gt;&nbsp;x==y</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__ge__"><strong>__ge__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__ge__">__ge__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;=y</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__gt__"><strong>__gt__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__gt__">__gt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;y</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__hash__"><strong>__hash__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__hash__">__hash__</a>()&nbsp;&lt;==&gt;&nbsp;hash(x)</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__iter__"><strong>__iter__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__iter__">__iter__</a>()&nbsp;&lt;==&gt;&nbsp;iter(x)</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__le__"><strong>__le__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__le__">__le__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;=y</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__len__"><strong>__len__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__len__">__len__</a>()&nbsp;&lt;==&gt;&nbsp;len(x)</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__lt__"><strong>__lt__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__lt__">__lt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;y</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__mul__"><strong>__mul__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__mul__">__mul__</a>(n)&nbsp;&lt;==&gt;&nbsp;x*n</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__ne__"><strong>__ne__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__ne__">__ne__</a>(y)&nbsp;&lt;==&gt;&nbsp;x!=y</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__rmul__"><strong>__rmul__</strong></a>(...)</dt><dd><tt>x.<a href="#RegisteringUser-__rmul__">__rmul__</a>(n)&nbsp;&lt;==&gt;&nbsp;n*x</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-__sizeof__"><strong>__sizeof__</strong></a>(...)</dt><dd><tt>T.<a href="#RegisteringUser-__sizeof__">__sizeof__</a>()&nbsp;--&nbsp;size&nbsp;of&nbsp;T&nbsp;in&nbsp;memory,&nbsp;in&nbsp;bytes</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-count"><strong>count</strong></a>(...)</dt><dd><tt>T.<a href="#RegisteringUser-count">count</a>(value)&nbsp;-&gt;&nbsp;integer&nbsp;--&nbsp;return&nbsp;number&nbsp;of&nbsp;occurrences&nbsp;of&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="RegisteringUser-index"><strong>index</strong></a>(...)</dt><dd><tt>T.<a href="#RegisteringUser-index">index</a>(value,&nbsp;[start,&nbsp;[stop]])&nbsp;-&gt;&nbsp;integer&nbsp;--&nbsp;return&nbsp;first&nbsp;index&nbsp;of&nbsp;value.<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;present.</tt></dd></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

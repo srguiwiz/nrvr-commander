@@ -1,0 +1,358 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.distros.el.kickstart</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.distros.html"><font color="#ffffff">distros</font></a>.<a href="nrvr.distros.el.html"><font color="#ffffff">el</font></a>.kickstart</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/distros/el/kickstart.py">/usr/lib/python2.6/site-packages/nrvr/distros/el/kickstart.py</a></font></td></tr></table>
+    <p><tt>nrvr.distros.el.kickstart&nbsp;-&nbsp;Create&nbsp;and&nbsp;manipulate&nbsp;Enterprise&nbsp;Linux&nbsp;kickstart&nbsp;files<br>
+&nbsp;<br>
+Classes&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;include<br>
+*&nbsp;<a href="#ElIsoImage">ElIsoImage</a><br>
+*&nbsp;<a href="#ElKickstartFileContent">ElKickstartFileContent</a><br>
+&nbsp;<br>
+To&nbsp;be&nbsp;improved&nbsp;as&nbsp;needed.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Contributor&nbsp;-&nbsp;Nora&nbsp;Baschy<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="nrvr.html">nrvr</a><br>
+</td><td width="25%" valign=top><a href="re.html">re</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="nrvr.distros.common.kickstart.html#DistroIsoImage">nrvr.distros.common.kickstart.DistroIsoImage</a>(<a href="nrvr.diskimage.isoimage.html#IsoImage">nrvr.diskimage.isoimage.IsoImage</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.distros.el.kickstart.html#ElIsoImage">ElIsoImage</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">nrvr.distros.common.kickstart.DistroKickstartFileContent</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.distros.el.kickstart.html#ElKickstartFileContent">ElKickstartFileContent</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ElIsoImage">class <strong>ElIsoImage</strong></a>(<a href="nrvr.distros.common.kickstart.html#DistroIsoImage">nrvr.distros.common.kickstart.DistroIsoImage</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>An&nbsp;Enterprise&nbsp;Linux&nbsp;.iso&nbsp;ISO&nbsp;CD-ROM&nbsp;or&nbsp;DVD-ROM&nbsp;disk&nbsp;image.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="nrvr.distros.el.kickstart.html#ElIsoImage">ElIsoImage</a></dd>
+<dd><a href="nrvr.distros.common.kickstart.html#DistroIsoImage">nrvr.distros.common.kickstart.DistroIsoImage</a></dd>
+<dd><a href="nrvr.diskimage.isoimage.html#IsoImage">nrvr.diskimage.isoimage.IsoImage</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ElIsoImage-__init__"><strong>__init__</strong></a>(self, isoImagePath)</dt><dd><tt>Create&nbsp;new&nbsp;Enterprise&nbsp;Linux&nbsp;<a href="#ElIsoImage">ElIsoImage</a>&nbsp;descriptor.<br>
+&nbsp;<br>
+A&nbsp;descriptor&nbsp;can&nbsp;describe&nbsp;an&nbsp;.iso&nbsp;image&nbsp;that&nbsp;does&nbsp;or&nbsp;doesn't&nbsp;yet&nbsp;exist&nbsp;on&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
+
+<dl><dt><a name="ElIsoImage-modificationsIncludingKickstartFile"><strong>modificationsIncludingKickstartFile</strong></a>(self, _kickstartFileContent)</dt><dd><tt>Construct&nbsp;and&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;modifications&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;method&nbsp;cloneWithModifications.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;is&nbsp;called&nbsp;by&nbsp;method&nbsp;cloneWithAutoBootingKickstart,&nbsp;which&nbsp;takes&nbsp;the&nbsp;returned&nbsp;list<br>
+and&nbsp;passes&nbsp;it&nbsp;to&nbsp;method&nbsp;cloneWithModifications.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;known&nbsp;to&nbsp;support&nbsp;Scientific&nbsp;Linux&nbsp;6.1&nbsp;and&nbsp;6.4.<br>
+As&nbsp;implemented&nbsp;tested&nbsp;for&nbsp;i386&nbsp;and&nbsp;x86_64.<br>
+Good&nbsp;chance&nbsp;it&nbsp;will&nbsp;work&nbsp;with&nbsp;other&nbsp;brand&nbsp;Enterprise&nbsp;Linux&nbsp;distributions.<br>
+Good&nbsp;chance&nbsp;it&nbsp;will&nbsp;work&nbsp;with&nbsp;newer&nbsp;versions&nbsp;distributions.<br>
+&nbsp;<br>
+_kickstartFileContent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;An&nbsp;<a href="#ElKickstartFileContent">ElKickstartFileContent</a>&nbsp;object.<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;list&nbsp;of&nbsp;modifications&nbsp;which&nbsp;will&nbsp;be&nbsp;passed&nbsp;to&nbsp;method&nbsp;cloneWithModifications.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="nrvr.distros.common.kickstart.html#DistroIsoImage">nrvr.distros.common.kickstart.DistroIsoImage</a>:<br>
+<dl><dt><a name="ElIsoImage-cloneWithAutoBootingKickstart"><strong>cloneWithAutoBootingKickstart</strong></a>(self, _kickstartFileContent, modifications<font color="#909090">=[]</font>, cloneIsoImagePath<font color="#909090">=None</font>)</dt><dd><tt>Clone&nbsp;with&nbsp;kickstart&nbsp;file&nbsp;added&nbsp;and&nbsp;modified&nbsp;to&nbsp;automatically&nbsp;boot&nbsp;with&nbsp;it.<br>
+&nbsp;<br>
+For&nbsp;more&nbsp;on&nbsp;behavior&nbsp;see&nbsp;documentation&nbsp;of&nbsp;class&nbsp;IsoImage&nbsp;method&nbsp;cloneWithModifications.<br>
+&nbsp;<br>
+For&nbsp;details&nbsp;of&nbsp;modifications&nbsp;see&nbsp;method&nbsp;modificationsIncludingKickstartFile,<br>
+which&nbsp;is&nbsp;expected&nbsp;to&nbsp;be&nbsp;different&nbsp;per&nbsp;distro&nbsp;specific&nbsp;subclass.<br>
+&nbsp;<br>
+_kickstartFileContent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">DistroKickstartFileContent</a>&nbsp;object.<br>
+&nbsp;<br>
+cloneIsoImagePath<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;not&nbsp;given&nbsp;then&nbsp;in&nbsp;same&nbsp;directory&nbsp;with&nbsp;a&nbsp;timestamp&nbsp;in&nbsp;the&nbsp;filename.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IsoImage(cloneIsoImagePath).</tt></dd></dl>
+
+<dl><dt><a name="ElIsoImage-genisoimageOptions"><strong>genisoimageOptions</strong></a>(self, bootImage<font color="#909090">='isolinux/isolinux.bin'</font>, bootCatalog<font color="#909090">='isolinux/boot.cat'</font>, label<font color="#909090">=None</font>, udf<font color="#909090">=False</font>, ignoreJoliet<font color="#909090">=True</font>)</dt><dd><tt>Auxiliary&nbsp;method,&nbsp;called&nbsp;by&nbsp;cloneWithModifications.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;calls&nbsp;superclass&nbsp;method&nbsp;genisoimageOptions&nbsp;and&nbsp;extends&nbsp;the&nbsp;returned&nbsp;list.<br>
+&nbsp;<br>
+Could&nbsp;be&nbsp;improved&nbsp;in&nbsp;the&nbsp;future.<br>
+Could&nbsp;recognize&nbsp;content&nbsp;of&nbsp;.iso&nbsp;image.<br>
+Could&nbsp;select&nbsp;different&nbsp;options&nbsp;depending&nbsp;on&nbsp;content&nbsp;of&nbsp;.iso&nbsp;image.<br>
+Maybe&nbsp;could&nbsp;use&nbsp;iso-info&nbsp;-d&nbsp;9&nbsp;-i&nbsp;self.<strong>isoImagePath</strong>.<br>
+Could&nbsp;be&nbsp;overridden&nbsp;for&nbsp;a&nbsp;subclass.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="nrvr.diskimage.isoimage.html#IsoImage">nrvr.diskimage.isoimage.IsoImage</a>:<br>
+<dl><dt><a name="ElIsoImage-cloneWithModifications"><strong>cloneWithModifications</strong></a>(self, modifications<font color="#909090">=[]</font>, cloneIsoImagePath<font color="#909090">=None</font>, udf<font color="#909090">=False</font>, ignoreJoliet<font color="#909090">=True</font>, pause<font color="#909090">=False</font>)</dt><dd><tt>Clone&nbsp;with&nbsp;any&nbsp;number&nbsp;of&nbsp;instances&nbsp;of&nbsp;IsoImageModification&nbsp;applied.<br>
+&nbsp;<br>
+A&nbsp;temporary&nbsp;assembly&nbsp;directory&nbsp;in&nbsp;the&nbsp;same&nbsp;directory&nbsp;as&nbsp;cloneIsoImagePath&nbsp;needs&nbsp;disk&nbsp;space,<br>
+but&nbsp;it&nbsp;is&nbsp;removed&nbsp;automatically&nbsp;upon&nbsp;completion&nbsp;of&nbsp;cloning.<br>
+&nbsp;<br>
+modifications<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;list&nbsp;of&nbsp;IsoImageModification&nbsp;instances.<br>
+&nbsp;<br>
+cloneIsoImagePath<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;not&nbsp;given&nbsp;then&nbsp;in&nbsp;same&nbsp;directory&nbsp;with&nbsp;a&nbsp;timestamp&nbsp;in&nbsp;the&nbsp;filename.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IsoImage(cloneIsoImagePath).</tt></dd></dl>
+
+<dl><dt><a name="ElIsoImage-cloneWithModificationsUsingMount"><strong>cloneWithModificationsUsingMount</strong></a>(self, modifications<font color="#909090">=[]</font>, cloneIsoImagePath<font color="#909090">=None</font>, udf<font color="#909090">=False</font>, ignoreJoliet<font color="#909090">=True</font>, pause<font color="#909090">=False</font>)</dt><dd><tt>Clone&nbsp;with&nbsp;any&nbsp;number&nbsp;of&nbsp;instances&nbsp;of&nbsp;IsoImageModification&nbsp;applied.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;an&nbsp;older&nbsp;implementation&nbsp;which&nbsp;regrettably&nbsp;because&nbsp;of&nbsp;the&nbsp;mount&nbsp;command&nbsp;requires<br>
+having&nbsp;superuser&nbsp;privileges.<br>
+It&nbsp;is&nbsp;still&nbsp;here&nbsp;in&nbsp;case&nbsp;a&nbsp;newer&nbsp;implementation&nbsp;doesn't&nbsp;work&nbsp;right,&nbsp;which&nbsp;could&nbsp;be&nbsp;for&nbsp;any<br>
+of&nbsp;a&nbsp;number&nbsp;of&nbsp;reasons,&nbsp;for&nbsp;example&nbsp;for&nbsp;symbolic&nbsp;links.<br>
+&nbsp;<br>
+A&nbsp;temporary&nbsp;assembly&nbsp;directory&nbsp;in&nbsp;the&nbsp;same&nbsp;directory&nbsp;as&nbsp;cloneIsoImagePath&nbsp;needs&nbsp;disk&nbsp;space,<br>
+but&nbsp;it&nbsp;is&nbsp;removed&nbsp;automatically&nbsp;upon&nbsp;completion&nbsp;of&nbsp;cloning.<br>
+&nbsp;<br>
+modifications<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;list&nbsp;of&nbsp;IsoImageModification&nbsp;instances.<br>
+&nbsp;<br>
+cloneIsoImagePath<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;not&nbsp;given&nbsp;then&nbsp;in&nbsp;same&nbsp;directory&nbsp;with&nbsp;a&nbsp;timestamp&nbsp;in&nbsp;the&nbsp;filename.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IsoImage(cloneIsoImagePath).</tt></dd></dl>
+
+<dl><dt><a name="ElIsoImage-copyToDirectory"><strong>copyToDirectory</strong></a>(self, copyDirectory, udf<font color="#909090">=False</font>, ignoreJoliet<font color="#909090">=True</font>, tolerance<font color="#909090">=0.0</font>)</dt><dd><tt>Copy&nbsp;all&nbsp;files&nbsp;into&nbsp;a&nbsp;directory.<br>
+&nbsp;<br>
+Not&nbsp;using&nbsp;mount&nbsp;command,&nbsp;no&nbsp;need&nbsp;to&nbsp;run&nbsp;as&nbsp;root.</tt></dd></dl>
+
+<dl><dt><a name="ElIsoImage-exists"><strong>exists</strong></a>(self)</dt><dd><tt>Return&nbsp;True&nbsp;if&nbsp;.iso&nbsp;image&nbsp;exists&nbsp;on&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
+
+<dl><dt><a name="ElIsoImage-mount"><strong>mount</strong></a>(self, mountDir, udf<font color="#909090">=False</font>)</dt><dd><tt>Mount&nbsp;.iso&nbsp;image.</tt></dd></dl>
+
+<dl><dt><a name="ElIsoImage-remove"><strong>remove</strong></a>(self)</dt><dd><tt>Remove&nbsp;(delete)&nbsp;.iso&nbsp;image&nbsp;from&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
+
+<dl><dt><a name="ElIsoImage-unmount"><strong>unmount</strong></a>(self)</dt><dd><tt>Unmount&nbsp;.iso&nbsp;image.</tt></dd></dl>
+
+<hr>
+Class methods inherited from <a href="nrvr.diskimage.isoimage.html#IsoImage">nrvr.diskimage.isoimage.IsoImage</a>:<br>
+<dl><dt><a name="ElIsoImage-commandsUsedInImplementation"><strong>commandsUsedInImplementation</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequired().<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;can&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequiredByImplementations().</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="nrvr.diskimage.isoimage.html#IsoImage">nrvr.diskimage.isoimage.IsoImage</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>isoImagePath</strong></dt>
+<dd><tt>Path&nbsp;of&nbsp;the&nbsp;.iso&nbsp;image.</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ElKickstartFileContent">class <strong>ElKickstartFileContent</strong></a>(<a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">nrvr.distros.common.kickstart.DistroKickstartFileContent</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;text&nbsp;content&nbsp;of&nbsp;an&nbsp;Anaconda&nbsp;kickstart&nbsp;file&nbsp;for&nbsp;Enterprise&nbsp;Linux.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="nrvr.distros.el.kickstart.html#ElKickstartFileContent">ElKickstartFileContent</a></dd>
+<dd><a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">nrvr.distros.common.kickstart.DistroKickstartFileContent</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ElKickstartFileContent-__init__"><strong>__init__</strong></a>(self, string)</dt><dd><tt>Create&nbsp;new&nbsp;kickstart&nbsp;file&nbsp;content&nbsp;container.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-elActivateGraphicalLogin"><strong>elActivateGraphicalLogin</strong></a>(self)</dt><dd><tt>Boot&nbsp;into&nbsp;graphical&nbsp;login&nbsp;on&nbsp;the&nbsp;installed&nbsp;system.<br>
+&nbsp;<br>
+Do&nbsp;not&nbsp;use&nbsp;in&nbsp;a&nbsp;kickstart&nbsp;that&nbsp;does&nbsp;not&nbsp;install&nbsp;the&nbsp;X&nbsp;Window&nbsp;System.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-elAddNetworkConfigurationWithDhcp"><strong>elAddNetworkConfigurationWithDhcp</strong></a>(self, device)</dt><dd><tt>Add&nbsp;an&nbsp;additional&nbsp;network&nbsp;device&nbsp;with&nbsp;DHCP.<br>
+&nbsp;<br>
+device<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string,&nbsp;e.g.&nbsp;"eth1".<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Should&nbsp;be&nbsp;increased&nbsp;past&nbsp;"eth1"&nbsp;if&nbsp;adding&nbsp;more&nbsp;than&nbsp;one&nbsp;additional&nbsp;configuration.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Pre-existing&nbsp;network&nbsp;configurations&nbsp;are&nbsp;moved&nbsp;up&nbsp;by&nbsp;one&nbsp;device&nbsp;each,&nbsp;if&nbsp;there&nbsp;would&nbsp;be&nbsp;a&nbsp;conflict.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;E.g.&nbsp;adding&nbsp;for&nbsp;"eth0"&nbsp;when&nbsp;for&nbsp;"eth0"&nbsp;already&nbsp;exists&nbsp;causes&nbsp;the&nbsp;pre-existing&nbsp;for&nbsp;"eth0"&nbsp;to&nbsp;become&nbsp;for&nbsp;"eth1".<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-elAddUser"><strong>elAddUser</strong></a>(self, username, pwd<font color="#909090">=None</font>)</dt><dd><tt>Add&nbsp;user.<br>
+&nbsp;<br>
+username<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;to&nbsp;add.<br>
+&nbsp;<br>
+pwd<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pwd&nbsp;will&nbsp;be&nbsp;encrypted.&nbsp;&nbsp;If&nbsp;starting&nbsp;with&nbsp;$&nbsp;it&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;encrypted&nbsp;already.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-elReplaceHostname"><strong>elReplaceHostname</strong></a>(self, hostname)</dt><dd><tt>Replace&nbsp;hostname&nbsp;option&nbsp;in&nbsp;network&nbsp;option.<br>
+&nbsp;<br>
+hostname<br>
+&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;hostname.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-elReplaceStaticIP"><strong>elReplaceStaticIP</strong></a>(self, ipaddress, netmask<font color="#909090">='255.255.255.0'</font>, gateway<font color="#909090">=None</font>, nameservers<font color="#909090">=None</font>)</dt><dd><tt>Replace&nbsp;static&nbsp;IP&nbsp;options&nbsp;in&nbsp;network&nbsp;option.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;only&nbsp;supports&nbsp;IPv4.<br>
+&nbsp;<br>
+ipaddress<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IP&nbsp;address.<br>
+&nbsp;<br>
+netmask<br>
+&nbsp;&nbsp;&nbsp;&nbsp;netmask.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;255.255.255.0.<br>
+&nbsp;<br>
+gateway<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gateway.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;ip.1.<br>
+&nbsp;<br>
+nameservers<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;nameserver&nbsp;or&nbsp;a&nbsp;list&nbsp;of&nbsp;nameservers.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;gateway.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;empty&nbsp;list&nbsp;then&nbsp;remove&nbsp;option.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">nrvr.distros.common.kickstart.DistroKickstartFileContent</a>:<br>
+<dl><dt><a name="ElKickstartFileContent-addPackage"><strong>addPackage</strong></a>(self, package)</dt><dd><tt>Add&nbsp;package&nbsp;or&nbsp;package&nbsp;group&nbsp;to&nbsp;%packages&nbsp;section.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-removeAllPackages"><strong>removeAllPackages</strong></a>(self)</dt><dd><tt>Remove&nbsp;all&nbsp;packages&nbsp;and&nbsp;package&nbsp;groups&nbsp;from&nbsp;%packages&nbsp;section.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-removePackage"><strong>removePackage</strong></a>(self, package)</dt><dd><tt>Remove&nbsp;package&nbsp;or&nbsp;package&nbsp;group&nbsp;from&nbsp;%packages&nbsp;section.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-replaceAllPackages"><strong>replaceAllPackages</strong></a>(self, packages)</dt><dd><tt>Replace&nbsp;all&nbsp;packages&nbsp;and&nbsp;package&nbsp;groups&nbsp;in&nbsp;%packages&nbsp;section.<br>
+&nbsp;<br>
+packages<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;list&nbsp;of&nbsp;packages&nbsp;and&nbsp;package&nbsp;groups.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-replaceLang"><strong>replaceLang</strong></a>(self, lang)</dt><dd><tt>Replace&nbsp;lang&nbsp;option.<br>
+&nbsp;<br>
+lang<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;"de_DE.UTF-8"&nbsp;to&nbsp;replace&nbsp;"en_US.UTF-8".<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;As&nbsp;implemented&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;sanity&nbsp;checking.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-replaceRootpw"><strong>replaceRootpw</strong></a>(self, pwd)</dt><dd><tt>Replace&nbsp;rootpw&nbsp;option.<br>
+&nbsp;<br>
+pwd<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pwd&nbsp;will&nbsp;be&nbsp;encrypted.&nbsp;&nbsp;If&nbsp;starting&nbsp;with&nbsp;$&nbsp;it&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;encrypted&nbsp;already.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-sectionByName"><strong>sectionByName</strong></a>(self, name)</dt><dd><tt>Return&nbsp;section&nbsp;by&nbsp;name.<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;KickstartFileSection,&nbsp;or&nbsp;None.<br>
+&nbsp;<br>
+Setting&nbsp;a&nbsp;returned&nbsp;KickstartFileSection's&nbsp;string&nbsp;modifies&nbsp;the&nbsp;<a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">DistroKickstartFileContent</a>.<br>
+&nbsp;<br>
+If&nbsp;more&nbsp;than&nbsp;one&nbsp;section&nbsp;with&nbsp;same&nbsp;name&nbsp;returns&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-sectionsByName"><strong>sectionsByName</strong></a>(self, name)</dt><dd><tt>Return&nbsp;sections&nbsp;by&nbsp;name.<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;list&nbsp;of&nbsp;KickstartFileSection,&nbsp;or&nbsp;empty&nbsp;list&nbsp;[].<br>
+&nbsp;<br>
+Setting&nbsp;a&nbsp;returned&nbsp;KickstartFileSection's&nbsp;string&nbsp;modifies&nbsp;the&nbsp;<a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">DistroKickstartFileContent</a>.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-setSwappiness"><strong>setSwappiness</strong></a>(self, swappiness)</dt><dd><tt>Set&nbsp;swappiness.<br>
+&nbsp;<br>
+swappiness<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;int&nbsp;between&nbsp;0&nbsp;and&nbsp;100.<br>
+&nbsp;<br>
+return<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self,&nbsp;for&nbsp;daisychaining.</tt></dd></dl>
+
+<hr>
+Class methods inherited from <a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">nrvr.distros.common.kickstart.DistroKickstartFileContent</a>:<br>
+<dl><dt><a name="ElKickstartFileContent-cryptedPwd"><strong>cryptedPwd</strong></a>(cls, plainPwd)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Encrypt&nbsp;in&nbsp;a&nbsp;format&nbsp;acceptable&nbsp;for&nbsp;kickstart.</tt></dd></dl>
+
+<dl><dt><a name="ElKickstartFileContent-parseIntoSections"><strong>parseIntoSections</strong></a>(cls, whole)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;sections&nbsp;as&nbsp;list&nbsp;of&nbsp;KickstartFileSection&nbsp;objects.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">nrvr.distros.common.kickstart.DistroKickstartFileContent</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>sections</strong></dt>
+</dl>
+<dl><dt><strong>string</strong></dt>
+<dd><tt>The&nbsp;whole&nbsp;content.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;this&nbsp;is&nbsp;dynamically&nbsp;built,&nbsp;but&nbsp;it&nbsp;is<br>
+for&nbsp;the&nbsp;sake&nbsp;of&nbsp;correctness&nbsp;and&nbsp;maintainability.</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="nrvr.distros.common.kickstart.html#DistroKickstartFileContent">nrvr.distros.common.kickstart.DistroKickstartFileContent</a>:<br>
+<dl><dt><strong>firstWordOfLineRegex</strong> = &lt;_sre.SRE_Pattern object&gt;</dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

@@ -1,0 +1,101 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.util.ipaddress</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.util.html"><font color="#ffffff">util</font></a>.ipaddress</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/util/ipaddress.py">/usr/lib/python2.6/site-packages/nrvr/util/ipaddress.py</a></font></td></tr></table>
+    <p><tt>nrvr.util.ipaddress&nbsp;-&nbsp;Utilities&nbsp;regarding&nbsp;IP&nbsp;addresses<br>
+&nbsp;<br>
+Class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#IPAddress">IPAddress</a>.<br>
+&nbsp;<br>
+Works&nbsp;in&nbsp;Linux&nbsp;and&nbsp;Windows.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Contributor&nbsp;-&nbsp;Nora&nbsp;Baschy<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="re.html">re</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="nrvr.util.ipaddress.html#IPAddress">IPAddress</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="IPAddress">class <strong>IPAddress</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Methods&nbsp;for&nbsp;multiple&nbsp;machines&nbsp;on&nbsp;one&nbsp;subnet.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;only&nbsp;supports&nbsp;IPv4.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Class methods defined here:<br>
+<dl><dt><a name="IPAddress-asInteger"><strong>asInteger</strong></a>(cls, ipaddress)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>For&nbsp;ipaddress=[10,&nbsp;123,&nbsp;45,&nbsp;67]&nbsp;return&nbsp;175844675.<br>
+&nbsp;<br>
+At&nbsp;the&nbsp;time&nbsp;of&nbsp;this&nbsp;writing,&nbsp;such&nbsp;an&nbsp;integer&nbsp;however&nbsp;is<br>
+not&nbsp;accepted&nbsp;as&nbsp;input&nbsp;by&nbsp;other&nbsp;methods&nbsp;of&nbsp;this&nbsp;class.</tt></dd></dl>
+
+<dl><dt><a name="IPAddress-asList"><strong>asList</strong></a>(cls, ipaddress, rangeCheck<font color="#909090">=False</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>For&nbsp;ipaddress="10.123.45.67"&nbsp;return&nbsp;mutable&nbsp;[10,&nbsp;123,&nbsp;45,&nbsp;67].<br>
+&nbsp;<br>
+If&nbsp;already&nbsp;a&nbsp;list,&nbsp;a&nbsp;copy&nbsp;is&nbsp;made&nbsp;and&nbsp;returned.</tt></dd></dl>
+
+<dl><dt><a name="IPAddress-asString"><strong>asString</strong></a>(cls, ipaddress)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>For&nbsp;ipaddress=[10,&nbsp;123,&nbsp;45,&nbsp;67]&nbsp;return&nbsp;"10.123.45.67".</tt></dd></dl>
+
+<dl><dt><a name="IPAddress-asTuple"><strong>asTuple</strong></a>(cls, ipaddress)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>For&nbsp;ipaddress="10.123.45.67"&nbsp;return&nbsp;immutable&nbsp;(10,&nbsp;123,&nbsp;45,&nbsp;67).</tt></dd></dl>
+
+<dl><dt><a name="IPAddress-bitAnd"><strong>bitAnd</strong></a>(cls, one, other)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt></dl>
+
+<dl><dt><a name="IPAddress-bitNot"><strong>bitNot</strong></a>(cls, one)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt></dl>
+
+<dl><dt><a name="IPAddress-bitOr"><strong>bitOr</strong></a>(cls, one, other)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt></dl>
+
+<dl><dt><a name="IPAddress-nameWithNumber"><strong>nameWithNumber</strong></a>(cls, stem, ipaddress, octets<font color="#909090">=1</font>, separator<font color="#909090">='-'</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>For&nbsp;stem="example"&nbsp;and&nbsp;ipaddress="10.123.45.67"&nbsp;return&nbsp;"example-067".<br>
+&nbsp;<br>
+If&nbsp;octets=2&nbsp;return&nbsp;"example-045-067".</tt></dd></dl>
+
+<dl><dt><a name="IPAddress-numberWithinSubnet"><strong>numberWithinSubnet</strong></a>(cls, oneInSubnet, otherNumber, netmask<font color="#909090">='255.255.255.0'</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>For&nbsp;oneInSubnet="10.123.45.67"&nbsp;and&nbsp;otherNumber="89"&nbsp;return&nbsp;[10,&nbsp;123,&nbsp;45,&nbsp;89].<br>
+&nbsp;<br>
+For&nbsp;oneInSubnet="10.123.45.67"&nbsp;and&nbsp;otherNumber="89.34"&nbsp;and&nbsp;netmask="255.255.0.0"&nbsp;return&nbsp;[10,&nbsp;123,&nbsp;89,&nbsp;34].</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>octetsRegex</strong> = &lt;_sre.SRE_Pattern object&gt;</dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

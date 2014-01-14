@@ -1,0 +1,123 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module nrvr.distros.el.clone</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.distros.html"><font color="#ffffff">distros</font></a>.<a href="nrvr.distros.el.html"><font color="#ffffff">el</font></a>.clone</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/distros/el/clone.py">/usr/lib/python2.6/site-packages/nrvr/distros/el/clone.py</a></font></td></tr></table>
+    <p><tt>nrvr.distros.el.clone&nbsp;-&nbsp;Manipulate&nbsp;Enterprise&nbsp;Linux&nbsp;machines&nbsp;for&nbsp;cloning<br>
+&nbsp;<br>
+Class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#ElClone">ElClone</a>.<br>
+&nbsp;<br>
+To&nbsp;be&nbsp;improved&nbsp;as&nbsp;needed.<br>
+&nbsp;<br>
+Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&lt;srguiwiz12&nbsp;AT&nbsp;nrvr&nbsp;DOT&nbsp;com&gt;<br>
+&nbsp;<br>
+Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
+&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
+Modified&nbsp;BSD&nbsp;License</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="re.html">re</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="nrvr.distros.el.clone.html#ElClone">ElClone</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ElClone">class <strong>ElClone</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Utilities&nbsp;for&nbsp;manipulating&nbsp;a&nbsp;Enterprise&nbsp;Linux&nbsp;machines&nbsp;for&nbsp;cloning.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Class methods defined here:<br>
+<dl><dt><a name="ElClone-commandToChangeHostname"><strong>commandToChangeHostname</strong></a>(cls, oldHostname, newHostname)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;change&nbsp;hostname.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;works&nbsp;in&nbsp;Enterprise&nbsp;Linux&nbsp;versions&nbsp;6.x.<br>
+&nbsp;<br>
+Clearly,&nbsp;some&nbsp;machines&nbsp;will&nbsp;have&nbsp;more&nbsp;settings&nbsp;that&nbsp;may&nbsp;or&nbsp;may&nbsp;not&nbsp;need&nbsp;changing&nbsp;too.<br>
+&nbsp;<br>
+Example&nbsp;use:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm&nbsp;=&nbsp;VMwareMachine("~/vmware/examples/example68/example68.vmx")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VMwareHypervisor.local.start(vm.vmxFilePath)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sleepUntilSshIsAvailable(ticker=True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sshCommand([<a href="#ElClone">ElClone</a>.<a href="#ElClone-commandToChangeStaticIPAddress">commandToChangeStaticIPAddress</a>("10.123.45.67",&nbsp;"10.123.45.68")])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.portsFile.changeIPAddress("10.123.45.67",&nbsp;"10.123.45.68")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sleepUntilSshIsAvailable(ticker=True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.acceptKnownHostKey()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sshCommand([<a href="#ElClone">ElClone</a>.<a href="#ElClone-commandToChangeHostname">commandToChangeHostname</a>("example67",&nbsp;"example68")])<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;change&nbsp;static&nbsp;hostname.</tt></dd></dl>
+
+<dl><dt><a name="ElClone-commandToChangeStaticIPAddress"><strong>commandToChangeStaticIPAddress</strong></a>(cls, oldIpAddress, newIpAddress, interface<font color="#909090">=None</font>)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;change&nbsp;static&nbsp;IP&nbsp;address.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;works&nbsp;in&nbsp;Enterprise&nbsp;Linux&nbsp;versions&nbsp;6.x.<br>
+&nbsp;<br>
+Example&nbsp;use:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm&nbsp;=&nbsp;VMwareMachine("~/vmware/examples/example68/example68.vmx")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VMwareHypervisor.local.start(vm.vmxFilePath)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sleepUntilSshIsAvailable(ticker=True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sshCommand([<a href="#ElClone">ElClone</a>.<a href="#ElClone-commandToChangeStaticIPAddress">commandToChangeStaticIPAddress</a>("10.123.45.67",&nbsp;"10.123.45.68")])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.portsFile.changeIPAddress("10.123.45.67",&nbsp;"10.123.45.68")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sleepUntilSshIsAvailable(ticker=True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.acceptKnownHostKey()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sshCommand([<a href="#ElClone">ElClone</a>.<a href="#ElClone-commandToChangeHostname">commandToChangeHostname</a>("example67",&nbsp;"example68")])<br>
+&nbsp;<br>
+interface<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;string,&nbsp;e.g.&nbsp;"eth0".<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;change&nbsp;static&nbsp;IP&nbsp;address.</tt></dd></dl>
+
+<dl><dt><a name="ElClone-commandToRecreateSshHostKeys"><strong>commandToRecreateSshHostKeys</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;recreate&nbsp;ssh&nbsp;host&nbsp;keys.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+May&nbsp;have&nbsp;to&nbsp;consider&nbsp;timing&nbsp;for&nbsp;subsequent&nbsp;invocation&nbsp;of&nbsp;acceptKnownHostKey().<br>
+&nbsp;<br>
+As&nbsp;implemented&nbsp;works&nbsp;in&nbsp;Enterprise&nbsp;Linux&nbsp;versions&nbsp;6.x.<br>
+Recreates&nbsp;SSHv1&nbsp;RSA&nbsp;key,&nbsp;SSHv2&nbsp;RSA&nbsp;and&nbsp;DSA&nbsp;key.<br>
+&nbsp;<br>
+Some&nbsp;machines&nbsp;may&nbsp;have&nbsp;further&nbsp;settings&nbsp;that&nbsp;may&nbsp;need&nbsp;changing&nbsp;too.<br>
+&nbsp;<br>
+Example&nbsp;use:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm&nbsp;=&nbsp;VMwareMachine("~/vmware/examples/example68/example68.vmx")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VMwareHypervisor.local.start(vm.vmxFilePath)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sleepUntilSshIsAvailable(ticker=True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sshCommand([<a href="#ElClone">ElClone</a>.<a href="#ElClone-commandToChangeStaticIPAddress">commandToChangeStaticIPAddress</a>("10.123.45.67",&nbsp;"10.123.45.68")])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.portsFile.changeIPAddress("10.123.45.67",&nbsp;"10.123.45.68")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sleepUntilSshIsAvailable(ticker=True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.acceptKnownHostKey()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sshCommand([<a href="#ElClone">ElClone</a>.<a href="#ElClone-commandToChangeHostname">commandToChangeHostname</a>("example67",&nbsp;"example68")])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.sshCommand([<a href="#ElClone">ElClone</a>.<a href="#ElClone-commandToRecreateSshHostKeys">commandToRecreateSshHostKeys</a>()])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;time.sleep(10.0)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vm.acceptKnownHostKey()<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;recreate&nbsp;ssh&nbsp;host&nbsp;keys.</tt></dd></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>
