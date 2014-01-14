@@ -34,11 +34,11 @@ srcDirectoryNameLength = len(srcDirectory)
 srcNrvrDirectory = os.path.join(scriptDirectory, "src/nrvr")
 for top, dirs, files in os.walk(srcNrvrDirectory):
     packageName = top[srcDirectoryNameLength+1:].replace(os.sep, ".")
-    print "documenting package " + packageName
+    #print "documenting package " + packageName
     os.system("pydoc -w " + packageName)
     for nm in files:
         if nm.endswith(".py") and not nm.startswith("__"):
             sourceFile = os.path.join(top, nm)
             packageName = sourceFile[srcDirectoryNameLength+1:-3].replace(os.sep, ".")
-            print "documenting package " + packageName
+            #print "documenting package " + packageName
             os.system("pydoc -w " + packageName)
