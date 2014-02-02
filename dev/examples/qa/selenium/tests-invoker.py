@@ -40,7 +40,7 @@ for iteration in range(0, numberOfIterations):
         print "STARTING iteration #%d of %s" % (iteration, test)
         stdFlush()
         try:
-            os.system(test)
+            os.system("python " + test)
             stdFlush()
             print "NORMALLY completed iteration #%d of %s" % (iteration, test)
             stdFlush()
