@@ -88,9 +88,10 @@ pythonSetuptoolsTarUrl = "https://pypi.python.org/packages/source/s/setuptools/s
 #
 googleChromeUbuntu32InstallerUrl = "https://dl.google.com/linux/direct/google-chrome-stable_current_i386.deb"
 googleChromeUbuntu64InstallerUrl = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-# from https://code.google.com/p/chromedriver/downloads/list
-chromeDriverLinux32InstallerZipUrl = "https://chromedriver.googlecode.com/files/chromedriver_linux32_2.3.zip"
-chromeDriverLinux64InstallerZipUrl = "https://chromedriver.googlecode.com/files/chromedriver_linux64_2.3.zip"
+# from http://chromedriver.storage.googleapis.com/index.html
+chromeDriverLinux32InstallerZipUrl = "http://chromedriver.storage.googleapis.com/2.9/chromedriver_linux32.zip"
+chromeDriverLinux64InstallerZipUrl = "http://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip"
+chromeDriverWindowsInstallerZipUrl = "http://chromedriver.storage.googleapis.com/2.9/chromedriver_win32.zip"
 
 # from http://code.google.com/p/selenium/downloads/list
 seleniumIeDriverServer32ZipUrl = "http://selenium.googlecode.com/files/IEDriverServer_Win32_2.39.0.zip"
