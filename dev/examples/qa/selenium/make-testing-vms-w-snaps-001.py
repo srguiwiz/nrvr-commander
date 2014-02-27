@@ -100,6 +100,9 @@ seleniumIeDriverServer64ZipUrl = "http://selenium.googlecode.com/files/IEDriverS
 python2xWindows32InstallerMsiUrl = "http://www.python.org/ftp/python/2.7.6/python-2.7.6.msi"
 python2xWindows64InstallerMsiUrl = "http://www.python.org/ftp/python/2.7.6/python-2.7.6.amd64.msi"
 
+# from http://nodejs.org/download/
+nodejsSourceTarUrl = "http://nodejs.org/dist/v0.10.26/node-v0.10.26.tar.gz"
+
 # used to be specific to the website you are testing,
 # no probably just the files inside testsDirectory will change
 testsInvokerScript = "tests-invoker.py"
@@ -234,8 +237,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameservers=[])
             kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
             kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Desktop)
-            kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
             kickstartFileContent.removePackage("@office-suite") # not used for now
+            kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
+            kickstartFileContent.addPackage("gcc") # needed for installing Node.js from a specific version .tar
+            kickstartFileContent.addPackage("gcc-c++") # needed for installing Node.js from a specific version .tar
             kickstartFileContent.elActivateGraphicalLogin()
             for additionalUser in additionalUsers:
                 kickstartFileContent.elAddUser(additionalUser.username, pwd=additionalUser.pwd)
@@ -660,6 +665,9 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                 user=rootOrAnAdministrator,
                 exceptionIfNotZero=True)
             #
+        #
+        # install Python
+        if distro == "win":
             # Python for Windows
             if arch == Arch(32):
                 python2xWindowsInstallerMsiUrl = python2xWindows32InstallerMsiUrl
@@ -694,6 +702,21 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
             CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
+        # install Node.js
+        if distro == "el" or distro == "ub":
+            nodejsSourceTarOnHostPath = Download.fromUrl(nodejsSourceTarUrl)
+            nodejsSourceTarBasename = Download.basename(nodejsSourceTarUrl)
+            nodejsSourceTarOnGuestPath = posixpath.join("~/Downloads", nodejsSourceTarBasename)
+            testVm.scpPutCommand(fromHostPath=nodejsSourceTarOnHostPath,
+                                 toGuestPath=nodejsSourceTarOnGuestPath,
+                                 guestUser=rootOrAnAdministrator)
+            nodejsSourcesExtracted = re.match(r"^(\S+)(?:\.tar\.gz)$", nodejsSourceTarBasename).group(1)
+            testVm.sshCommand(["cd ~/Downloads"
+                               + " && tar -xf " + nodejsSourceTarOnGuestPath
+                               + " && cd " + nodejsSourcesExtracted + "/"
+                               + " && ./configure && make && make install"],
+                              user=rootOrAnAdministrator)
+        #
         # install Google Chrome
         if browser == "chrome" and distro == "ub":
             if arch == Arch(32):
@@ -704,11 +727,11 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             chromeInstallerOnGuestPath = posixpath.join("~/Downloads", Download.basename(googleChromeUbuntuInstallerUrl))
             testVm.scpPutCommand(fromHostPath=chromeInstallerOnHostPath,
                                  toGuestPath=chromeInstallerOnGuestPath,
-                                 guestUser="root")
+                                 guestUser=rootOrAnAdministrator)
             # install
             testVm.sshCommand(["cd ~/Downloads"
                                + " && dpkg -i " + chromeInstallerOnGuestPath],
-                              user="root")
+                              user=rootOrAnAdministrator)
             # run once, wait, terminate
             testVm.sshCommand(["export DISPLAY=:0.0 ; "
                                + "( nohup"
@@ -732,12 +755,12 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             elif arch == Arch(64):
                 chromeDriverLinuxInstallerZipUrl = chromeDriverLinux64InstallerZipUrl
             chromeDriverInstallerZipOnHostPath = Download.fromUrl(chromeDriverLinuxInstallerZipUrl)
-            chromeDriverInstallerZipBaseName = Download.basename(chromeDriverLinuxInstallerZipUrl)
-            chromeDriverInstallerZipOnGuestPath = posixpath.join("~/Downloads", chromeDriverInstallerZipBaseName)
+            chromeDriverInstallerZipBasename = Download.basename(chromeDriverLinuxInstallerZipUrl)
+            chromeDriverInstallerZipOnGuestPath = posixpath.join("~/Downloads", chromeDriverInstallerZipBasename)
             testVm.scpPutCommand(fromHostPath=chromeDriverInstallerZipOnHostPath,
                                  toGuestPath=chromeDriverInstallerZipOnGuestPath,
                                  guestUser=rootOrAnAdministrator)
-            chromeDriverInstallerExtracted = re.match(r"^(\S+)(?:\.zip)$", chromeDriverInstallerZipBaseName).group(1)
+            chromeDriverInstallerExtracted = re.match(r"^(\S+)(?:\.zip)$", chromeDriverInstallerZipBasename).group(1)
             chromeDriverInstallerExtractedPath = posixpath.join("~/Downloads", chromeDriverInstallerExtracted)
             # unzip and copy to where it is on PATH
             testVm.sshCommand(["cd ~/Downloads"
@@ -754,12 +777,12 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             elif arch == Arch(64):
                 seleniumIeDriverServerZipUrl = seleniumIeDriverServer64ZipUrl
             seleniumIeDriverServerZipOnHostPath = Download.fromUrl(seleniumIeDriverServerZipUrl)
-            seleniumIeDriverServerZipBaseName = Download.basename(seleniumIeDriverServerZipUrl)
-            seleniumIeDriverServerZipOnGuestPath = posixpath.join("~/Downloads", seleniumIeDriverServerZipBaseName)
+            seleniumIeDriverServerZipBasename = Download.basename(seleniumIeDriverServerZipUrl)
+            seleniumIeDriverServerZipOnGuestPath = posixpath.join("~/Downloads", seleniumIeDriverServerZipBasename)
             testVm.scpPutCommand(fromHostPath=seleniumIeDriverServerZipOnHostPath,
                                  toGuestPath=seleniumIeDriverServerZipOnGuestPath,
                                  guestUser=rootOrAnAdministrator)
-            seleniumIeDriverServerExtracted = re.match(r"^(\S+)(?:\.zip)$", seleniumIeDriverServerZipBaseName).group(1)
+            seleniumIeDriverServerExtracted = re.match(r"^(\S+)(?:\.zip)$", seleniumIeDriverServerZipBasename).group(1)
             seleniumIeDriverServerExtractedPath = posixpath.join("~/Downloads", seleniumIeDriverServerExtracted)
             # unzip and copy to where it is on PATH, e.g. SYSTEMROOT could be /cygdrive/c/Windows
             testVm.sshCommand(["cd ~/Downloads"
@@ -778,12 +801,12 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         if distro == "win":
             # first an auxiliary tool
             pythonSetuptoolsTarOnHostPath = Download.fromUrl(pythonSetuptoolsTarUrl)
-            pythonSetuptoolsTarBaseName = Download.basename(pythonSetuptoolsTarUrl)
-            pythonSetuptoolsTarOnGuestPath = posixpath.join("~/Downloads", pythonSetuptoolsTarBaseName)
+            pythonSetuptoolsTarBasename = Download.basename(pythonSetuptoolsTarUrl)
+            pythonSetuptoolsTarOnGuestPath = posixpath.join("~/Downloads", pythonSetuptoolsTarBasename)
             testVm.scpPutCommand(fromHostPath=pythonSetuptoolsTarOnHostPath,
                                  toGuestPath=pythonSetuptoolsTarOnGuestPath,
                                  guestUser=rootOrAnAdministrator)
-            pythonSetuptoolsExtracted = re.match(r"^(\S+)(?:\.tar\.gz)$", pythonSetuptoolsTarBaseName).group(1)
+            pythonSetuptoolsExtracted = re.match(r"^(\S+)(?:\.tar\.gz)$", pythonSetuptoolsTarBasename).group(1)
             testVm.sshCommand(["cd ~/Downloads"
                                + " && tar -xf " + pythonSetuptoolsTarOnGuestPath
                                + " && cd " + pythonSetuptoolsExtracted + "/"
@@ -791,12 +814,12 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                                + " && python ./setup.py install"],
                               user=rootOrAnAdministrator)
         seleniumPythonBindingsTarOnHostPath = Download.fromUrl(seleniumPythonBindingsTarUrl)
-        seleniumPythonBindingsTarBaseName = Download.basename(seleniumPythonBindingsTarUrl)
-        seleniumPythonBindingsTarOnGuestPath = posixpath.join("~/Downloads", seleniumPythonBindingsTarBaseName)
+        seleniumPythonBindingsTarBasename = Download.basename(seleniumPythonBindingsTarUrl)
+        seleniumPythonBindingsTarOnGuestPath = posixpath.join("~/Downloads", seleniumPythonBindingsTarBasename)
         testVm.scpPutCommand(fromHostPath=seleniumPythonBindingsTarOnHostPath,
                              toGuestPath=seleniumPythonBindingsTarOnGuestPath,
                              guestUser=rootOrAnAdministrator)
-        seleniumPythonBindingsExtracted = re.match(r"^(\S+)(?:\.tar\.gz)$", seleniumPythonBindingsTarBaseName).group(1)
+        seleniumPythonBindingsExtracted = re.match(r"^(\S+)(?:\.tar\.gz)$", seleniumPythonBindingsTarBasename).group(1)
         testVm.sshCommand(["cd ~/Downloads"
                            + " && tar -xf " + seleniumPythonBindingsTarOnGuestPath
                            + " && cd " + seleniumPythonBindingsExtracted + "/"
