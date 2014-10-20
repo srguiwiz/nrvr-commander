@@ -67,8 +67,8 @@ VMwareHypervisor.localRequired()
 VMwareHypervisor.snapshotsRequired()
 
 # from https://www.scientificlinux.org/download/
-scientificLinuxDistro32IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"
-scientificLinuxDistro64IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.4/x86_64/iso/SL-64-x86_64-2013-03-18-Install-DVD.iso"
+scientificLinuxDistro32IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.5/i386/iso/SL-65-i386-2013-12-16-Install-DVD.iso"
+scientificLinuxDistro64IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.5/x86_64/iso/SL-65-x86_64-2014-01-27-Install-DVD.iso"
 
 # from http://releases.ubuntu.com/
 ubuntuDistro32IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-i386.iso"
