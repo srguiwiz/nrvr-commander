@@ -70,6 +70,10 @@ VMwareHypervisor.snapshotsRequired()
 scientificLinuxDistro32IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.5/i386/iso/SL-65-i386-2013-12-16-Install-DVD.iso"
 scientificLinuxDistro64IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.5/x86_64/iso/SL-65-x86_64-2014-01-27-Install-DVD.iso"
 
+# from http://isoredirect.centos.org/centos/6/isos/
+centOSDistro32IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.5/isos/i386/CentOS-6.5-i386-bin-DVD1.iso"
+centOSDistro64IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.5/isos/x86_64/CentOS-6.5-x86_64-bin-DVD1.iso"
+
 # from http://releases.ubuntu.com/
 ubuntuDistro32IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-i386.iso"
 ubuntuDistro64IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-amd64.iso"
@@ -125,13 +129,19 @@ testUsers = [RegisteringUser(username="tester", pwd="testing"),
 MachineParameters = namedtuple("MachineParameters", ["distro", "arch", "browser", "lang", "memsize"])
 class Arch(str): pass # make sure it is a string to avoid string-number unequality
 # customize as needed
-machinesPattern = [MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
+# sl - Scientific Linux
+# cent - CentOS
+# ub - Ubuntu
+# win - Windows
+machinesPattern = [MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
+                   #MachineParameters(distro="cent", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
                    MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
-                   #MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
+                   #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
                    #MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
-                   #MachineParameters(distro="el", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
+                   #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
                    #MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
-                   #MachineParameters(distro="el", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
+                   #MachineParameters(distro="sl", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
+                   #MachineParameters(distro="cent", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
                    #MachineParameters(distro="ub", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
                    MachineParameters(distro="win", arch=Arch(32), browser="iexplorer", lang="en-US", memsize=1020),
                    #MachineParameters(distro="win", arch=Arch(64), browser="iexplorer", lang="en-US", memsize=1520),
@@ -192,18 +202,18 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
     arch = vmIdentifiers.mapas.arch
     browser = vmIdentifiers.mapas.browser
     #
-    if not distro in ["el", "ub", "win"]:
+    if not distro in ["sl", "cent", "ub", "win"]:
         raise Exception("unknown distro %s" % (distro))
     if not arch in [Arch(32), Arch(64)]:
         raise Exception("unknown architecture arch=%s" % (arch))
     if not browser in ["firefox", "chrome", "iexplorer"]:
         raise Exception("unknown distro %s" % (distro))
-    if distro == "el" and browser == "chrome":
+    if distro in ["sl", "cent"] and browser == "chrome":
         raise Exception("cannot run browser %s in distro %s" % (browser, distro))
-    if (distro == "el" or distro == "ub") and browser == "iexplorer":
+    if distro in ["sl", "cent", "ub"] and browser == "iexplorer":
         raise Exception("cannot run browser %s in distro %s" % (browser, distro))
     #
-    if distro == "el":
+    if distro in ["sl", "cent"]:
         additionalUsers = testUsers
         regularUser = testUsers[0]
     elif distro == "ub":
@@ -224,11 +234,17 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         # make virtual machine
         testVm.mkdir()
         #
-        if distro == "el":
-            if arch == Arch(32):
-                downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(scientificLinuxDistro32IsoUrl))
-            elif arch == Arch(64):
-                downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(scientificLinuxDistro64IsoUrl))
+        if distro in ["sl", "cent"]:
+            if distro == "sl":
+                if arch == Arch(32):
+                    downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(scientificLinuxDistro32IsoUrl))
+                elif arch == Arch(64):
+                    downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(scientificLinuxDistro64IsoUrl))
+            elif distro == "cent":
+                if arch == Arch(32):
+                    downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(centOSDistro32IsoUrl))
+                elif arch == Arch(64):
+                    downloadedDistroIsoImage = ElIsoImage(Download.fromUrl(centOSDistro64IsoUrl))
             kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableElKickstartTemplate001)
             kickstartFileContent.replaceLang(vmIdentifiers.mapas.lang)
             kickstartFileContent.replaceRootpw(rootpw)
@@ -237,7 +253,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             # put in DHCP at eth0, to be used with NAT, works well if before hostonly
             kickstartFileContent.elReplaceStaticIP(vmIdentifiers.ipaddress, nameservers=[])
             kickstartFileContent.elAddNetworkConfigurationWithDhcp("eth0")
-            kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Desktop)
+            if distro == "sl":
+                kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfSL64Desktop)
+            elif distro == "cent":
+                kickstartFileContent.replaceAllPackages(ElKickstartTemplates.packagesOfCentOS65Desktop)
             kickstartFileContent.removePackage("@office-suite") # not used for now
             kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
             kickstartFileContent.addPackage("gcc") # needed for installing Node.js from a specific version .tar
@@ -594,7 +613,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
     arch = vmIdentifiers.mapas.arch
     browser = vmIdentifiers.mapas.browser
     #
-    if distro == "el" or distro == "ub":
+    if distro in ["sl", "cent", "ub"]:
         rootOrAnAdministrator = "root"
     elif distro == "win":
         rootOrAnAdministrator = testVm.regularUser
@@ -610,7 +629,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
-        if distro == "el" or distro == "ub":
+        if distro in ["sl", "cent", "ub"]:
             LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         elif distro == "win":
             CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
@@ -704,7 +723,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         # install Node.js
-        if distro == "el" or distro == "ub":
+        if distro in ["sl", "cent", "ub"]:
             nodejsSourceTarOnHostPath = Download.fromUrl(nodejsSourceTarUrl)
             nodejsSourceTarBasename = Download.basename(nodejsSourceTarUrl)
             nodejsSourceTarOnGuestPath = posixpath.join("~/Downloads", nodejsSourceTarBasename)
@@ -849,7 +868,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
-        if distro == "el" or distro == "ub":
+        if distro in ["sl", "cent", "ub"]:
             LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         elif distro == "win":
             CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, alsoNeedsScreen=True, ticker=True)
@@ -886,7 +905,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         time.sleep(5)
         #
         # run tests
-        if distro == "el" or distro == "ub":
+        if distro in ["sl", "cent", "ub"]:
             testVm.sshCommand(["export DISPLAY=:0.0 ; "
                                + "cd ~/Downloads/"
                                + " && chmod +x " + testsInvokerScript
