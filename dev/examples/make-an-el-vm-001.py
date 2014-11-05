@@ -66,9 +66,9 @@ if exists == False:
     # the remaining issue is you need to make sure you have libcdio 0.92 installed
     #
     #downloadedDistroIsoImage = ElIsoImage(ScriptUser.loggedIn.userHomeRelative \
-    #                                      ("Downloads/SL-64-i386-2013-03-18-Install-DVD.iso"))
+    #                                      ("Downloads/CentOS-6.6-i386-bin-DVD1.iso"))
     downloadedDistroIsoImage = ElIsoImage(Download.fromUrl
-                                          ("http://ftp.scientificlinux.org/linux/scientific/6.4/i386/iso/SL-64-i386-2013-03-18-Install-DVD.iso"))
+                                          ("http://mirrors.usc.edu/pub/linux/distributions/centos/6.6/isos/i386/CentOS-6.6-i386-bin-DVD1.iso"))
     # some possible choices pointed out
     # server w command line only
     kickstartFileContent = ElKickstartFileContent(ElKickstartTemplates.usableElKickstartTemplate001)

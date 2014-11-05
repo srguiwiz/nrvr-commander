@@ -73,8 +73,8 @@ scientificLinuxDistro32IsoUrl = "http://ftp.scientificlinux.org/linux/scientific
 scientificLinuxDistro64IsoUrl = "http://ftp.scientificlinux.org/linux/scientific/6.5/x86_64/iso/SL-65-x86_64-2014-01-27-Install-DVD.iso"
 
 # from http://isoredirect.centos.org/centos/6/isos/
-centOSDistro32IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.5/isos/i386/CentOS-6.5-i386-bin-DVD1.iso"
-centOSDistro64IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.5/isos/x86_64/CentOS-6.5-x86_64-bin-DVD1.iso"
+centOSDistro32IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.6/isos/i386/CentOS-6.6-i386-bin-DVD1.iso"
+centOSDistro64IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.6/isos/x86_64/CentOS-6.6-x86_64-bin-DVD1.iso"
 
 # from http://releases.ubuntu.com/
 # several packages installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
@@ -87,11 +87,11 @@ windows7ProInstaller32EnIsoUrl = "http://msft.digitalrivercontent.net/win/X17-59
 windows7ProInstaller64EnIsoUrl = "http://msft.digitalrivercontent.net/win/X17-59186.iso"
 
 # from http://code.google.com/p/selenium/downloads/list
-seleniumServerStandaloneJarUrl = "http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar"
+seleniumServerStandaloneJarUrl = "http://selenium-release.storage.googleapis.com/2.44/selenium-server-standalone-2.44.0.jar"
 # from https://pypi.python.org/pypi/selenium/
-seleniumPythonBindingsTarUrl = "https://pypi.python.org/packages/source/s/selenium/selenium-2.35.0.tar.gz"
+seleniumPythonBindingsTarUrl = "https://pypi.python.org/packages/source/s/selenium/selenium-2.44.0.tar.gz"
 # from https://pypi.python.org/pypi/setuptools
-pythonSetuptoolsTarUrl = "https://pypi.python.org/packages/source/s/setuptools/setuptools-2.0.1.tar.gz"
+pythonSetuptoolsTarUrl = "https://pypi.python.org/packages/source/s/setuptools/setuptools-7.0.tar.gz"
 #
 googleChromeUbuntu32InstallerUrl = "https://dl.google.com/linux/direct/google-chrome-stable_current_i386.deb"
 googleChromeUbuntu64InstallerUrl = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
@@ -136,8 +136,8 @@ class Arch(str): pass # make sure it is a string to avoid string-number unequali
 # cent - CentOS
 # ub - Ubuntu
 # win - Windows
-machinesPattern = [MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
-                   #MachineParameters(distro="cent", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
+machinesPattern = [#MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
+                   MachineParameters(distro="cent", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
                    MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
                    #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
                    #MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),

@@ -99,7 +99,6 @@ services --enabled sshd
 @network-file-system-client
 @performance
 @perl-runtime
-@scalable-file-systems
 @server-platform
 pax
 oddjob
@@ -313,7 +312,6 @@ libXmu
 @network-file-system-client
 @performance
 @perl-runtime
-@scalable-file-systems
 @server-platform
 pax
 oddjob
@@ -346,7 +344,6 @@ perl-DBD-SQLite
 @network-file-system-client
 @performance
 @perl-runtime
-@scalable-file-systems
 @server-platform
 pax
 oddjob
