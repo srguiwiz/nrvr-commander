@@ -48,6 +48,7 @@ svga.vramSize = "16384000" # 16384000 apparently allows up to 2560x1600
 
 usb.present = "TRUE" # enable USB 1.1
 ehci.present = "TRUE" # enable USB 2.0
+usb.generic.autoconnect = "FALSE" # do not automatically connect new USB devices
 
 sound.present = "FALSE" # if off less trouble
 
