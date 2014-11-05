@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.distros.ub.gnome - Manipulate Ubuntu GNOME
+"""nrvr.distros.ub.rel1204.gnome - Manipulate Ubuntu 12.04 GNOME
 
 Class provided by this module is Gnome.
 
@@ -15,35 +15,8 @@ import re
 
 import nrvr.distros.common.gnome
 
-class UbGnome(nrvr.distros.common.gnome.Gnome):
+class Ub1204Gnome(nrvr.distros.common.gnome.Gnome):
     """Utilities for manipulating a Gnome installation."""
-
-    @classmethod
-    def ubCommandToEnableAutoLogin(cls, username=None):
-        """Build command to enable auto-login into GNOME.
-        
-        Must be root to succeed.
-        
-        username
-            defaults to None, which effects disabling auto-login.
-        
-        Return command to enable auto-login into GNOME."""
-        # see http://www.tuxgarage.com/2011/09/setting-lightdm-to-auto-login-oneiric.html
-        command = UbGnome.ubCommandToDisableAutoLogin()
-        if username:
-            username = re.escape(username) # precaution
-            # autologin-user-timeout=0 to avoid https://bugs.launchpad.net/ubuntu/+source/lightdm/+bug/902852
-            command += r" ; sed -i -e '/^\[SeatDefaults\]/ a \autologin-user=" + username + r"\nautologin-user-timeout=0' /etc/lightdm/lightdm.conf"
-        return command
-
-    @classmethod
-    def ubCommandToDisableAutoLogin(cls):
-        """Build command to disable auto-login into GNOME.
-        
-        Must be root to succeed.
-        
-        Return command to disable auto-login into GNOME."""
-        return r"sed -i -e '/^\s*autologin-user\s*=/ d' -e '/^\s*autologin-user-timeout\s*=/ d' /etc/lightdm/lightdm.conf"
 
     @classmethod
     def ubCommandToDisableScreenSaver(cls):
@@ -88,6 +61,17 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
         return command
 
     @classmethod
+    def ubCommandToInstallSystemMonitorPanel(cls):
+        """Build command to install System Load Indicator for Panel of GNOME.
+        
+        Must be root to succeed.
+        Then, as user must invoke ubCommandToAddSystemMonitorPanel().
+        
+        Return command to install System Load Indicator for Panel of GNOME."""
+        command = "apt-get -y install indicator-multiload"
+        return command
+
+    @classmethod
     def ubCommandToAddSystemMonitorPanel(cls):
         """Build command to add System Load Indicator to Panel of GNOME.
         
@@ -106,6 +90,7 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
         # gsettings- view are optional to show all loads, possibly only after logout and login
         command = cls.exportDD + \
                   r" ; export XDG_DATA_DIRS='/usr/share/gnome:/usr/local/share/:/usr/share/' ; " + \
+                  r"if which indicator-multiload &> /dev/null ; then " + \
                   r"mkdir -p ~/.config/autostart ; " + \
                   r"gsettings set de.mh21.indicator.multiload autostart true ; " + \
                   r"( nohup indicator-multiload &> /dev/null & ) ; " + \
@@ -119,15 +104,13 @@ class UbGnome(nrvr.distros.common.gnome.Gnome):
                   r"gsettings set de.mh21.indicator.multiload view-swapload true ; " + \
                   r"gsettings set de.mh21.indicator.multiload view-loadavg true ; " + \
                   r"gsettings set de.mh21.indicator.multiload view-diskload true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload speed 2000"
+                  r"gsettings set de.mh21.indicator.multiload speed 2000 ; " + \
+                  r"fi"
         return command
 
 if __name__ == "__main__":
-    print UbGnome.ubCommandToEnableAutoLogin("joe")
-    print UbGnome.ubCommandToDisableAutoLogin()
-    print UbGnome.ubCommandToEnableAutoLogin()
-    print UbGnome.ubCommandToDisableScreenSaver()
-    print UbGnome.ubCommandToEnableScreenSaver()
-    print UbGnome.ubCommandToSetSolidColorBackground("#4f6f8f")
-    print UbGnome.commandToTellWhetherGuiIsAvailable()
-    print UbGnome.ubCommandToAddSystemMonitorPanel()
+    print Ub1204Gnome.ubCommandToDisableScreenSaver()
+    print Ub1204Gnome.ubCommandToEnableScreenSaver()
+    print Ub1204Gnome.ubCommandToSetSolidColorBackground("#4f6f8f")
+    print Ub1204Gnome.commandToTellWhetherGuiIsAvailable()
+    print Ub1204Gnome.ubCommandToAddSystemMonitorPanel()

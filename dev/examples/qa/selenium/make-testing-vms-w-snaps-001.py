@@ -34,9 +34,11 @@ from nrvr.distros.common.util import LinuxUtil
 from nrvr.distros.el.gnome import ElGnome
 from nrvr.distros.el.kickstart import ElIsoImage, ElKickstartFileContent
 from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
-from nrvr.distros.ub.gnome import UbGnome
-from nrvr.distros.ub.kickstart import UbIsoImage, UbKickstartFileContent
-from nrvr.distros.ub.kickstarttemplates import UbKickstartTemplates
+from nrvr.distros.el.util import ElUtil
+from nrvr.distros.ub.util import UbUtil
+from nrvr.distros.ub.rel1204.gnome import Ub1204Gnome
+from nrvr.distros.ub.rel1204.kickstart import UbIsoImage, UbKickstartFileContent
+from nrvr.distros.ub.rel1204.kickstarttemplates import UbKickstartTemplates
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.remote.ssh import SshCommand, ScpCommand
@@ -75,8 +77,9 @@ centOSDistro32IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.
 centOSDistro64IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.5/isos/x86_64/CentOS-6.5-x86_64-bin-DVD1.iso"
 
 # from http://releases.ubuntu.com/
-ubuntuDistro32IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-i386.iso"
-ubuntuDistro64IsoUrl = "http://releases.ubuntu.com/12.04.3/ubuntu-12.04.3-alternate-amd64.iso"
+# several packages installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
+ubuntuDistro32IsoUrl = "http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-i386.iso"
+ubuntuDistro64IsoUrl = "http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-amd64.iso"
 
 # from http://social.technet.microsoft.com/Forums/windows/en-US/653d34d9-ac99-42db-80c8-6300f01f7aae/windows-7downloard
 # or http://forums.mydigitallife.info/threads/14709-Windows-7-Digital-River-direct-links-Multiple-Languages-X86-amp-X64/page60
@@ -306,7 +309,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.sshCommand([ElGnome.elCommandToDisableUpdateNotifications()], user=regularUser.username)
             #
             # might as well
-            testVm.sshCommand([LinuxUtil.commandToEnableSudo(regularUser.username)])
+            testVm.sshCommand([ElUtil.commandToEnableSudo(regularUser.username)])
             #
             # shut down
             testVm.shutdownCommand()
@@ -340,6 +343,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             kickstartFileContent.ubSetUpgradeNone()
             kickstartFileContent.ubSetUpdatePolicyNone()
             kickstartFileContent.replaceAllPackages(UbKickstartTemplates.packagesForUbuntuDesktop)
+            # default-jre installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
             kickstartFileContent.addPackage("default-jre") # Java needed for Selenium Server standalone .jar
             kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
             kickstartFileContent.addPackage("libxss1") # needed for Google Chrome
@@ -379,10 +383,10 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
             #
             # a test machine needs to come up ready to run tests, no manual login
-            testVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(regularUser.username)])
+            testVm.sshCommand([UbUtil.ubCommandToEnableAutoLogin(regularUser.username)])
             #
             # might as well
-            testVm.sshCommand([LinuxUtil.commandToEnableSudo(regularUser.username)])
+            testVm.sshCommand([UbUtil.commandToEnableSudo(regularUser.username)])
             #
             # shut down
             testVm.shutdownCommand()
@@ -392,10 +396,12 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             userSshParameters = testVm.sshParameters(user=regularUser.username)
             LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
             #
-            testVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=regularUser.username)
+            testVm.sshCommand([Ub1204Gnome.ubCommandToDisableScreenSaver()], user=regularUser.username)
             # avoid distracting backgrounds, picks unique color to be clear this is a test machine
-            testVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground("#dddd66")], user=regularUser.username)
-            testVm.sshCommand([UbGnome.ubCommandToAddSystemMonitorPanel()], user=regularUser.username)
+            testVm.sshCommand([Ub1204Gnome.ubCommandToSetSolidColorBackground("#dddd66")], user=regularUser.username)
+            # indicator-multiload installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
+            testVm.sshCommand([Ub1204Gnome.ubCommandToInstallSystemMonitorPanel()])
+            testVm.sshCommand([Ub1204Gnome.ubCommandToAddSystemMonitorPanel()], user=regularUser.username)
             #
             # shut down for snapshot
             testVm.shutdownCommand()
@@ -762,6 +768,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                               user=testVm.regularUser)
         #
         # install Selenium Server standalone
+        # default-jre installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
         seleniumServerStandaloneJarPath = Download.fromUrl(seleniumServerStandaloneJarUrl)
         testVm.scpPutCommand(fromHostPath=seleniumServerStandaloneJarPath,
                              toGuestPath="~/Downloads/" + Download.basename(seleniumServerStandaloneJarUrl),
@@ -897,6 +904,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
                    [LinuxUtil.commandToWaitForNetworkDevice(device="eth0", maxSeconds=100)])
         #
         # start up Selenium Server
+        # default-jre installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
         SshCommand(userSshParameters,
                    ["nohup "
                     + "java -jar ~/Downloads/" + Download.basename(seleniumServerStandaloneJarUrl)

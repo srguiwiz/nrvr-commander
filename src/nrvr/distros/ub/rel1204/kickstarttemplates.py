@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.distros.ub.kickstarttemplates - Templates for creating Ubuntu kickstart files
+"""nrvr.distros.ub.rel1204.kickstarttemplates - Templates for creating Ubuntu kickstart files
 
 The main class provided by this module is UbKickstartTemplates.
 
@@ -163,5 +163,4 @@ update-grub
 @ubuntu-desktop
 openssh-server
 build-essential
-indicator-multiload
 """.splitlines())

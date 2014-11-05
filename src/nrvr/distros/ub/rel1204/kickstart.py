@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.distros.ub.kickstart - Create and manipulate Ubuntu kickstart files
+"""nrvr.distros.ub.rel1204.kickstart - Create and manipulate Ubuntu kickstart files
 
 Classes provided by this module include
 * UbIsoImage
@@ -42,9 +42,9 @@ class UbIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
             A UbKickstartFileContent object.
         
         Return a list of modifications which will be passed to method cloneWithModifications."""
-        if not isinstance(_kickstartFileContent, nrvr.distros.ub.kickstart.UbKickstartFileContent):
+        if not isinstance(_kickstartFileContent, nrvr.distros.ub.rel1204.kickstart.UbKickstartFileContent):
             # defense against more hidden problems
-            raise Exception("not given but in need of an instance of nrvr.distros.ub.kickstart.UbKickstartFileContent")
+            raise Exception("not given but in need of an instance of nrvr.distros.ub.rel1204.kickstart.UbKickstartFileContent")
         # a distinct label
         kickstartCustomLabel = "kscustom"
         # a distinct path
@@ -423,7 +423,7 @@ echo '<monitors version="1">
         return self.ubSetPreseedValue("d-i", "pkgsel/update-policy", "select", "unattended-upgrades")
 
 if __name__ == "__main__":
-    from nrvr.distros.ub.kickstarttemplates import UbKickstartTemplates
+    from nrvr.distros.ub.rel1204.kickstarttemplates import UbKickstartTemplates
     from nrvr.util.nameserver import Nameserver
     _kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
     _kickstartFileContent.replaceRootpw("redwood")

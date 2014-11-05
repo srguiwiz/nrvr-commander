@@ -5,7 +5,7 @@ import sys
 
 try:
     setup(name="NrvrCommander",
-          version="1.5.2",
+          version="1.5.3",
           description="Tools for automation.",
           long_description="""Tools for automation.
           
@@ -14,14 +14,16 @@ try:
           * nrvr.distros.common.gnome
           * nrvr.distros.common.kickstart
           * nrvr.distros.common.ssh
+          * nrvr.distros.common.util
           * nrvr.distros.el.clone
           * nrvr.distros.el.gnome
           * nrvr.distros.el.kickstart
           * nrvr.distros.el.kickstarttemplates
           * nrvr.distros.el.util
-          * nrvr.distros.ub.gnome
-          * nrvr.distros.ub.kickstart
-          * nrvr.distros.ub.kickstarttemplates
+          * nrvr.distros.ub.util
+          * nrvr.distros.ub.rel1204.gnome
+          * nrvr.distros.ub.rel1204.kickstart
+          * nrvr.distros.ub.rel1204.kickstarttemplates
           * nrvr.machine.ports
           * nrvr.process.commandcapture
           * nrvr.remote.ssh
@@ -49,6 +51,8 @@ try:
                     "nrvr.distros.common",
                     "nrvr.distros.el",
                     "nrvr.distros.ub",
+                    "nrvr.distros.ub.rel1204",
+                    "nrvr.distros.ub.rel1404",
                     "nrvr.machine",
                     "nrvr.process",
                     "nrvr.remote",

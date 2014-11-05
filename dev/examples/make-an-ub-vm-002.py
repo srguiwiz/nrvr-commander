@@ -19,10 +19,10 @@ import time
 
 from nrvr.diskimage.isoimage import IsoImage
 from nrvr.distros.common.ssh import LinuxSshCommand
-from nrvr.distros.common.util import LinuxUtil
-from nrvr.distros.ub.gnome import UbGnome
-from nrvr.distros.ub.kickstart import UbIsoImage, UbKickstartFileContent
-from nrvr.distros.ub.kickstarttemplates import UbKickstartTemplates
+from nrvr.distros.ub.util import UbUtil
+from nrvr.distros.ub.rel1204.gnome import Ub1204Gnome
+from nrvr.distros.ub.rel1204.kickstart import UbIsoImage, UbKickstartFileContent
+from nrvr.distros.ub.rel1204.kickstarttemplates import UbKickstartTemplates
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.remote.ssh import SshCommand, ScpCommand
@@ -58,8 +58,9 @@ exampleVm = VMwareMachine(ScriptUser.loggedIn.userHomeRelative("vmware/examples/
 exists = exampleVm.vmxFile.exists()
 if exists == False:
     exampleVm.mkdir()
+    # several packages installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
     downloadedDistroIsoImage = UbIsoImage(Download.fromUrl
-                                          ("http://releases.ubuntu.com/precise/ubuntu-12.04.3-alternate-i386.iso"))
+                                          ("http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-i386.iso"))
     # some possible choices pointed out
     # server w command line only
     kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
@@ -118,10 +119,10 @@ VMwareHypervisor.local.start(exampleVm.vmxFilePath, gui=True)
 exampleVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
 
 # a possible choice pointed out
-#exampleVm.sshCommand([LinuxUtil.commandToEnableSudo(exampleVm.regularUser)])
+#exampleVm.sshCommand([UbUtil.commandToEnableSudo(exampleVm.regularUser)])
 
 # a possible choice pointed out
-#exampleVm.sshCommand([UbGnome.ubCommandToEnableAutoLogin(exampleVm.regularUser)])
+#exampleVm.sshCommand([UbUtil.ubCommandToEnableAutoLogin(exampleVm.regularUser)])
 
 # these ssh commands here are just a demo
 print "------"
@@ -170,7 +171,7 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 # a possible modification pointed out
 # just a demo
 #regularUserSshParameters = exampleVm.sshParameters(user=exampleVm.regularUser)
-#SshCommand(regularUserSshParameters, [UbGnome.commandToStartApplicationInGui("firefox about:blank")])
+#SshCommand(regularUserSshParameters, [Ub1204Gnome.commandToStartApplicationInGui("firefox about:blank")])
 
 # possible modifications pointed out
 # start up until successful login into GUI
@@ -178,9 +179,9 @@ VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 #regularUserSshParameters = exampleVm.sshParameters(user=exampleVm.regularUser)
 #LinuxSshCommand.sleepUntilIsGuiAvailable(regularUserSshParameters, ticker=True)
 # some possible choices pointed out
-#exampleVm.sshCommand([UbGnome.ubCommandToDisableScreenSaver()], user=exampleVm.regularUser)
-#exampleVm.sshCommand([UbGnome.ubCommandToSetSolidColorBackground()], user=exampleVm.regularUser)
-#exampleVm.sshCommand([UbGnome.ubCommandToAddSystemMonitorPanel()], user=exampleVm.regularUser)
+#exampleVm.sshCommand([Ub1204Gnome.ubCommandToDisableScreenSaver()], user=exampleVm.regularUser)
+#exampleVm.sshCommand([Ub1204Gnome.ubCommandToSetSolidColorBackground()], user=exampleVm.regularUser)
+#exampleVm.sshCommand([Ub1204Gnome.ubCommandToAddSystemMonitorPanel()], user=exampleVm.regularUser)
 #exampleVm.shutdownCommand()
 #VMwareHypervisor.local.sleepUntilNotRunning(exampleVm.vmxFilePath, ticker=True)
 
