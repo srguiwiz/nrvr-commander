@@ -5,7 +5,7 @@ import sys
 
 try:
     setup(name="NrvrCommander",
-          version="1.6.0",
+          version="1.6.1",
           description="Tools for automation.",
           long_description="""Tools for automation.
           
@@ -24,6 +24,8 @@ try:
           * nrvr.distros.ub.rel1204.gnome
           * nrvr.distros.ub.rel1204.kickstart
           * nrvr.distros.ub.rel1204.kickstarttemplates
+          * nrvr.distros.ub.rel1404.preseed
+          * nrvr.distros.ub.rel1404.preseedtemplates
           * nrvr.machine.ports
           * nrvr.process.commandcapture
           * nrvr.remote.ssh

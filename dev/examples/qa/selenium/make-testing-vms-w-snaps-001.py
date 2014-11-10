@@ -37,8 +37,10 @@ from nrvr.distros.el.kickstarttemplates import ElKickstartTemplates
 from nrvr.distros.el.util import ElUtil
 from nrvr.distros.ub.util import UbUtil
 from nrvr.distros.ub.rel1204.gnome import Ub1204Gnome
-from nrvr.distros.ub.rel1204.kickstart import UbIsoImage, UbKickstartFileContent
+from nrvr.distros.ub.rel1204.kickstart import Ub1204IsoImage, UbKickstartFileContent
 from nrvr.distros.ub.rel1204.kickstarttemplates import UbKickstartTemplates
+from nrvr.distros.ub.rel1404.preseed import Ub1404IsoImage, UbPreseedFileContent
+from nrvr.distros.ub.rel1404.preseedtemplates import UbPreseedTemplates
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
 from nrvr.remote.ssh import SshCommand, ScpCommand
@@ -78,8 +80,12 @@ centOSDistro64IsoUrl = "http://mirrors.usc.edu/pub/linux/distributions/centos/6.
 
 # from http://releases.ubuntu.com/
 # several packages installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
-ubuntuDistro32IsoUrl = "http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-i386.iso"
-ubuntuDistro64IsoUrl = "http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-amd64.iso"
+ubuntu1204Distro32IsoUrl = "http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-i386.iso"
+ubuntu1204Distro64IsoUrl = "http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-amd64.iso"
+
+# from http://releases.ubuntu.com/
+ubuntu1404Distro32IsoUrl = "http://releases.ubuntu.com/14.04.1/ubuntu-14.04.1-desktop-i386.iso"
+ubuntu1404Distro64IsoUrl = "http://releases.ubuntu.com/14.04.1/ubuntu-14.04.1-desktop-amd64.iso"
 
 # from http://social.technet.microsoft.com/Forums/windows/en-US/653d34d9-ac99-42db-80c8-6300f01f7aae/windows-7downloard
 # or http://forums.mydigitallife.info/threads/14709-Windows-7-Digital-River-direct-links-Multiple-Languages-X86-amp-X64/page60
@@ -134,18 +140,20 @@ class Arch(str): pass # make sure it is a string to avoid string-number unequali
 # customize as needed
 # sl - Scientific Linux
 # cent - CentOS
-# ub - Ubuntu
+# ub1204 - Ubuntu 12.04 LTS
+# ub1404 - Ubuntu 14.04 LTS
 # win - Windows
 machinesPattern = [#MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
                    MachineParameters(distro="cent", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
-                   MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
+                   MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
+                   #MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
                    #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
-                   #MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
+                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
                    #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
-                   #MachineParameters(distro="ub", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
+                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
                    #MachineParameters(distro="sl", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
                    #MachineParameters(distro="cent", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
-                   #MachineParameters(distro="ub", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
+                   #MachineParameters(distro="ub1204", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
                    MachineParameters(distro="win", arch=Arch(32), browser="iexplorer", lang="en-US", memsize=1020),
                    #MachineParameters(distro="win", arch=Arch(64), browser="iexplorer", lang="en-US", memsize=1520),
                    ]
@@ -205,7 +213,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
     arch = vmIdentifiers.mapas.arch
     browser = vmIdentifiers.mapas.browser
     #
-    if not distro in ["sl", "cent", "ub", "win"]:
+    if not distro in ["sl", "cent", "ub1204", "ub1404", "win"]:
         raise Exception("unknown distro %s" % (distro))
     if not arch in [Arch(32), Arch(64)]:
         raise Exception("unknown architecture arch=%s" % (arch))
@@ -213,14 +221,14 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
         raise Exception("unknown distro %s" % (distro))
     if distro in ["sl", "cent"] and browser == "chrome":
         raise Exception("cannot run browser %s in distro %s" % (browser, distro))
-    if distro in ["sl", "cent", "ub"] and browser == "iexplorer":
+    if distro not in ["win"] and browser == "iexplorer":
         raise Exception("cannot run browser %s in distro %s" % (browser, distro))
     #
     if distro in ["sl", "cent"]:
         additionalUsers = testUsers
         regularUser = testUsers[0]
-    elif distro == "ub":
-        # Ubuntu kickstart supports only one regular user
+    elif distro in ["ub1204", "ub1404"]:
+        # Ubuntu kickstart and preseed support only one regular user
         regularUser = testUsers[0]
     elif distro == "win":
         additionalUsers = testUsers
@@ -324,36 +332,55 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             # shut down for snapshot
             testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
-        elif distro == "ub":
-            if arch == Arch(32):
-                downloadedDistroIsoImage = UbIsoImage(Download.fromUrl(ubuntuDistro32IsoUrl))
-            elif arch == Arch(64):
-                downloadedDistroIsoImage = UbIsoImage(Download.fromUrl(ubuntuDistro64IsoUrl))
-            kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
-            kickstartFileContent.replaceLang(vmIdentifiers.mapas.lang)
-            kickstartFileContent.replaceRootpw(rootpw)
-            kickstartFileContent.ubReplaceHostname(testVm.basenameStem)
-            kickstartFileContent.ubCreateNetworkConfigurationSection()
-            #kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth0", ipaddress=ipaddress, nameservers=Nameserver.list)
-            # put in DHCP at eth0, to be used with NAT, works well if before hostonly
-            kickstartFileContent.ubAddNetworkConfigurationDhcp("eth0")
-            kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth1",
-                                                                 ipaddress=vmIdentifiers.ipaddress,
-                                                                 nameservers=Nameserver.list)
-            kickstartFileContent.ubSetUpgradeNone()
-            kickstartFileContent.ubSetUpdatePolicyNone()
-            kickstartFileContent.replaceAllPackages(UbKickstartTemplates.packagesForUbuntuDesktop)
-            # default-jre installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
-            kickstartFileContent.addPackage("default-jre") # Java needed for Selenium Server standalone .jar
-            kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
-            kickstartFileContent.addPackage("libxss1") # needed for Google Chrome
-            kickstartFileContent.ubActivateGraphicalLogin()
-            kickstartFileContent.ubSetUser(regularUser.username, pwd=regularUser.pwd, fullname=regularUser.fullname)
-            kickstartFileContent.setSwappiness(10)
-            # pick right temporary directory, ideally same as VM
-            modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
-                (kickstartFileContent,
-                 cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
+        elif distro in ["ub1204", "ub1404"]:
+            if distro == "ub1204":
+                if arch == Arch(32):
+                    downloadedDistroIsoImage = Ub1204IsoImage(Download.fromUrl(ubuntu1204Distro32IsoUrl))
+                elif arch == Arch(64):
+                    downloadedDistroIsoImage = Ub1204IsoImage(Download.fromUrl(ubuntu1204Distro64IsoUrl))
+            elif distro == "ub1404":
+                if arch == Arch(32):
+                    downloadedDistroIsoImage = Ub1404IsoImage(Download.fromUrl(ubuntu1404Distro32IsoUrl))
+                elif arch == Arch(64):
+                    downloadedDistroIsoImage = Ub1404IsoImage(Download.fromUrl(ubuntu1404Distro64IsoUrl))
+            if distro == "ub1204":
+                kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)
+                kickstartFileContent.replaceLang(vmIdentifiers.mapas.lang)
+                kickstartFileContent.replaceRootpw(rootpw)
+                kickstartFileContent.ubReplaceHostname(testVm.basenameStem)
+                kickstartFileContent.ubCreateNetworkConfigurationSection()
+                #kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth0", ipaddress=ipaddress, nameservers=Nameserver.list)
+                # put in DHCP at eth0, to be used with NAT, works well if before hostonly
+                kickstartFileContent.ubAddNetworkConfigurationDhcp("eth0")
+                kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth1",
+                                                                     ipaddress=vmIdentifiers.ipaddress,
+                                                                     nameservers=Nameserver.list)
+                kickstartFileContent.ubSetUpgradeNone()
+                kickstartFileContent.ubSetUpdatePolicyNone()
+                kickstartFileContent.replaceAllPackages(UbKickstartTemplates.packagesForUbuntuDesktop)
+                # default-jre installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
+                kickstartFileContent.addPackage("default-jre") # Java needed for Selenium Server standalone .jar
+                kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
+                kickstartFileContent.addPackage("libxss1") # needed for Google Chrome
+                kickstartFileContent.ubActivateGraphicalLogin()
+                kickstartFileContent.ubSetUser(regularUser.username, pwd=regularUser.pwd, fullname=regularUser.fullname)
+                kickstartFileContent.setSwappiness(10)
+                # pick right temporary directory, ideally same as VM
+                modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingKickstart \
+                    (kickstartFileContent,
+                     cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
+            elif distro == "ub1404":
+                preseedFileContent = UbPreseedFileContent(UbPreseedTemplates.usableUbPreseedTemplate001)
+                preseedFileContent.replaceLang(vmIdentifiers.mapas.lang)
+                preseedFileContent.replaceHostname(testVm.basenameStem)
+                #
+                # TODO remaining settings, and issues like swap partition, this here is NOT done yet for Ubuntu 14.04
+                #
+                preseedFileContent.setUser(regularUser.username, pwd=regularUser.pwd, fullname=regularUser.fullname)
+                # pick right temporary directory, ideally same as VM
+                modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingPreseed \
+                    (preseedFileContent,
+                     cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
             # 32-bit versus 64-bit Linux, memsizeMegabytes needs to be more for 64-bit
             if arch == Arch(32):
@@ -619,7 +646,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
     arch = vmIdentifiers.mapas.arch
     browser = vmIdentifiers.mapas.browser
     #
-    if distro in ["sl", "cent", "ub"]:
+    if distro in ["sl", "cent", "ub1204", "ub1404"]:
         rootOrAnAdministrator = "root"
     elif distro == "win":
         rootOrAnAdministrator = testVm.regularUser
@@ -635,7 +662,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
-        if distro in ["sl", "cent", "ub"]:
+        if distro in ["sl", "cent", "ub1204", "ub1404"]:
             LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         elif distro == "win":
             CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
@@ -729,7 +756,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
             CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         #
         # install Node.js
-        if distro in ["sl", "cent", "ub"]:
+        if distro in ["sl", "cent", "ub1204", "ub1404"]:
             nodejsSourceTarOnHostPath = Download.fromUrl(nodejsSourceTarUrl)
             nodejsSourceTarBasename = Download.basename(nodejsSourceTarUrl)
             nodejsSourceTarOnGuestPath = posixpath.join("~/Downloads", nodejsSourceTarBasename)
@@ -744,7 +771,7 @@ def installToolsIntoTestVm(vmIdentifiers, forceThisStep=False):
                               user=rootOrAnAdministrator)
         #
         # install Google Chrome
-        if browser == "chrome" and distro == "ub":
+        if browser == "chrome" and distro in ["ub1204", "ub1404"]:
             if arch == Arch(32):
                 googleChromeUbuntuInstallerUrl = googleChromeUbuntu32InstallerUrl
             elif arch == Arch(64):
@@ -875,7 +902,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         # start up until successful login into GUI
         VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
         userSshParameters = testVm.sshParameters(user=testVm.regularUser)
-        if distro in ["sl", "cent", "ub"]:
+        if distro in ["sl", "cent", "ub1204", "ub1404"]:
             LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
         elif distro == "win":
             CygwinSshCommand.sleepUntilIsGuiAvailable(userSshParameters, alsoNeedsScreen=True, ticker=True)
@@ -913,7 +940,7 @@ def runTestsInTestVm(vmIdentifiers, forceThisStep=False):
         time.sleep(5)
         #
         # run tests
-        if distro in ["sl", "cent", "ub"]:
+        if distro in ["sl", "cent", "ub1204", "ub1404"]:
             testVm.sshCommand(["export DISPLAY=:0.0 ; "
                                + "cd ~/Downloads/"
                                + " && chmod +x " + testsInvokerScript

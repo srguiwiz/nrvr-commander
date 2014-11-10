@@ -19,6 +19,11 @@ class UbUtil(nrvr.distros.common.util.LinuxUtil):
     """Utilities for manipulating an Ubuntu installation."""
 
     @classmethod
+    def ubReleaseVersion(cls, isoImagePath):
+        """Return release version from isoImagePath."""
+        return re.search(r'ubuntu-([0-9]{2}\.[0-9]{2}(?:\.[0-9]+)?)[^/]*\.iso', isoImagePath).group(1);
+
+    @classmethod
     def ubCommandToOpenFirewallPort(cls, port):
         """Build command to open a firewall TCP port.
         
@@ -60,6 +65,7 @@ class UbUtil(nrvr.distros.common.util.LinuxUtil):
         return r"sed -i -e '/^\s*autologin-user\s*=/ d' -e '/^\s*autologin-user-timeout\s*=/ d' /etc/lightdm/lightdm.conf"
 
 if __name__ == "__main__":
+    print UbUtil.ubReleaseVersion("/mnt/isos/ubuntu-12.04.4-alternate-i386.iso")
     print UbUtil.commandToAppendAddressNameLineToEtcHosts("127.0.0.1", "myself")
     print UbUtil.ubCommandToOpenFirewallPort(80)
     print UbUtil.ubCommandToOpenFirewallPort("80")

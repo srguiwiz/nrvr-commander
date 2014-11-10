@@ -13,6 +13,8 @@ Modules provides by this package are
 * nrvr.distros.ub.rel1204.gnome
 * nrvr.distros.ub.rel1204.kickstart
 * nrvr.distros.ub.rel1204.kickstarttemplates
+* nrvr.distros.ub.rel1404.preseed
+* nrvr.distros.ub.rel1404.preseedtemplates
 * nrvr.machine.ports
 * nrvr.process.commandcapture
 * nrvr.remote.ssh
@@ -36,6 +38,6 @@ Modules provides by this package are
 * nrvr.xml.etree
 
 To install do the usual:
-	tar xzf dist/NrvrCommander-1.6.0.tar.gz
-	cd NrvrCommander-1.6.0
+	tar xzf dist/NrvrCommander-1.6.1.tar.gz
+	cd NrvrCommander-1.6.1
 	sudo python ./setup.py install

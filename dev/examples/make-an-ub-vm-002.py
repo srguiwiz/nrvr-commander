@@ -21,7 +21,7 @@ from nrvr.diskimage.isoimage import IsoImage
 from nrvr.distros.common.ssh import LinuxSshCommand
 from nrvr.distros.ub.util import UbUtil
 from nrvr.distros.ub.rel1204.gnome import Ub1204Gnome
-from nrvr.distros.ub.rel1204.kickstart import UbIsoImage, UbKickstartFileContent
+from nrvr.distros.ub.rel1204.kickstart import Ub1204IsoImage, UbKickstartFileContent
 from nrvr.distros.ub.rel1204.kickstarttemplates import UbKickstartTemplates
 from nrvr.machine.ports import PortsFile
 from nrvr.process.commandcapture import CommandCapture
@@ -59,8 +59,8 @@ exists = exampleVm.vmxFile.exists()
 if exists == False:
     exampleVm.mkdir()
     # several packages installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
-    downloadedDistroIsoImage = UbIsoImage(Download.fromUrl
-                                          ("http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-i386.iso"))
+    downloadedDistroIsoImage = Ub1204IsoImage(Download.fromUrl
+                                              ("http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-i386.iso"))
     # some possible choices pointed out
     # server w command line only
     kickstartFileContent = UbKickstartFileContent(UbKickstartTemplates.usableUbKickstartTemplate001)

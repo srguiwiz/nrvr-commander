@@ -42,11 +42,12 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
         As implemented calls superclass method genisoimageOptions and extends the returned list.
         
         Could be improved in the future.
-        Could recognize content of .iso image.
-        Could select different options depending on content of .iso image.
-        Maybe could use iso-info -d 9 -i self.isoImagePath.
         Could be overridden for a subclass."""
-        # this implementation has been made to work for Linux
+        # this implementation has been made to work for Linux,
+        # could be improved in the future,
+        # could recognize content of .iso image,
+        # could select different options depending on content of .iso image,
+        # maybe could use iso-info -d 9 -i self.isoImagePath
         genisoimageOptions = super(DistroIsoImage, self).genisoimageOptions(label=label,
                                                                             udf=udf, ignoreJoliet=ignoreJoliet)
         genisoimageOptions.extend([

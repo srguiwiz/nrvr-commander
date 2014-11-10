@@ -3,7 +3,7 @@
 """nrvr.distros.ub.rel1204.kickstart - Create and manipulate Ubuntu kickstart files
 
 Classes provided by this module include
-* UbIsoImage
+* Ub1204IsoImage
 * UbKickstartFileContent
 
 To be improved as needed.
@@ -20,11 +20,11 @@ import re
 import nrvr.distros.common.kickstart
 from nrvr.util.networkinterface import NetworkConfigurationStaticParameters
 
-class UbIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
-    """An Ubuntu .iso ISO CD-ROM or DVD-ROM disk image."""
+class Ub1204IsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
+    """An Ubuntu .iso ISO CD-ROM or DVD-ROM disk image for use with kickstart."""
 
     def __init__(self, isoImagePath):
-        """Create new Ubuntu UbIsoImage descriptor.
+        """Create new Ubuntu Ub1204IsoImage descriptor.
         
         A descriptor can describe an .iso image that does or doesn't yet exist on the host disk."""
         nrvr.distros.common.kickstart.DistroIsoImage.__init__(self, isoImagePath)
@@ -36,7 +36,7 @@ class UbIsoImage(nrvr.distros.common.kickstart.DistroIsoImage):
         and passes it to method cloneWithModifications.
         
         As implemented known to support Ubuntu 12.04 LTS.
-        Good chance it will work with newer versions distributions.
+        Apparently much less luck using it with Ubuntu 14.04 LTS.
         
         _kickstartFileContent
             A UbKickstartFileContent object.
