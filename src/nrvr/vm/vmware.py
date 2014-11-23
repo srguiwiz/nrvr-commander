@@ -1424,7 +1424,7 @@ class VMwareMachine(object):
                                 tickerForRetry=tickerForRetry)
         return sshCommand
 
-    def shutdownCommand(self, extraSleepSeconds=7.0, ignoreException=False):
+    def shutdownCommand(self, firstSleepSeconds=5.0, extraSleepSeconds=7.0, ignoreException=False):
         """Send shutdown command.
         
         Assumes .ports file to exist and to have an entry for shutdown.
@@ -1435,6 +1435,10 @@ class VMwareMachine(object):
         
             vmwareMachine1.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(vmwareMachine1.vmxFilePath, ticker=True)
+        
+        firstSleepSeconds
+            time for this process to sleep before shutting down virtual machine,
+            unless None.
         
         extraSleepSeconds
             extra time for this process to sleep after shutting down virtual machine,
@@ -1454,6 +1458,8 @@ class VMwareMachine(object):
         if command is None or user is None:
             raise Exception("incomplete information to send shutdown command to machine {0}".format
                             (self.basenameStem))
+        if firstSleepSeconds:
+            time.sleep(firstSleepSeconds)
         self.sshCommand(command, user, exceptionIfNotZero = not ignoreException)
         if extraSleepSeconds:
             time.sleep(extraSleepSeconds)

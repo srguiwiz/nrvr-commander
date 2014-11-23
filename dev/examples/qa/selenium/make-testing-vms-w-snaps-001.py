@@ -424,7 +424,8 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             #
             # start up for accepting known host key
             VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
-            testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True)
+            # allow more time, hope this will fix problem which made grub not proceed with default
+            testVm.sleepUntilHasAcceptedKnownHostKey(ticker=True, extraSleepSeconds=15)
             #
             # a test machine needs to come up ready to run tests, no manual login
             testVm.sshCommand([UbUtil.ubCommandToEnableAutoLogin(regularUser.username)])
@@ -435,7 +436,8 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.sshCommand([UbUtil.commandToEnableSudo(regularUser.username)])
             #
             # shut down
-            testVm.shutdownCommand()
+            # allow more time, hope this will fix problem which made grub not proceed with default
+            testVm.shutdownCommand(firstSleepSeconds=10)
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
             # start up
             VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
