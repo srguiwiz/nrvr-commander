@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.distros.ub.rel1204.gnome - Manipulate Ubuntu 12.04 GNOME
+"""nrvr.distros.ub.rel1404.gnome - Manipulate Ubuntu 12.04 GNOME
 
 Class provided by this module is Gnome.
 
@@ -15,7 +15,7 @@ import re
 
 import nrvr.distros.common.gnome
 
-class Ub1204Gnome(nrvr.distros.common.gnome.Gnome):
+class Ub1404Gnome(nrvr.distros.common.gnome.Gnome):
     """Utilities for manipulating a Gnome installation."""
 
     @classmethod
@@ -28,10 +28,9 @@ class Ub1204Gnome(nrvr.distros.common.gnome.Gnome):
         Return command to disable screen saver of GNOME."""
         # see http://askubuntu.com/questions/109120/how-do-i-turn-off-the-screen-saver-using-the-command-line
         # maybe also see http://www.lucidelectricdreams.com/2011/06/disabling-screensaverlock-screen-on.html
-        command = cls.exportDisplay + \
-                  r" ; gsettings set org.gnome.desktop.screensaver lock-enabled false" + \
-                  r" ; gsettings set org.gnome.desktop.screensaver idle-activation-enabled false" + \
-                  r" ; gsettings set org.gnome.desktop.session idle-delay 0"
+        command = r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.screensaver lock-enabled false ; " + \
+                  r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.screensaver idle-activation-enabled false ; " + \
+                  r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.session idle-delay 0"
         return command
 
     @classmethod
@@ -42,10 +41,9 @@ class Ub1204Gnome(nrvr.distros.common.gnome.Gnome):
         Also, GUI must be available to succeed.
         
         Return command to enable screen saver of GNOME."""
-        command = cls.exportDisplay + \
-                  r" ; gsettings set org.gnome.desktop.screensaver lock-enabled true" + \
-                  r" ; gsettings set org.gnome.desktop.screensaver idle-activation-enabled true" + \
-                  r" ; gsettings set org.gnome.desktop.session idle-delay " + str(idleDelaySeconds)
+        command = r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.screensaver lock-enabled true ; " + \
+                  r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.screensaver idle-activation-enabled true ; " + \
+                  r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.session idle-delay " + str(idleDelaySeconds)
         return command
 
     @classmethod
@@ -56,10 +54,9 @@ class Ub1204Gnome(nrvr.distros.common.gnome.Gnome):
         Also, GUI must be available to succeed.
         
         Return command to set solid color background of GNOME."""
-        command = cls.exportDisplay + \
-                  r" ; gsettings set org.gnome.desktop.background picture-options none" + \
-                  r" ; gsettings set org.gnome.desktop.background color-shading-type solid" + \
-                  r" ; gsettings set org.gnome.desktop.background primary-color " + re.escape(color)
+        command = r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.background picture-options none ; " + \
+                  r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.background color-shading-type solid ; " + \
+                  r"dbus-launch --exit-with-session gsettings set org.gnome.desktop.background primary-color " + re.escape(color)
         return command
 
     @classmethod
@@ -94,25 +91,25 @@ class Ub1204Gnome(nrvr.distros.common.gnome.Gnome):
                   r" ; export XDG_DATA_DIRS='/usr/share/gnome:/usr/local/share/:/usr/share/' ; " + \
                   r"if which indicator-multiload &> /dev/null ; then " + \
                   r"mkdir -p ~/.config/autostart ; " + \
-                  r"gsettings set de.mh21.indicator.multiload autostart true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.general autostart true ; " + \
                   r"( nohup indicator-multiload &> /dev/null & ) ; " + \
                   r"while [ ! -f ~/.config/autostart/indicator-multiload* ] ; do sleep 1 ; done ; " + \
                   r"( if pidofim=`pidof indicator-multiload` ; then /bin/kill $pidofim ; fi ) ; " + \
                   r"( while pidof indicator-multiload ; do sleep 1 ; done ) ; " + \
-                  r"gsettings set de.mh21.indicator.multiload autostart true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload view-cpuload true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload view-memload true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload view-netload true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload view-swapload true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload view-loadavg true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload view-diskload true ; " + \
-                  r"gsettings set de.mh21.indicator.multiload speed 2000 ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.general autostart true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.graphs.cpu enabled true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.graphs.mem enabled true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.graphs.net enabled true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.graphs.swap enabled true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.graphs.load enabled true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.graphs.disk enabled true ; " + \
+                  r"gsettings set de.mh21.indicator.multiload.general speed 2000 ; " + \
                   r"fi"
         return command
 
 if __name__ == "__main__":
-    print Ub1204Gnome.ubCommandToDisableScreenSaver()
-    print Ub1204Gnome.ubCommandToEnableScreenSaver()
-    print Ub1204Gnome.ubCommandToSetSolidColorBackground("#4f6f8f")
-    print Ub1204Gnome.commandToTellWhetherGuiIsAvailable()
-    print Ub1204Gnome.ubCommandToAddSystemMonitorPanel()
+    print Ub1404Gnome.ubCommandToDisableScreenSaver()
+    print Ub1404Gnome.ubCommandToEnableScreenSaver()
+    print Ub1404Gnome.ubCommandToSetSolidColorBackground("#4f6f8f")
+    print Ub1404Gnome.commandToTellWhetherGuiIsAvailable()
+    print Ub1404Gnome.ubCommandToAddSystemMonitorPanel()

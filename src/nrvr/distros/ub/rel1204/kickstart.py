@@ -374,7 +374,7 @@ echo '<monitors version="1">
             commandSection.string = re.sub(preseedRegex,
                                            preseedString,
                                            commandSection.string)
-        else: # no pre-existing pkgsel/update-policy
+        else: # no pre-existing preseed for this qowner and qname
             # append
             commandSection.string = commandSection.string + "#\n" + preseedString + "\n"
 

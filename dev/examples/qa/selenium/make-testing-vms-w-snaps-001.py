@@ -39,6 +39,7 @@ from nrvr.distros.ub.util import UbUtil
 from nrvr.distros.ub.rel1204.gnome import Ub1204Gnome
 from nrvr.distros.ub.rel1204.kickstart import Ub1204IsoImage, UbKickstartFileContent
 from nrvr.distros.ub.rel1204.kickstarttemplates import UbKickstartTemplates
+from nrvr.distros.ub.rel1404.gnome import Ub1404Gnome
 from nrvr.distros.ub.rel1404.preseed import Ub1404IsoImage, UbPreseedFileContent
 from nrvr.distros.ub.rel1404.preseedtemplates import UbPreseedTemplates
 from nrvr.machine.ports import PortsFile
@@ -145,15 +146,18 @@ class Arch(str): pass # make sure it is a string to avoid string-number unequali
 # win - Windows
 machinesPattern = [#MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
                    MachineParameters(distro="cent", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
-                   MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
-                   #MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
+                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
+                   MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
                    #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
                    #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
+                   #MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
                    #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
                    #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
+                   #MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
                    #MachineParameters(distro="sl", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
                    #MachineParameters(distro="cent", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
                    #MachineParameters(distro="ub1204", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
+                   #MachineParameters(distro="ub1404", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
                    MachineParameters(distro="win", arch=Arch(32), browser="iexplorer", lang="en-US", memsize=1020),
                    #MachineParameters(distro="win", arch=Arch(64), browser="iexplorer", lang="en-US", memsize=1520),
                    ]
@@ -349,7 +353,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 kickstartFileContent.replaceRootpw(rootpw)
                 kickstartFileContent.ubReplaceHostname(testVm.basenameStem)
                 kickstartFileContent.ubCreateNetworkConfigurationSection()
-                #kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth0", ipaddress=ipaddress, nameservers=Nameserver.list)
+                #kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth0", ipaddress=vmIdentifiers.ipaddress, nameservers=Nameserver.list)
                 # put in DHCP at eth0, to be used with NAT, works well if before hostonly
                 kickstartFileContent.ubAddNetworkConfigurationDhcp("eth0")
                 kickstartFileContent.ubAddNetworkConfigurationStatic(device="eth1",
@@ -362,6 +366,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 kickstartFileContent.addPackage("default-jre") # Java needed for Selenium Server standalone .jar
                 kickstartFileContent.addPackage("python-setuptools") # needed for installing Python packages
                 kickstartFileContent.addPackage("libxss1") # needed for Google Chrome
+                kickstartFileContent.addPackage("libappindicator1") # needed for Google Chrome
                 kickstartFileContent.ubActivateGraphicalLogin()
                 kickstartFileContent.ubSetUser(regularUser.username, pwd=regularUser.pwd, fullname=regularUser.fullname)
                 kickstartFileContent.setSwappiness(10)
@@ -370,16 +375,28 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                     (kickstartFileContent,
                      cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             elif distro == "ub1404":
-                preseedFileContent = UbPreseedFileContent(UbPreseedTemplates.usableUbPreseedTemplate001)
+                preseedFileContent = UbPreseedFileContent(UbPreseedTemplates.usableUbWithGuiPreseedTemplate001)
                 preseedFileContent.replaceLang(vmIdentifiers.mapas.lang)
+                preseedFileContent.replaceRootpw(rootpw)
                 preseedFileContent.replaceHostname(testVm.basenameStem)
-                #
-                # TODO remaining settings, and issues like swap partition, this here is NOT done yet for Ubuntu 14.04
-                #
+                #preseedFileContent.addNetworkConfigurationStatic(device="eth0", ipaddress=vmIdentifiers.ipaddress, nameservers=Nameserver.list)
+                # put in DHCP at eth0, to be used with NAT, works well if before hostonly
+                # in Ubuntu 14.04 LTS routing works only if not configuring that eth0 interface which will use DHCP
+                #preseedFileContent.addNetworkConfigurationDhcp("eth0")
+                preseedFileContent.addNetworkConfigurationStatic(device="eth1",
+                                                                 ipaddress=vmIdentifiers.ipaddress,
+                                                                 nameservers=Nameserver.list)
+                preseedFileContent.setUpgradeNone()
+                preseedFileContent.setUpdatePolicyNone()
+                preseedFileContent.addPackage("default-jre") # Java needed for Selenium Server standalone .jar
+                preseedFileContent.addPackage("python-setuptools") # needed for installing Python packages
+                preseedFileContent.addPackage("libappindicator1") # needed for Google Chrome
                 preseedFileContent.setUser(regularUser.username, pwd=regularUser.pwd, fullname=regularUser.fullname)
+                preseedFileContent.setSwappiness(10)
                 # pick right temporary directory, ideally same as VM
                 modifiedDistroIsoImage = downloadedDistroIsoImage.cloneWithAutoBootingPreseed \
                     (preseedFileContent,
+                     UbPreseedTemplates.usableUbWithGuiPreseedFirstTimeStartScript001,
                      cloneIsoImagePath=os.path.join(testVm.directory, "made-to-order-os-install.iso"))
             # some necessary choices pointed out
             # 32-bit versus 64-bit Linux, memsizeMegabytes needs to be more for 64-bit
@@ -411,6 +428,8 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             #
             # a test machine needs to come up ready to run tests, no manual login
             testVm.sshCommand([UbUtil.ubCommandToEnableAutoLogin(regularUser.username)])
+            # might as well
+            testVm.sshCommand([UbUtil.ubCommandToDisableGuestLogin()])
             #
             # might as well
             testVm.sshCommand([UbUtil.commandToEnableSudo(regularUser.username)])
@@ -418,17 +437,30 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             # shut down
             testVm.shutdownCommand()
             VMwareHypervisor.local.sleepUntilNotRunning(testVm.vmxFilePath, ticker=True)
-            # start up until successful login into GUI
+            # start up
             VMwareHypervisor.local.start(testVm.vmxFilePath, gui=True, extraSleepSeconds=0)
             userSshParameters = testVm.sshParameters(user=regularUser.username)
-            LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
             #
-            testVm.sshCommand([Ub1204Gnome.ubCommandToDisableScreenSaver()], user=regularUser.username)
-            # avoid distracting backgrounds, picks unique color to be clear this is a test machine
-            testVm.sshCommand([Ub1204Gnome.ubCommandToSetSolidColorBackground("#dddd66")], user=regularUser.username)
-            # indicator-multiload installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
-            testVm.sshCommand([Ub1204Gnome.ubCommandToInstallSystemMonitorPanel()])
-            testVm.sshCommand([Ub1204Gnome.ubCommandToAddSystemMonitorPanel()], user=regularUser.username)
+            if distro == "ub1204":
+                # until successful login into GUI
+                LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True)
+                #
+                testVm.sshCommand([Ub1204Gnome.ubCommandToDisableScreenSaver()], user=regularUser.username)
+                # avoid distracting backgrounds, picks unique color to be clear this is a test machine
+                testVm.sshCommand([Ub1204Gnome.ubCommandToSetSolidColorBackground("#dddd66")], user=regularUser.username)
+                # indicator-multiload installed OK until Ubuntu 12.04.4, but apparently not in Ubuntu 12.04.5
+                testVm.sshCommand([Ub1204Gnome.ubCommandToInstallSystemMonitorPanel()])
+                testVm.sshCommand([Ub1204Gnome.ubCommandToAddSystemMonitorPanel()], user=regularUser.username)
+            elif distro == "ub1404":
+                # until successful login into GUI
+                # allow more time, hope this will allow the gsettings commands to work and stick for good
+                LinuxSshCommand.sleepUntilIsGuiAvailable(userSshParameters, ticker=True, extraSleepSeconds=30)
+                #
+                testVm.sshCommand([Ub1404Gnome.ubCommandToDisableScreenSaver()], user=regularUser.username)
+                # avoid distracting backgrounds, picks unique color to be clear this is a test machine
+                testVm.sshCommand([Ub1404Gnome.ubCommandToSetSolidColorBackground("#dddd66")], user=regularUser.username)
+                testVm.sshCommand([Ub1404Gnome.ubCommandToInstallSystemMonitorPanel()])
+                testVm.sshCommand([Ub1404Gnome.ubCommandToAddSystemMonitorPanel()], user=regularUser.username)
             #
             # shut down for snapshot
             testVm.shutdownCommand()

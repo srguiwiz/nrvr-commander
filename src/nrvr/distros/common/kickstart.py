@@ -431,7 +431,6 @@ class DistroKickstartFileContent(object):
         
         return
             self, for daisychaining."""
-        # see https://help.ubuntu.com/12.04/installation-guide/example-preseed.txt
         postSection = self.sectionByName("%post")
         swappiness = int(swappiness) # precaution
         if not 0 <= swappiness <= 100:
@@ -455,6 +454,7 @@ class DistroKickstartFileContent(object):
         # simply append
         # in case of multiple invocations last one would be effective
         postSection.string = postSection.string + settingSwappiness + "\n"
+        return self
 
 if __name__ == "__main__":
     from nrvr.distros.el.kickstart import ElKickstartFileContent

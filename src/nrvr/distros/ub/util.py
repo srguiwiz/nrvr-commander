@@ -38,6 +38,16 @@ class UbUtil(nrvr.distros.common.util.LinuxUtil):
         return command
 
     @classmethod
+    def _ubCommandToHaveLightDMConfiguration(cls, username=None):
+        """Build command to enable configuration of LightDM.
+        
+        Must be root to succeed.
+        
+        Return command to enable configuration of LightDM."""
+        # in Ubuntu 14.04 LTS first must ensure there is a file /etc/lightdm/lightdm.conf with a section [SeatDefaults]
+        return r"if [ ! -f /etc/lightdm/lightdm.conf ] ; then mkdir -p /etc/lightdm ; echo '[SeatDefaults]' > /etc/lightdm/lightdm.conf ; fi"
+
+    @classmethod
     def ubCommandToEnableAutoLogin(cls, username=None):
         """Build command to enable auto-login with LightDM.
         
@@ -48,7 +58,7 @@ class UbUtil(nrvr.distros.common.util.LinuxUtil):
         
         Return command to enable auto-login with LightDM."""
         # see http://www.tuxgarage.com/2011/09/setting-lightdm-to-auto-login-oneiric.html
-        command = UbUtil.ubCommandToDisableAutoLogin()
+        command = cls.ubCommandToDisableAutoLogin()
         if username:
             username = re.escape(username) # precaution
             # autologin-user-timeout=0 to avoid https://bugs.launchpad.net/ubuntu/+source/lightdm/+bug/902852
@@ -62,7 +72,31 @@ class UbUtil(nrvr.distros.common.util.LinuxUtil):
         Must be root to succeed.
         
         Return command to disable auto-login with LightDM."""
-        return r"sed -i -e '/^\s*autologin-user\s*=/ d' -e '/^\s*autologin-user-timeout\s*=/ d' /etc/lightdm/lightdm.conf"
+        command = cls._ubCommandToHaveLightDMConfiguration()
+        command += r" ; sed -i -e '/^\s*autologin-user\s*=/ d' -e '/^\s*autologin-user-timeout\s*=/ d' /etc/lightdm/lightdm.conf"
+        return command
+
+    @classmethod
+    def ubCommandToDisableGuestLogin(cls):
+        """Build command to disable guest login with LightDM.
+        
+        Must be root to succeed.
+        
+        Return command to disable guest login with LightDM."""
+        command = cls._ubCommandToHaveLightDMConfiguration()
+        command += r" ; sed -i -e '/^\s*allow-guest\s*=/ d'  -e '/^\[SeatDefaults\]/ a \allow-guest=false' /etc/lightdm/lightdm.conf"
+        return command
+
+    @classmethod
+    def ubCommandToEnableGuestLogin(cls):
+        """Build command to enable guest login with LightDM.
+        
+        Must be root to succeed.
+        
+        Return command to enable guest login with LightDM."""
+        command = cls._ubCommandToHaveLightDMConfiguration()
+        command += r" ; sed -i -e '/^\s*allow-guest\s*=/ d'  -e '/^\[SeatDefaults\]/ a \allow-guest=true' /etc/lightdm/lightdm.conf"
+        return command
 
 if __name__ == "__main__":
     print UbUtil.ubReleaseVersion("/mnt/isos/ubuntu-12.04.4-alternate-i386.iso")
@@ -73,3 +107,5 @@ if __name__ == "__main__":
     print UbUtil.ubCommandToEnableAutoLogin("joe")
     print UbUtil.ubCommandToDisableAutoLogin()
     print UbUtil.ubCommandToEnableAutoLogin()
+    print UbUtil.ubCommandToDisableGuestLogin()
+    print UbUtil.ubCommandToEnableGuestLogin()

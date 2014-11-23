@@ -13,6 +13,7 @@ Modules provides by this package are
 * nrvr.distros.ub.rel1204.gnome
 * nrvr.distros.ub.rel1204.kickstart
 * nrvr.distros.ub.rel1204.kickstarttemplates
+* nrvr.distros.ub.rel1404.gnome
 * nrvr.distros.ub.rel1404.preseed
 * nrvr.distros.ub.rel1404.preseedtemplates
 * nrvr.machine.ports
