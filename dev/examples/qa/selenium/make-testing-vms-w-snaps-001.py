@@ -136,7 +136,7 @@ testUsers = [RegisteringUser(username="tester", pwd="testing"),
              RegisteringUser(username="tester2", pwd="testing")
              ]
 
-MachineParameters = namedtuple("MachineParameters", ["distro", "arch", "browser", "lang", "memsize"])
+MachineParameters = namedtuple("MachineParameters", ["distro", "arch", "browser", "lang", "memsize", "cores"])
 class Arch(str): pass # make sure it is a string to avoid string-number unequality
 # customize as needed
 # sl - Scientific Linux
@@ -144,22 +144,22 @@ class Arch(str): pass # make sure it is a string to avoid string-number unequali
 # ub1204 - Ubuntu 12.04 LTS
 # ub1404 - Ubuntu 14.04 LTS
 # win - Windows
-machinesPattern = [#MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
-                   MachineParameters(distro="cent", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900),
-                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
-                   MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960),
-                   #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920),
-                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
-                   #MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980),
-                   #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000),
-                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
-                   #MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060),
-                   #MachineParameters(distro="sl", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
-                   #MachineParameters(distro="cent", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400),
-                   #MachineParameters(distro="ub1204", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
-                   #MachineParameters(distro="ub1404", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460),
-                   MachineParameters(distro="win", arch=Arch(32), browser="iexplorer", lang="en-US", memsize=1020),
-                   #MachineParameters(distro="win", arch=Arch(64), browser="iexplorer", lang="en-US", memsize=1520),
+machinesPattern = [#MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900, cores=1),
+                   MachineParameters(distro="cent", arch=Arch(32), browser="firefox", lang="en_US.UTF-8", memsize=900, cores=1),
+                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960, cores=1),
+                   MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="en_US.UTF-8", memsize=960, cores=1),
+                   #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="de_DE.UTF-8", memsize=920, cores=1),
+                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980, cores=1),
+                   #MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="de_DE.UTF-8", memsize=980, cores=1),
+                   #MachineParameters(distro="sl", arch=Arch(32), browser="firefox", lang="zh_CN.UTF-8", memsize=1000, cores=1),
+                   #MachineParameters(distro="ub1204", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060, cores=1),
+                   #MachineParameters(distro="ub1404", arch=Arch(32), browser="chrome", lang="zh_CN.UTF-8", memsize=1060, cores=1),
+                   #MachineParameters(distro="sl", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400, cores=2),
+                   #MachineParameters(distro="cent", arch=Arch(64), browser="firefox", lang="en_US.UTF-8", memsize=1400, cores=2),
+                   #MachineParameters(distro="ub1204", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460, cores=2),
+                   #MachineParameters(distro="ub1404", arch=Arch(64), browser="chrome", lang="en_US.UTF-8", memsize=1460, cores=2),
+                   MachineParameters(distro="win", arch=Arch(32), browser="iexplorer", lang="en-US", memsize=1020, cores=1),
+                   #MachineParameters(distro="win", arch=Arch(64), browser="iexplorer", lang="en-US", memsize=1520, cores=2),
                    ]
 
 # trying to approximate the order in which identifiers are used from this tuple
@@ -293,6 +293,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
                           guestOS=guestOS,
                           ideDrives=[20000, 300, modifiedDistroIsoImage])
+            testVm.vmxFile.setNumberOfProcessorCores(vmIdentifiers.mapas.cores)
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
             for additionalUser in additionalUsers:
@@ -407,6 +408,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
                           guestOS=guestOS,
                           ideDrives=[20000, 300, modifiedDistroIsoImage])
+            testVm.vmxFile.setNumberOfProcessorCores(vmIdentifiers.mapas.cores)
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress,
@@ -481,8 +483,8 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
                           guestOS=guestOS,
                           ideDrives=[20000]) #, modifiedDistroIsoImage])
+            testVm.vmxFile.setNumberOfProcessorCores(vmIdentifiers.mapas.cores)
             # some possible choices pointed out
-            #testVm.vmxFile.setNumberOfProcessorCores(2)
             #testVm.vmxFile.setAccelerate3D()
             cygServerRandomPwd = ''.join(random.choice(string.letters) for i in xrange(20))
             # were considering doing  ssh-host-config --yes --pwd $( openssl rand -hex 16 )
