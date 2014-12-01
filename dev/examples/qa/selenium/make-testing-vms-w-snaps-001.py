@@ -292,7 +292,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 guestOS = "centos-64"
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
                           guestOS=guestOS,
-                          ideDrives=[20000, 300, modifiedDistroIsoImage])
+                          ideDrives=[40000, 300, modifiedDistroIsoImage])
             testVm.vmxFile.setNumberOfProcessorCores(vmIdentifiers.mapas.cores)
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
@@ -407,7 +407,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 guestOS = "ubuntu-64"
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
                           guestOS=guestOS,
-                          ideDrives=[20000, 300, modifiedDistroIsoImage])
+                          ideDrives=[40000, 300, modifiedDistroIsoImage])
             testVm.vmxFile.setNumberOfProcessorCores(vmIdentifiers.mapas.cores)
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
@@ -482,7 +482,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 guestOS = "windows7-64"
             testVm.create(memsizeMegabytes=vmIdentifiers.mapas.memsize,
                           guestOS=guestOS,
-                          ideDrives=[20000]) #, modifiedDistroIsoImage])
+                          ideDrives=[40000]) #, modifiedDistroIsoImage])
             testVm.vmxFile.setNumberOfProcessorCores(vmIdentifiers.mapas.cores)
             # some possible choices pointed out
             #testVm.vmxFile.setAccelerate3D()

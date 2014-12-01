@@ -93,7 +93,7 @@ if exists == False:
      cloneIsoImagePath=os.path.join(exampleVm.directory, "made-to-order-os-install.iso"))
     # some necessary choices pointed out
     # 32-bit versus 64-bit linux, memsizeMegabytes needs to be more for 64-bit, guestOS is "ubuntu" versus "ubuntu-64"
-    exampleVm.create(memsizeMegabytes=1200, guestOS="ubuntu", ideDrives=[20000, 300, modifiedDistroIsoImage])
+    exampleVm.create(memsizeMegabytes=1200, guestOS="ubuntu", ideDrives=[40000, 300, modifiedDistroIsoImage])
     # some possible modifications pointed out
     #exampleVm.vmxFile.setMemorySize(1280)
     #exampleVm.vmxFile.setNumberOfProcessorCores(2)

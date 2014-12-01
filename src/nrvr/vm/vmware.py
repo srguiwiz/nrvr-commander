@@ -647,7 +647,7 @@ class VmxFile(object):
         ideDrives
             a list of at most four VmdkFile or IsoImage.
             If given a number as an element then make a VmdkFile with that many megabytes capactiy.
-            If None then default to one VmdkFile with 20000 megabytes capacity.
+            If None then default to one VmdkFile with 40000 megabytes capacity.
         
         displayName
             defaults to self.basenameStem.
@@ -665,7 +665,7 @@ class VmxFile(object):
         #
         if ideDrives is None:
             # default to one hard disk
-            ideDrives = [20000]
+            ideDrives = [40000]
         if len(ideDrives) > 4:
             raise Exception("cannot have more than 4 IDE drives, cannot have {0}".format(len(ideDrives)))
         # for a number make a hard disk with that many megabytes capactiy
@@ -1595,7 +1595,7 @@ if __name__ == "__main__":
     os.mkdir(_testDir, 0755)
     try:
         _vmwareMachine1 = VMwareMachine(os.path.join(_testDir, "test1/test1.vmx"))
-        _vmwareMachine1.create(memsizeMegabytes=640, ideDrives=[20000, 300])
+        _vmwareMachine1.create(memsizeMegabytes=640, ideDrives=[40000, 300])
         VMwareHypervisor.local.createSnapshot(_vmwareMachine1.vmxFilePath, "VM created")
         _vmwareMachine1.vmxFile.setEthernetAdapter(1, "nat")
         VMwareHypervisor.local.createSnapshot(_vmwareMachine1.vmxFilePath, "set NAT")
