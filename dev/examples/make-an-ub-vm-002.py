@@ -96,7 +96,7 @@ if exists == False:
     exampleVm.create(memsizeMegabytes=1200, guestOS="ubuntu", ideDrives=[20000, 300, modifiedDistroIsoImage])
     # some possible modifications pointed out
     #exampleVm.vmxFile.setMemorySize(1280)
-    #exampleVm.vmxFile.setNumberOfProcessors(2)
+    #exampleVm.vmxFile.setNumberOfProcessorCores(2)
     #exampleVm.vmxFile.setAccelerate3D()
     exampleVm.portsFile.setSsh(ipaddress=ipaddress, user="root", pwd=rootpw)
     exampleVm.portsFile.setShutdown()

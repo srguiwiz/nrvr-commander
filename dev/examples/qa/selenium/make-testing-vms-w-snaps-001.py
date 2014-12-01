@@ -482,7 +482,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                           guestOS=guestOS,
                           ideDrives=[20000]) #, modifiedDistroIsoImage])
             # some possible choices pointed out
-            #testVm.vmxFile.setNumberOfProcessors(2)
+            #testVm.vmxFile.setNumberOfProcessorCores(2)
             #testVm.vmxFile.setAccelerate3D()
             cygServerRandomPwd = ''.join(random.choice(string.letters) for i in xrange(20))
             # were considering doing  ssh-host-config --yes --pwd $( openssl rand -hex 16 )

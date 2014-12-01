@@ -518,15 +518,27 @@ class VmxFileContent(object):
             raise Exception("Memory size must be >= 32 [megabytes], cannot be {0}".format(memsizeMegabytes))
         self.setSettingValue("memsize", memsizeMegabytes)
 
-    def setNumberOfProcessors(self, number=1):
-        """Set .vmx file parameter for number of processors.
+    def setNumberOfProcessorCores(self, cores=1, processors=1):
+        """Set .vmx file parameters for number of processor cores.
         
-        number
-            e.g. 2."""
-        number = int(number)
-        if number < 1:
-            raise Exception("Number of processors must be >= 1, cannot be {0}".format(number))
-        self.setSettingValue("numvcpus", number)
+        cores
+            e.g. 2.
+        
+        processors
+            e.g. 1."""
+        cores = int(cores)
+        processors = int(processors)
+        coresPreProcessor = cores / processors
+        if cores < 1:
+            raise Exception("Number of cores must be >= 1, cannot be {0}".format(cores))
+        if processors < 1:
+            raise Exception("Number of processors must be >= 1, cannot be {0}".format(processors))
+        if coresPreProcessor < 1:
+            raise Exception("Number of cores per processor must be >= 1, cannot be {0}".format(coresPreProcessor))
+        if processors * coresPreProcessor != cores:
+            raise Exception("Problem with number of cores and processors, cannot be {0} and {1}".format(cores, processors))
+        self.setSettingValue("numvcpus", cores)
+        self.setSettingValue("cpuid.coresPerSocket", coresPreProcessor)
 
     def setAccelerate3D(self, accelerate3D=True):
         """Set .vmx file parameter for enabling accelerated 3D graphics.
@@ -556,7 +568,7 @@ if __name__ == "__main__":
     _vmxFileContent1.setEthernetAdapter(3, "nat")
     _vmxFileContent1.setEthernetAdapter(3, change="remove")
     _vmxFileContent1.setMemorySize(640)
-    _vmxFileContent1.setNumberOfProcessors(2)
+    _vmxFileContent1.setNumberOfProcessorCores(2)
     _vmxFileContent1.setAccelerate3D()
     _vmxFileContent1.setVideoMemorySize(32)
     print _vmxFileContent1.string
@@ -759,14 +771,17 @@ class VmxFile(object):
         self.modify(lambda vmxFileContent:
             vmxFileContent.setMemorySize(memsizeMegabytes=memsizeMegabytes))
 
-    def setNumberOfProcessors(self, number=1):
-        """Set .vmx file parameter for number of processors.
+    def setNumberOfProcessorCores(self, cores=1, processors=1):
+        """Set .vmx file parameters for number of processor cores.
         
-        number
-            the number."""
+        cores
+            e.g. 2.
+        
+        processors
+            e.g. 1."""
         # recommended safe wrapper
         self.modify(lambda vmxFileContent:
-            vmxFileContent.setNumberOfProcessors(number=number))
+            vmxFileContent.setNumberOfProcessorCores(cores=cores, processors=processors))
 
     def setAccelerate3D(self, accelerate3D=True):
         """Set .vmx file parameter for enabling accelerated 3D graphics.
