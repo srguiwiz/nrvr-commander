@@ -77,7 +77,8 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
         modifications = []
         return modifications
 
-    def cloneWithAutoBootingKickstart(self, _kickstartFileContent, modifications=[], cloneIsoImagePath=None):
+    def cloneWithAutoBootingKickstart(self, _kickstartFileContent, modifications=[], cloneIsoImagePath=None,
+                                      ignoreJoliet=True):
         """Clone with kickstart file added and modified to automatically boot with it.
         
         For more on behavior see documentation of class IsoImage method cloneWithModifications.
@@ -97,7 +98,8 @@ class DistroIsoImage(nrvr.diskimage.isoimage.IsoImage):
         modifications.extend(self.modificationsIncludingKickstartFile(_kickstartFileContent))
         # clone with modifications
         clone = self.cloneWithModifications(modifications=modifications,
-                                            cloneIsoImagePath=cloneIsoImagePath)
+                                            cloneIsoImagePath=cloneIsoImagePath,
+                                            ignoreJoliet=ignoreJoliet)
         return clone
 
 
