@@ -34,4 +34,8 @@ physical machines, etc.
 
 This project is about getting stuff done reproducibly.
 
-There is a [dedicated category in a blog](http://leosbog.nrvr.com/category/nrvrcommander/).
+There is an API reference
+[online here](http://srguiwiz.github.io/nrvr-commander/docs/api/).
+
+There is a
+[dedicated category in a blog](http://leosbog.nrvr.com/category/nrvrcommander/).
