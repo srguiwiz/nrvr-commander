@@ -39,3 +39,10 @@ There is an API reference
 
 There is a
 [dedicated category in a blog](http://leosbog.nrvr.com/category/nrvrcommander/).
+
+Documentation is too conservative regarding VMware compatibility.
+So far has been working OK with new versions VMware Workstation and Fusion.
+
+New version operating systems, that's another cup of tea.
+
+Can this project be integrated with something popular?
