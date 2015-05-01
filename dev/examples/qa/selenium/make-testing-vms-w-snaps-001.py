@@ -85,8 +85,8 @@ ubuntu1204Distro32IsoUrl = "http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-al
 ubuntu1204Distro64IsoUrl = "http://releases.ubuntu.com/12.04.4/ubuntu-12.04.4-alternate-amd64.iso"
 
 # from http://releases.ubuntu.com/
-ubuntu1404Distro32IsoUrl = "http://releases.ubuntu.com/14.04.1/ubuntu-14.04.1-desktop-i386.iso"
-ubuntu1404Distro64IsoUrl = "http://releases.ubuntu.com/14.04.1/ubuntu-14.04.1-desktop-amd64.iso"
+ubuntu1404Distro32IsoUrl = "http://releases.ubuntu.com/14.04.2/ubuntu-14.04.2-desktop-i386.iso"
+ubuntu1404Distro64IsoUrl = "http://releases.ubuntu.com/14.04.2/ubuntu-14.04.2-desktop-amd64.iso"
 
 # from http://social.technet.microsoft.com/Forums/windows/en-US/653d34d9-ac99-42db-80c8-6300f01f7aae/windows-7downloard
 # or http://forums.mydigitallife.info/threads/14709-Windows-7-Digital-River-direct-links-Multiple-Languages-X86-amp-X64/page60
