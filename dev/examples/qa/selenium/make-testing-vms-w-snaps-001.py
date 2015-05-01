@@ -116,7 +116,7 @@ python2xWindows32InstallerMsiUrl = "http://www.python.org/ftp/python/2.7.6/pytho
 python2xWindows64InstallerMsiUrl = "http://www.python.org/ftp/python/2.7.6/python-2.7.6.amd64.msi"
 
 # from http://nodejs.org/download/
-nodejsSourceTarUrl = "http://nodejs.org/dist/v0.10.33/node-v0.10.33.tar.gz"
+nodejsSourceTarUrl = "http://nodejs.org/dist/v0.12.2/node-v0.12.2.tar.gz"
 
 # used to be specific to the website you are testing,
 # no probably just the files inside testsDirectory will change
