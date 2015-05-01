@@ -39,6 +39,6 @@ Modules provides by this package are
 * nrvr.xml.etree
 
 To install do the usual:
-	tar xzf dist/NrvrCommander-1.7.1.tar.gz
-	cd NrvrCommander-1.7.1
+	tar xzf dist/NrvrCommander-1.7.2.tar.gz
+	cd NrvrCommander-1.7.2
 	sudo python ./setup.py install
