@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.distros.ub.rel1404.gnome - Manipulate Ubuntu 12.04 GNOME
+"""nrvr.distros.ub.rel1404.gnome - Manipulate Ubuntu 14.04 GNOME
 
 Class provided by this module is Gnome.
 
@@ -8,7 +8,7 @@ Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
 
 Public repository - https://github.com/srguiwiz/nrvr-commander
 
-Copyright (c) Nirvana Research 2006-2014.
+Copyright (c) Nirvana Research 2006-2015.
 Modified BSD License"""
 
 import re
