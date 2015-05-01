@@ -465,6 +465,9 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 testVm.sshCommand([Ub1404Gnome.ubCommandToSetSolidColorBackground("#dddd66")], user=regularUser.username)
                 testVm.sshCommand([Ub1404Gnome.ubCommandToInstallSystemMonitorPanel()])
                 testVm.sshCommand([Ub1404Gnome.ubCommandToAddSystemMonitorPanel()], user=regularUser.username)
+                #
+                # try avoiding excessive GPU use in virtual machines
+                testVm.sshCommand([Ub1404Gnome.ubCommandToLimitCompizGpuUse()])
             #
             # shut down for snapshot
             testVm.shutdownCommand()

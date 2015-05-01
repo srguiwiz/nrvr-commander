@@ -19,6 +19,20 @@ class Ub1404Gnome(nrvr.distros.common.gnome.Gnome):
     """Utilities for manipulating a Gnome installation."""
 
     @classmethod
+    def ubCommandToLimitCompizGpuUse(cls):
+        """Build command to limit Compiz GPU use.
+        
+        Must be root to succeed.
+        
+        Return command to limit Compiz GPU user."""
+        # see https://bugs.launchpad.net/compiz/+bug/1293384
+        # note: the export never executes when /usr/share/gnome-session/sessions/ubuntu.session
+        # still in line RequiredComponents has compiz
+        # hence consider this an experimental stub to be improved upon
+        return r"sed -i -e '/^export\s*COMPIZ_CONFIG_PROFILE/a #\nenv UNITY_LOW_GFX_MODE=\"1\"\nexport UNITY_LOW_GFX_MODE'" + \
+               r" /usr/share/upstart/sessions/unity7.conf"
+
+    @classmethod
     def ubCommandToDisableScreenSaver(cls):
         """Build command to disable screen saver of GNOME.
         
