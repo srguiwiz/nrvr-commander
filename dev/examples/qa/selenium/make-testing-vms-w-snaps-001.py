@@ -409,6 +409,8 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                           guestOS=guestOS,
                           ideDrives=[40000, 300, modifiedDistroIsoImage])
             testVm.vmxFile.setNumberOfProcessorCores(vmIdentifiers.mapas.cores)
+            # a possible choice pointed out
+            #testVm.vmxFile.setAccelerate3D()
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress, user="root", pwd=rootpw)
             testVm.portsFile.setShutdown()
             testVm.portsFile.setSsh(ipaddress=vmIdentifiers.ipaddress,
@@ -467,7 +469,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 testVm.sshCommand([Ub1404Gnome.ubCommandToAddSystemMonitorPanel()], user=regularUser.username)
                 #
                 # try avoiding excessive GPU use in virtual machines
-                testVm.sshCommand([Ub1404Gnome.ubCommandToLimitCompizGpuUse()])
+                testVm.sshCommand([Ub1404Gnome.ubCommandToLimitCompizGpuUse()], user=regularUser.username)
             #
             # shut down for snapshot
             testVm.shutdownCommand()
@@ -487,7 +489,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                           guestOS=guestOS,
                           ideDrives=[40000]) #, modifiedDistroIsoImage])
             testVm.vmxFile.setNumberOfProcessorCores(vmIdentifiers.mapas.cores)
-            # some possible choices pointed out
+            # a possible choice pointed out
             #testVm.vmxFile.setAccelerate3D()
             cygServerRandomPwd = ''.join(random.choice(string.letters) for i in xrange(20))
             # were considering doing  ssh-host-config --yes --pwd $( openssl rand -hex 16 )

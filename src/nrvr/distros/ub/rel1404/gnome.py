@@ -22,15 +22,32 @@ class Ub1404Gnome(nrvr.distros.common.gnome.Gnome):
     def ubCommandToLimitCompizGpuUse(cls):
         """Build command to limit Compiz GPU use.
         
-        Must be root to succeed.
+        Must be user to succeed.
         
-        Return command to limit Compiz GPU user."""
+        Return command to limit Compiz GPU use."""
+        # per http://ubuntuforums.org/showthread.php?t=2140745
+        # to help deal with https://bugs.launchpad.net/compiz/+bug/1293384
+        #
         # see https://bugs.launchpad.net/compiz/+bug/1293384
-        # note: the export never executes when /usr/share/gnome-session/sessions/ubuntu.session
-        # still in line RequiredComponents has compiz
-        # hence consider this an experimental stub to be improved upon
-        return r"sed -i -e '/^export\s*COMPIZ_CONFIG_PROFILE/a #\nenv UNITY_LOW_GFX_MODE=\"1\"\nexport UNITY_LOW_GFX_MODE'" + \
-               r" /usr/share/upstart/sessions/unity7.conf"
+        # and http://ubuntuforums.org/showthread.php?t=2140745#6
+        # and http://askubuntu.com/questions/403316/how-do-i-enable-disable-compiz-plugins-from-command-line-in-ubuntu-13-10
+        # and http://www.techdrivein.com/2013/03/4-simple-tweaks-to-improve-unity-performance-ubuntu.html
+        #
+        # also to investigate sudo apt-get install compizconfig-settings-manager gconf-editor
+        #
+        # also have used
+        # gconftool-2 --set --type=integer /apps/compiz-1/plugins/opengl/screen0/options/texture_filter 0
+        # gconftool-2 --set --type=boolean /apps/compiz-1/plugins/opengl/screen0/options/framebuffer_object false
+        #
+        # apparently this doesn't work as suggested by online posts, but it points the right direction,
+        # to get expected results we have then made equivalent adjustments with GUI tools
+        # compizconfig-settings-manager and gconf-editor
+        #
+        # hence, still consider this an experimental stub to be improved upon
+        return r"gconftool-2 --set --type=list --list-type=string" + \
+               r" /apps/compizconfig-1/profiles/Default/general/screen0/options/active_plugins" + \
+               r" `gconftool-2 --get /apps/compizconfig-1/profiles/Default/general/screen0/options/active_plugins" + \
+               r" | sed -e 's/,ezoom//' -e 's/,animation//' -e 's/,fade//' -e 's/,decor//'`"
 
     @classmethod
     def ubCommandToDisableScreenSaver(cls):
