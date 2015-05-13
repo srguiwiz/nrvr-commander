@@ -392,6 +392,7 @@ def makeTestVmWithGui(vmIdentifiers, forceThisStep=False):
                 preseedFileContent.addPackage("default-jre") # Java needed for Selenium Server standalone .jar
                 preseedFileContent.addPackage("python-setuptools") # needed for installing Python packages
                 preseedFileContent.addPackage("libappindicator1") # needed for Google Chrome
+                preseedFileContent.addPackage("gnome-panel") # per http://ubuntuforums.org/showthread.php?t=2140745
                 preseedFileContent.setUser(regularUser.username, pwd=regularUser.pwd, fullname=regularUser.fullname)
                 preseedFileContent.setSwappiness(10)
                 # pick right temporary directory, ideally same as VM
