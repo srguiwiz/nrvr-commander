@@ -122,8 +122,12 @@ class IsoImage(object):
             # files without leading slash and without trailing slash
             files = re.findall(r"(?m)^[ \t]*[0-9]*[ \t]+/(.+?)/?[ \t]*$", isoInfoF.stdout)
         else: # udf
+            # apparently since libcdio 0.93 if using iso-info option -i then -U doesn't work right
+            # apparently since libcdio 0.92 not using iso-info option -i works right for -U and -l
+            # even though man iso-info says to use -i
+            #
             # get directories and files info in a reasonably parsable list
-            isoInfoUArgs = ["iso-info", "-i", self._isoImagePath, "-U"]
+            isoInfoUArgs = ["iso-info", self._isoImagePath, "-U"]
             if ignoreJoliet:
                 isoInfoUArgs.insert(1, "--no-joliet")
             isoInfoU = CommandCapture(isoInfoUArgs, copyToStdio=False)
