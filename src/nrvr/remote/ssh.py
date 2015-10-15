@@ -595,6 +595,7 @@ class ScpCommand(object):
             self._fromSpecification = \
                 [fromSshParameters.user + "@" + IPAddress.asString(fromSshParameters.ipaddress) + ":" + " ".join(fromPaths)]
             self._toSpecification = toPath
+            self._ipaddress = fromSshParameters.ipaddress
             self._pwd = fromSshParameters.pwd
         else: # put files to remote
             anyFromDirectory = False
@@ -607,6 +608,7 @@ class ScpCommand(object):
             self._fromSpecification = fromPaths
             self._toSpecification = \
                 toSshParameters.user + "@" + IPAddress.asString(toSshParameters.ipaddress) + ":" + toPath
+            self._ipaddress = toSshParameters.ipaddress
             self._pwd = toSshParameters.pwd
         self._args = ["scp"]
         if preserveTimes:
