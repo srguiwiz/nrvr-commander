@@ -28,6 +28,7 @@ Modified BSD License"""
 
 import os.path
 import re
+import signal
 import sys
 import time
 
@@ -79,9 +80,11 @@ class SshParameters(object):
 class SshCommand(object):
     """Send a command over ssh."""
 
-    _pwdPromptRegex = re.compile(re.escape(r"password:"))
-    _acceptPromptRegex = re.compile(re.escape(r"(yes/no)?"))
-    _acceptAnswer="yes\n"
+    _pwdPromptRegex = re.compile(r"(?i)password:")
+    _removeLeadingSpaceAndFirstNewlineRegex = re.compile(r"^\s*?\n(.*)$")
+    _acceptPromptRegex = re.compile(r"(?i)\(yes/no\)\?")
+    _acceptAnswer="yes\no"
+    _permissionDeniedRegex = re.compile(r"(?i)Permission\s+denied")
 
     @classmethod
     def commandsUsedInImplementation(cls):
@@ -94,7 +97,8 @@ class SshCommand(object):
                  exceptionIfNotZero=True,
                  maxConnectionRetries=10,
                  connectionRetryIntervalSeconds=5.0,
-                 tickerForRetry=True):
+                 tickerForRetry=True,
+                 checkForPermissionDenied=False):
         """Create new SshCommand instance.
         
         Will wait until completed.
@@ -204,6 +208,12 @@ class SshCommand(object):
                             else:
                                 # end has been reached
                                 endOfOutput = True
+                            if checkForPermissionDenied:
+                                # seen stderr "Permission denied, please try again."
+                                # and a repeat of stdout "10.123.45.67's password: "
+                                if len(outputSincePrompt) <= 128: # limit to early in output
+                                    if SshCommand._permissionDeniedRegex.search(outputSincePrompt) and SshCommand._pwdPromptRegex.search(outputSincePrompt):
+                                        os.kill(self._pid, signal.SIGKILL)
                         except EnvironmentError as e:
                             # some ideas maybe at http://bugs.python.org/issue5380
                             if e.errno == 5: # errno.EIO:
@@ -215,33 +225,38 @@ class SshCommand(object):
                 finally:
                     # remove any leading space (maybe there after "password:" prompt) and
                     # remove first newline (is there after entering password and "\n")
-                    self._output = re.sub(r"^\s*?\n(.*)$", r"\1", outputSincePrompt)
+                    self._output = re.sub(SshCommand._removeLeadingSpaceAndFirstNewlineRegex, r"\1", outputSincePrompt)
                     #
                     # get returncode
+                    signalled = False
                     try:
                         ignorePidAgain, waitEncodedStatusIndication = os.waitpid(self._pid, 0)
                         if os.WIFEXITED(waitEncodedStatusIndication):
                             # normal exit(status) call
                             self._returncode = os.WEXITSTATUS(waitEncodedStatusIndication)
-                            # raise an exception if asked to and there is a reason
-                            exceptionMessage = ""
-                            if self._exceptionIfNotZero and self._returncode:
-                                exceptionMessage += "returncode: " + str(self._returncode)
-                            if exceptionMessage:
-                                commandDescription = "ipaddress: " + self._ipaddress
-                                commandDescription += "\ncommand:\n\t" + self._argv[0]
-                                if len(self._argv) > 1:
-                                    commandDescription += "\narguments:\n\t" + "\n\t".join(self._argv[1:])
-                                else:
-                                    commandDescription += "\nno arguments"
-                                commandDescription += "\nuser: " + self._user
-                                exceptionMessage = commandDescription + "\n" + exceptionMessage
-                                exceptionMessage += "\noutput:\n" + self._output
-                                raise SshCommandException(exceptionMessage)
                         else:
                             # e.g. os.WIFSIGNALED or os.WIFSTOPPED
+                            # less common case
+                            signalled = True
                             self._returncode = -1
-                            raise SshCommandException("ssh did not exit normally")
+                        # raise an exception if asked to and there is a reason
+                        exceptionMessage = ""
+                        if signalled:
+                            # less common case
+                            exceptionMessage += "ssh did not exit normally"
+                        elif self._exceptionIfNotZero and self._returncode:
+                            exceptionMessage += "returncode: " + str(self._returncode)
+                        if exceptionMessage:
+                            commandDescription = "ipaddress: " + self._ipaddress
+                            commandDescription += "\ncommand:\n\t" + self._argv[0]
+                            if len(self._argv) > 1:
+                                commandDescription += "\narguments:\n\t" + "\n\t".join(self._argv[1:])
+                            else:
+                                commandDescription += "\nno arguments"
+                            commandDescription += "\nuser: " + self._user
+                            exceptionMessage = commandDescription + "\n" + exceptionMessage
+                            exceptionMessage += "\noutput:\n" + self._output
+                            raise SshCommandException(exceptionMessage)
                     except OSError:
                         # supposedly can occur
                         self._returncode = -1
