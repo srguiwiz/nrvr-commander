@@ -1407,7 +1407,6 @@ class VMwareMachine(object):
     def sshCommand(self, argv, user="root",
                    exceptionIfNotZero=True,
                    maxConnectionRetries=10,
-                   connectionRetryIntervalSeconds=5.0,
                    tickerForRetry=True):
         """Return an SshCommand instance.
         
@@ -1435,7 +1434,6 @@ class VMwareMachine(object):
         sshCommand = SshCommand(sshParameters, argv,
                                 exceptionIfNotZero=exceptionIfNotZero,
                                 maxConnectionRetries=maxConnectionRetries,
-                                connectionRetryIntervalSeconds=connectionRetryIntervalSeconds,
                                 tickerForRetry=tickerForRetry)
         return sshCommand
 

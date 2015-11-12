@@ -95,8 +95,8 @@ class SshCommand(object):
 
     def __init__(self, sshParameters, argv,
                  exceptionIfNotZero=True,
+                 connectTimeoutSeconds=None,
                  maxConnectionRetries=10,
-                 connectionRetryIntervalSeconds=5.0,
                  tickerForRetry=True,
                  checkForPermissionDenied=False):
         """Create new SshCommand instance.
@@ -130,15 +130,14 @@ class SshCommand(object):
         if isinstance(argv, basestring):
             argv = argv.split()
         maxConnectionRetries = int(maxConnectionRetries)
-        connectionRetryIntervalSeconds = float(connectionRetryIntervalSeconds)
         #
         self._ipaddress = sshParameters.ipaddress
         self._argv = argv
         self._user = sshParameters.user
         self._pwd = sshParameters.pwd
         self._exceptionIfNotZero = exceptionIfNotZero
+        self._connectTimeoutSeconds = connectTimeoutSeconds
         self._connectionRetriesRemaining = maxConnectionRetries if maxConnectionRetries else -1
-        self._connectionRetryIntervalSeconds = connectionRetryIntervalSeconds
         self._output = ""
         self._returncode = None
         #
@@ -149,7 +148,11 @@ class SshCommand(object):
             self._pid, self._fd = pty.fork()
             if self._pid == 0:
                 # in child process
-                os.execvp("ssh", ["ssh", "-l", self._user, self._ipaddress] + self._argv)
+                sshOptions = ["-l", self._user]
+                if connectTimeoutSeconds:
+                    sshOptions.extend(["-o", "ConnectTimeout=" + str(connectTimeoutSeconds)])
+                sshOptions.append(self._ipaddress)
+                os.execvp("ssh", ["ssh"] + sshOptions + self._argv)
             else:
                 # in parent process
                 if self._pwd:
@@ -323,7 +326,7 @@ class SshCommand(object):
                                        exceptionIfNotZero=True, exceptionIfAnyStderr=False)
 
     @classmethod
-    def acceptKnownHostKey(cls, sshParameters):
+    def acceptKnownHostKey(cls, sshParameters, connectTimeoutSeconds=None):
         """Accept host's key.
         
         Will wait until completed.
@@ -352,8 +355,12 @@ class SshCommand(object):
         if pid == 0:
             # in child process;
             # user if given, real or dummy, doesn't give away information about this script's user;
+            sshOptions = ["-l", user]
+            if connectTimeoutSeconds:
+                sshOptions.extend(["-o", "ConnectTimeout=" + str(connectTimeoutSeconds)])
+            sshOptions.append(ipaddress)
             # commands "sleep 1 ; exit" if it executes should be harmless
-            os.execvp("ssh", ["ssh", "-l", user, ipaddress, '"sleep 1 ; exit"'])
+            os.execvp("ssh", ["ssh"] + sshOptions + ['"sleep 1 ; exit"'])
         else:
             # in parent process
             promptedForAccept = False # common case

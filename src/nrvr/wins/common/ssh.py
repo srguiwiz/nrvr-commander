@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""nrvr.distros.common.ssh - Remote commands over ssh to Cygwin
+"""nrvr.wins.common.ssh - Remote commands over ssh to Cygwin
 
 The main class provided by this module is CygwinSshCommand.
 
@@ -28,7 +28,6 @@ class CygwinSshCommand(SshCommand):
     def __init__(self, sshParameters, argv,
                  exceptionIfNotZero=True,
                  maxConnectionRetries=10,
-                 connectionRetryIntervalSeconds=5.0,
                  tickerForRetry=True):
         """Create new CygwinSshCommand instance.
         
@@ -38,7 +37,6 @@ class CygwinSshCommand(SshCommand):
          argv=argv, \
          exceptionIfNotZero=exceptionIfNotZero, \
          maxConnectionRetries=maxConnectionRetries, \
-         connectionRetryIntervalSeconds=connectionRetryIntervalSeconds, \
          tickerForRetry=tickerForRetry)
 
     _isGuiAvailableRegex = re.compile(r"[1-9]") # any number larger than 0

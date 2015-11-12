@@ -29,7 +29,6 @@ class LinuxSshCommand(SshCommand):
     def __init__(self, sshParameters, argv,
                  exceptionIfNotZero=True,
                  maxConnectionRetries=10,
-                 connectionRetryIntervalSeconds=5.0,
                  tickerForRetry=True):
         """Create new LinuxSshCommand instance.
         
@@ -39,7 +38,6 @@ class LinuxSshCommand(SshCommand):
          argv=argv, \
          exceptionIfNotZero=exceptionIfNotZero, \
          maxConnectionRetries=maxConnectionRetries, \
-         connectionRetryIntervalSeconds=connectionRetryIntervalSeconds, \
          tickerForRetry=tickerForRetry)
 
     _isGuiAvailableRegex = re.compile(r"^\s*available")
