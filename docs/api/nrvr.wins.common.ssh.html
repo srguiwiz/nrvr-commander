@@ -8,8 +8,8 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.wins.html"><font color="#ffffff">wins</font></a>.<a href="nrvr.wins.common.html"><font color="#ffffff">common</font></a>.ssh</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/wins/common/ssh.py">/usr/lib/python2.6/site-packages/nrvr/wins/common/ssh.py</a></font></td></tr></table>
-    <p><tt>nrvr.distros.common.ssh&nbsp;-&nbsp;Remote&nbsp;commands&nbsp;over&nbsp;ssh&nbsp;to&nbsp;Cygwin<br>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.7/site-packages/nrvr/wins/common/ssh.py">/usr/lib/python2.7/site-packages/nrvr/wins/common/ssh.py</a></font></td></tr></table>
+    <p><tt>nrvr.wins.common.ssh&nbsp;-&nbsp;Remote&nbsp;commands&nbsp;over&nbsp;ssh&nbsp;to&nbsp;Cygwin<br>
 &nbsp;<br>
 The&nbsp;main&nbsp;class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#CygwinSshCommand">CygwinSshCommand</a>.<br>
 &nbsp;<br>
@@ -63,7 +63,7 @@ Modified&nbsp;BSD&nbsp;License</tt></p>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="CygwinSshCommand-__init__"><strong>__init__</strong></a>(self, sshParameters, argv, exceptionIfNotZero<font color="#909090">=True</font>, maxConnectionRetries<font color="#909090">=10</font>, connectionRetryIntervalSeconds<font color="#909090">=5.0</font>, tickerForRetry<font color="#909090">=True</font>)</dt><dd><tt>Create&nbsp;new&nbsp;<a href="#CygwinSshCommand">CygwinSshCommand</a>&nbsp;instance.<br>
+<dl><dt><a name="CygwinSshCommand-__init__"><strong>__init__</strong></a>(self, sshParameters, argv, exceptionIfNotZero<font color="#909090">=True</font>, maxConnectionRetries<font color="#909090">=10</font>, tickerForRetry<font color="#909090">=True</font>)</dt><dd><tt>Create&nbsp;new&nbsp;<a href="#CygwinSshCommand">CygwinSshCommand</a>&nbsp;instance.<br>
 &nbsp;<br>
 See&nbsp;nrvr.remote.ssh.<a href="nrvr.remote.ssh.html#SshCommand">SshCommand</a>.</tt></dd></dl>
 
@@ -89,7 +89,7 @@ sshParameters<br>
 
 <hr>
 Class methods inherited from <a href="nrvr.remote.ssh.html#SshCommand">nrvr.remote.ssh.SshCommand</a>:<br>
-<dl><dt><a name="CygwinSshCommand-acceptKnownHostKey"><strong>acceptKnownHostKey</strong></a>(cls, sshParameters)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Accept&nbsp;host's&nbsp;key.<br>
+<dl><dt><a name="CygwinSshCommand-acceptKnownHostKey"><strong>acceptKnownHostKey</strong></a>(cls, sshParameters, connectTimeoutSeconds<font color="#909090">=None</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Accept&nbsp;host's&nbsp;key.<br>
 &nbsp;<br>
 Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
 &nbsp;<br>

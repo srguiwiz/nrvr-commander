@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.distros.html"><font color="#ffffff">distros</font></a>.<a href="nrvr.distros.common.html"><font color="#ffffff">common</font></a>.kickstart</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/distros/common/kickstart.py">/usr/lib/python2.6/site-packages/nrvr/distros/common/kickstart.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.7/site-packages/nrvr/distros/common/kickstart.py">/usr/lib/python2.7/site-packages/nrvr/distros/common/kickstart.py</a></font></td></tr></table>
     <p><tt>nrvr.distros.common.kickstart&nbsp;-&nbsp;Create&nbsp;and&nbsp;manipulate&nbsp;Linux&nbsp;distribution&nbsp;kickstart&nbsp;files<br>
 &nbsp;<br>
 Classes&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;include<br>
@@ -77,7 +77,7 @@ Methods defined here:<br>
 &nbsp;<br>
 A&nbsp;descriptor&nbsp;can&nbsp;describe&nbsp;an&nbsp;.iso&nbsp;image&nbsp;that&nbsp;does&nbsp;or&nbsp;doesn't&nbsp;yet&nbsp;exist&nbsp;on&nbsp;the&nbsp;host&nbsp;disk.</tt></dd></dl>
 
-<dl><dt><a name="DistroIsoImage-cloneWithAutoBootingKickstart"><strong>cloneWithAutoBootingKickstart</strong></a>(self, _kickstartFileContent, modifications<font color="#909090">=[]</font>, cloneIsoImagePath<font color="#909090">=None</font>)</dt><dd><tt>Clone&nbsp;with&nbsp;kickstart&nbsp;file&nbsp;added&nbsp;and&nbsp;modified&nbsp;to&nbsp;automatically&nbsp;boot&nbsp;with&nbsp;it.<br>
+<dl><dt><a name="DistroIsoImage-cloneWithAutoBootingKickstart"><strong>cloneWithAutoBootingKickstart</strong></a>(self, _kickstartFileContent, modifications<font color="#909090">=[]</font>, cloneIsoImagePath<font color="#909090">=None</font>, ignoreJoliet<font color="#909090">=True</font>)</dt><dd><tt>Clone&nbsp;with&nbsp;kickstart&nbsp;file&nbsp;added&nbsp;and&nbsp;modified&nbsp;to&nbsp;automatically&nbsp;boot&nbsp;with&nbsp;it.<br>
 &nbsp;<br>
 For&nbsp;more&nbsp;on&nbsp;behavior&nbsp;see&nbsp;documentation&nbsp;of&nbsp;class&nbsp;<a href="nrvr.diskimage.isoimage.html#IsoImage">IsoImage</a>&nbsp;method&nbsp;cloneWithModifications.<br>
 &nbsp;<br>
@@ -98,9 +98,6 @@ return<br>
 As&nbsp;implemented&nbsp;calls&nbsp;superclass&nbsp;method&nbsp;genisoimageOptions&nbsp;and&nbsp;extends&nbsp;the&nbsp;returned&nbsp;list.<br>
 &nbsp;<br>
 Could&nbsp;be&nbsp;improved&nbsp;in&nbsp;the&nbsp;future.<br>
-Could&nbsp;recognize&nbsp;content&nbsp;of&nbsp;.iso&nbsp;image.<br>
-Could&nbsp;select&nbsp;different&nbsp;options&nbsp;depending&nbsp;on&nbsp;content&nbsp;of&nbsp;.iso&nbsp;image.<br>
-Maybe&nbsp;could&nbsp;use&nbsp;iso-info&nbsp;-d&nbsp;9&nbsp;-i&nbsp;self.<strong>isoImagePath</strong>.<br>
 Could&nbsp;be&nbsp;overridden&nbsp;for&nbsp;a&nbsp;subclass.</tt></dd></dl>
 
 <dl><dt><a name="DistroIsoImage-modificationsIncludingKickstartFile"><strong>modificationsIncludingKickstartFile</strong></a>(self, _kickstartFileContent)</dt><dd><tt>Construct&nbsp;and&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;modifications&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;method&nbsp;cloneWithModifications.<br>

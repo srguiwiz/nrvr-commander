@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.wins.html"><font color="#ffffff">wins</font></a>.<a href="nrvr.wins.common.html"><font color="#ffffff">common</font></a>.javaw</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/wins/common/javaw.py">/usr/lib/python2.6/site-packages/nrvr/wins/common/javaw.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.7/site-packages/nrvr/wins/common/javaw.py">/usr/lib/python2.7/site-packages/nrvr/wins/common/javaw.py</a></font></td></tr></table>
     <p><tt>nrvr.wins.common.javaw&nbsp;-&nbsp;A&nbsp;download&nbsp;manager&nbsp;for&nbsp;Java&nbsp;for&nbsp;Windows&nbsp;installs<br>
 &nbsp;<br>
 Class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#JavawDownload">JavawDownload</a>.<br>
@@ -77,7 +77,9 @@ Methods inherited from <a href="__builtin__.html#str">__builtin__.str</a>:<br>
 
 <dl><dt><a name="Arch-__eq__"><strong>__eq__</strong></a>(...)</dt><dd><tt>x.<a href="#Arch-__eq__">__eq__</a>(y)&nbsp;&lt;==&gt;&nbsp;x==y</tt></dd></dl>
 
-<dl><dt><a name="Arch-__format__"><strong>__format__</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-__format__">__format__</a>(format_spec)&nbsp;-&gt;&nbsp;string</tt></dd></dl>
+<dl><dt><a name="Arch-__format__"><strong>__format__</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-__format__">__format__</a>(format_spec)&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;formatted&nbsp;version&nbsp;of&nbsp;S&nbsp;as&nbsp;described&nbsp;by&nbsp;format_spec.</tt></dd></dl>
 
 <dl><dt><a name="Arch-__ge__"><strong>__ge__</strong></a>(...)</dt><dd><tt>x.<a href="#Arch-__ge__">__ge__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;=y</tt></dd></dl>
 
@@ -166,12 +168,15 @@ If&nbsp;tabsize&nbsp;is&nbsp;not&nbsp;given,&nbsp;a&nbsp;tab&nbsp;size&nbsp;of&n
 <dl><dt><a name="Arch-find"><strong>find</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-find">find</a>(sub&nbsp;[,start&nbsp;[,end]])&nbsp;-&gt;&nbsp;int<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;lowest&nbsp;index&nbsp;in&nbsp;S&nbsp;where&nbsp;substring&nbsp;sub&nbsp;is&nbsp;found,<br>
-such&nbsp;that&nbsp;sub&nbsp;is&nbsp;contained&nbsp;within&nbsp;s[start:end].&nbsp;&nbsp;Optional<br>
+such&nbsp;that&nbsp;sub&nbsp;is&nbsp;contained&nbsp;within&nbsp;S[start:end].&nbsp;&nbsp;Optional<br>
 arguments&nbsp;start&nbsp;and&nbsp;end&nbsp;are&nbsp;interpreted&nbsp;as&nbsp;in&nbsp;slice&nbsp;notation.<br>
 &nbsp;<br>
 Return&nbsp;-1&nbsp;on&nbsp;failure.</tt></dd></dl>
 
-<dl><dt><a name="Arch-format"><strong>format</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-format">format</a>(*args,&nbsp;**kwargs)&nbsp;-&gt;&nbsp;string</tt></dd></dl>
+<dl><dt><a name="Arch-format"><strong>format</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-format">format</a>(*args,&nbsp;**kwargs)&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;formatted&nbsp;version&nbsp;of&nbsp;S,&nbsp;using&nbsp;substitutions&nbsp;from&nbsp;args&nbsp;and&nbsp;kwargs.<br>
+The&nbsp;substitutions&nbsp;are&nbsp;identified&nbsp;by&nbsp;braces&nbsp;('{'&nbsp;and&nbsp;'}').</tt></dd></dl>
 
 <dl><dt><a name="Arch-index"><strong>index</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-index">index</a>(sub&nbsp;[,start&nbsp;[,end]])&nbsp;-&gt;&nbsp;int<br>
 &nbsp;<br>
@@ -249,7 +254,7 @@ given,&nbsp;only&nbsp;the&nbsp;first&nbsp;count&nbsp;occurrences&nbsp;are&nbsp;r
 <dl><dt><a name="Arch-rfind"><strong>rfind</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-rfind">rfind</a>(sub&nbsp;[,start&nbsp;[,end]])&nbsp;-&gt;&nbsp;int<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;highest&nbsp;index&nbsp;in&nbsp;S&nbsp;where&nbsp;substring&nbsp;sub&nbsp;is&nbsp;found,<br>
-such&nbsp;that&nbsp;sub&nbsp;is&nbsp;contained&nbsp;within&nbsp;s[start:end].&nbsp;&nbsp;Optional<br>
+such&nbsp;that&nbsp;sub&nbsp;is&nbsp;contained&nbsp;within&nbsp;S[start:end].&nbsp;&nbsp;Optional<br>
 arguments&nbsp;start&nbsp;and&nbsp;end&nbsp;are&nbsp;interpreted&nbsp;as&nbsp;in&nbsp;slice&nbsp;notation.<br>
 &nbsp;<br>
 Return&nbsp;-1&nbsp;on&nbsp;failure.</tt></dd></dl>
@@ -291,7 +296,7 @@ splits&nbsp;are&nbsp;done.&nbsp;If&nbsp;sep&nbsp;is&nbsp;not&nbsp;specified&nbsp
 whitespace&nbsp;string&nbsp;is&nbsp;a&nbsp;separator&nbsp;and&nbsp;empty&nbsp;strings&nbsp;are&nbsp;removed<br>
 from&nbsp;the&nbsp;result.</tt></dd></dl>
 
-<dl><dt><a name="Arch-splitlines"><strong>splitlines</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-splitlines">splitlines</a>([keepends])&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;strings<br>
+<dl><dt><a name="Arch-splitlines"><strong>splitlines</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-splitlines">splitlines</a>(keepends=False)&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;strings<br>
 &nbsp;<br>
 Return&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;lines&nbsp;in&nbsp;S,&nbsp;breaking&nbsp;at&nbsp;line&nbsp;boundaries.<br>
 Line&nbsp;breaks&nbsp;are&nbsp;not&nbsp;included&nbsp;in&nbsp;the&nbsp;resulting&nbsp;list&nbsp;unless&nbsp;keepends<br>
@@ -326,7 +331,9 @@ characters,&nbsp;all&nbsp;remaining&nbsp;cased&nbsp;characters&nbsp;have&nbsp;lo
 Return&nbsp;a&nbsp;copy&nbsp;of&nbsp;the&nbsp;string&nbsp;S,&nbsp;where&nbsp;all&nbsp;characters&nbsp;occurring<br>
 in&nbsp;the&nbsp;optional&nbsp;argument&nbsp;deletechars&nbsp;are&nbsp;removed,&nbsp;and&nbsp;the<br>
 remaining&nbsp;characters&nbsp;have&nbsp;been&nbsp;mapped&nbsp;through&nbsp;the&nbsp;given<br>
-translation&nbsp;table,&nbsp;which&nbsp;must&nbsp;be&nbsp;a&nbsp;string&nbsp;of&nbsp;length&nbsp;256.</tt></dd></dl>
+translation&nbsp;table,&nbsp;which&nbsp;must&nbsp;be&nbsp;a&nbsp;string&nbsp;of&nbsp;length&nbsp;256&nbsp;or&nbsp;None.<br>
+If&nbsp;the&nbsp;table&nbsp;argument&nbsp;is&nbsp;None,&nbsp;no&nbsp;translation&nbsp;is&nbsp;applied&nbsp;and<br>
+the&nbsp;operation&nbsp;simply&nbsp;removes&nbsp;the&nbsp;characters&nbsp;in&nbsp;deletechars.</tt></dd></dl>
 
 <dl><dt><a name="Arch-upper"><strong>upper</strong></a>(...)</dt><dd><tt>S.<a href="#Arch-upper">upper</a>()&nbsp;-&gt;&nbsp;string<br>
 &nbsp;<br>

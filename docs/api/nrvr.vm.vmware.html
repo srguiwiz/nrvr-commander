@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.vm.html"><font color="#ffffff">vm</font></a>.vmware</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/vm/vmware.py">/usr/lib/python2.6/site-packages/nrvr/vm/vmware.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.7/site-packages/nrvr/vm/vmware.py">/usr/lib/python2.7/site-packages/nrvr/vm/vmware.py</a></font></td></tr></table>
     <p><tt>nrvr.vm.vmware&nbsp;-&nbsp;Create&nbsp;and&nbsp;manipulate&nbsp;VMware&nbsp;virtual&nbsp;machines<br>
 &nbsp;<br>
 Classes&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;include<br>
@@ -123,6 +123,8 @@ As&nbsp;implemented&nbsp;raises&nbsp;exception&nbsp;if&nbsp;running,&nbsp;unless
 &nbsp;<br>
 As&nbsp;implemented&nbsp;omits&nbsp;leading&nbsp;and&nbsp;trailing&nbsp;whitespace&nbsp;if&nbsp;any.</tt></dd></dl>
 
+<strong>local</strong> = &lt;nrvr.vm.vmware.VMwareHypervisor object&gt;
+<strong>localHostOnlyIPAddress</strong> = '172.16.224.1'
 <dl><dt><a name="VMwareHypervisor-notRunningRequired"><strong>notRunningRequired</strong></a>(self, vmxFilePath)</dt><dd><tt>Raises&nbsp;exception&nbsp;if&nbsp;.vmx&nbsp;file&nbsp;listed&nbsp;as&nbsp;running.</tt></dd></dl>
 
 <dl><dt><a name="VMwareHypervisor-revertToSnapshot"><strong>revertToSnapshot</strong></a>(self, vmxFilePath, snapshot, tolerateRunning<font color="#909090">=False</font>)</dt><dd><tt>Revert&nbsp;to&nbsp;snapshot&nbsp;of&nbsp;virtual&nbsp;machine.<br>
@@ -225,10 +227,6 @@ Data and other attributes defined here:<br>
 
 <dl><dt><strong>WORKSTATION</strong> = 'ws'</dl>
 
-<dl><dt><strong>local</strong> = &lt;nrvr.vm.vmware.VMwareHypervisor object&gt;</dl>
-
-<dl><dt><strong>localHostOnlyIPAddress</strong> = '192.168.87.1'</dl>
-
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -316,7 +314,7 @@ Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp
 &nbsp;<br>
 Needs&nbsp;virtual&nbsp;machine&nbsp;to&nbsp;be&nbsp;running&nbsp;already,&nbsp;ready&nbsp;to&nbsp;accept&nbsp;ssh&nbsp;connections,&nbsp;duh.</tt></dd></dl>
 
-<dl><dt><a name="VMwareMachine-shutdownCommand"><strong>shutdownCommand</strong></a>(self, extraSleepSeconds<font color="#909090">=7.0</font>, ignoreException<font color="#909090">=False</font>)</dt><dd><tt>Send&nbsp;shutdown&nbsp;command.<br>
+<dl><dt><a name="VMwareMachine-shutdownCommand"><strong>shutdownCommand</strong></a>(self, firstSleepSeconds<font color="#909090">=5.0</font>, extraSleepSeconds<font color="#909090">=7.0</font>, ignoreException<font color="#909090">=False</font>)</dt><dd><tt>Send&nbsp;shutdown&nbsp;command.<br>
 &nbsp;<br>
 Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;shutdown.<br>
 &nbsp;<br>
@@ -326,6 +324,10 @@ Example&nbsp;use::<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;vmwareMachine1.<a href="#VMwareMachine-shutdownCommand">shutdownCommand</a>()<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#VMwareHypervisor">VMwareHypervisor</a>.local.sleepUntilNotRunning(vmwareMachine1.vmxFilePath,&nbsp;ticker=True)<br>
+&nbsp;<br>
+firstSleepSeconds<br>
+&nbsp;&nbsp;&nbsp;&nbsp;time&nbsp;for&nbsp;this&nbsp;process&nbsp;to&nbsp;sleep&nbsp;before&nbsp;shutting&nbsp;down&nbsp;virtual&nbsp;machine,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unless&nbsp;None.<br>
 &nbsp;<br>
 extraSleepSeconds<br>
 &nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;time&nbsp;for&nbsp;this&nbsp;process&nbsp;to&nbsp;sleep&nbsp;after&nbsp;shutting&nbsp;down&nbsp;virtual&nbsp;machine,<br>
@@ -344,7 +346,7 @@ user<br>
 &nbsp;<br>
 Assumes&nbsp;.ports&nbsp;file&nbsp;to&nbsp;exist&nbsp;and&nbsp;to&nbsp;have&nbsp;an&nbsp;entry&nbsp;for&nbsp;ssh&nbsp;for&nbsp;the&nbsp;user.</tt></dd></dl>
 
-<dl><dt><a name="VMwareMachine-sshCommand"><strong>sshCommand</strong></a>(self, argv, user<font color="#909090">='root'</font>, exceptionIfNotZero<font color="#909090">=True</font>, maxConnectionRetries<font color="#909090">=10</font>, connectionRetryIntervalSeconds<font color="#909090">=5.0</font>, tickerForRetry<font color="#909090">=True</font>)</dt><dd><tt>Return&nbsp;an&nbsp;SshCommand&nbsp;instance.<br>
+<dl><dt><a name="VMwareMachine-sshCommand"><strong>sshCommand</strong></a>(self, argv, user<font color="#909090">='root'</font>, exceptionIfNotZero<font color="#909090">=True</font>, maxConnectionRetries<font color="#909090">=10</font>, tickerForRetry<font color="#909090">=True</font>)</dt><dd><tt>Return&nbsp;an&nbsp;SshCommand&nbsp;instance.<br>
 &nbsp;<br>
 Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
 &nbsp;<br>
@@ -490,7 +492,7 @@ Nevertheless&nbsp;essential.&nbsp;&nbsp;To&nbsp;be&nbsp;improved&nbsp;as&nbsp;ne
 ideDrives<br>
 &nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;list&nbsp;of&nbsp;at&nbsp;most&nbsp;four&nbsp;<a href="#VmdkFile">VmdkFile</a>&nbsp;or&nbsp;IsoImage.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;given&nbsp;a&nbsp;number&nbsp;as&nbsp;an&nbsp;element&nbsp;then&nbsp;make&nbsp;a&nbsp;<a href="#VmdkFile">VmdkFile</a>&nbsp;with&nbsp;that&nbsp;many&nbsp;megabytes&nbsp;capactiy.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;one&nbsp;<a href="#VmdkFile">VmdkFile</a>&nbsp;with&nbsp;20000&nbsp;megabytes&nbsp;capacity.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;None&nbsp;then&nbsp;default&nbsp;to&nbsp;one&nbsp;<a href="#VmdkFile">VmdkFile</a>&nbsp;with&nbsp;40000&nbsp;megabytes&nbsp;capacity.<br>
 &nbsp;<br>
 displayName<br>
 &nbsp;&nbsp;&nbsp;&nbsp;defaults&nbsp;to&nbsp;self.<strong>basenameStem</strong>.<br>
@@ -541,10 +543,13 @@ memsizeMegabytes<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Will&nbsp;be&nbsp;rounded&nbsp;up&nbsp;to&nbsp;a&nbsp;multiple&nbsp;of&nbsp;4,&nbsp;if&nbsp;necessary.</tt></dd></dl>
 
-<dl><dt><a name="VmxFile-setNumberOfProcessors"><strong>setNumberOfProcessors</strong></a>(self, number<font color="#909090">=1</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;number&nbsp;of&nbsp;processors.<br>
+<dl><dt><a name="VmxFile-setNumberOfProcessorCores"><strong>setNumberOfProcessorCores</strong></a>(self, cores<font color="#909090">=1</font>, processors<font color="#909090">=1</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;number&nbsp;of&nbsp;processor&nbsp;cores.<br>
 &nbsp;<br>
-number<br>
-&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;number.</tt></dd></dl>
+cores<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;2.<br>
+&nbsp;<br>
+processors<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;1.</tt></dd></dl>
 
 <dl><dt><a name="VmxFile-setVideoMemorySize"><strong>setVideoMemorySize</strong></a>(self, vramSizeMegabytes)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;video&nbsp;RAM&nbsp;size.<br>
 &nbsp;<br>
@@ -694,10 +699,13 @@ memsizeMegabytes<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Will&nbsp;be&nbsp;rounded&nbsp;up&nbsp;to&nbsp;a&nbsp;multiple&nbsp;of&nbsp;4,&nbsp;if&nbsp;necessary.</tt></dd></dl>
 
-<dl><dt><a name="VmxFileContent-setNumberOfProcessors"><strong>setNumberOfProcessors</strong></a>(self, number<font color="#909090">=1</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameter&nbsp;for&nbsp;number&nbsp;of&nbsp;processors.<br>
+<dl><dt><a name="VmxFileContent-setNumberOfProcessorCores"><strong>setNumberOfProcessorCores</strong></a>(self, cores<font color="#909090">=1</font>, processors<font color="#909090">=1</font>)</dt><dd><tt>Set&nbsp;.vmx&nbsp;file&nbsp;parameters&nbsp;for&nbsp;number&nbsp;of&nbsp;processor&nbsp;cores.<br>
 &nbsp;<br>
-number<br>
-&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;2.</tt></dd></dl>
+cores<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;2.<br>
+&nbsp;<br>
+processors<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e.g.&nbsp;1.</tt></dd></dl>
 
 <dl><dt><a name="VmxFileContent-setSettingValue"><strong>setSettingValue</strong></a>(self, name, newValue, extraEmptyLine<font color="#909090">=False</font>)</dt><dd><tt>Replace&nbsp;one&nbsp;setting&nbsp;value&nbsp;or&nbsp;create&nbsp;and&nbsp;append&nbsp;that&nbsp;setting.<br>
 &nbsp;<br>

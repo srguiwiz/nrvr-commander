@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.distros.html"><font color="#ffffff">distros</font></a>.<a href="nrvr.distros.common.html"><font color="#ffffff">common</font></a>.gnome</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/distros/common/gnome.py">/usr/lib/python2.6/site-packages/nrvr/distros/common/gnome.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.7/site-packages/nrvr/distros/common/gnome.py">/usr/lib/python2.7/site-packages/nrvr/distros/common/gnome.py</a></font></td></tr></table>
     <p><tt>nrvr.distros.common.gnome&nbsp;-&nbsp;Manipulate&nbsp;Linux&nbsp;distribution&nbsp;GNOME<br>
 &nbsp;<br>
 Class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;<a href="#Gnome">Gnome</a>.<br>
@@ -46,7 +46,12 @@ Modified&nbsp;BSD&nbsp;License</tt></p>
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt>Utilities&nbsp;for&nbsp;manipulating&nbsp;a&nbsp;<a href="#Gnome">Gnome</a>&nbsp;installation.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Class methods defined here:<br>
+<td width="100%">Methods defined here:<br>
+<strong>exportDD</strong> = 'export DISPLAY=:0.0 ; if test -z "$DBUS_SESSION_...N_BUS_ADDRESS &amp;&amp; export DBUS_SESSION_BUS_PID ; fi'
+<strong>exportDbus</strong> = 'if test -z "$DBUS_SESSION_BUS_ADDRESS" ; then ev...N_BUS_ADDRESS &amp;&amp; export DBUS_SESSION_BUS_PID ; fi'
+<strong>exportDisplay</strong> = 'export DISPLAY=:0.0'
+<hr>
+Class methods defined here:<br>
 <dl><dt><a name="Gnome-commandToStartApplicationInGui"><strong>commandToStartApplicationInGui</strong></a>(cls, application)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;start&nbsp;application&nbsp;in&nbsp;GNOME.<br>
 &nbsp;<br>
 Must&nbsp;be&nbsp;user&nbsp;to&nbsp;succeed.<br>
@@ -66,14 +71,6 @@ Should&nbsp;be&nbsp;user&nbsp;to&nbsp;be&nbsp;meaningful.<br>
 Command&nbsp;output&nbsp;first&nbsp;word&nbsp;is&nbsp;"available"&nbsp;or&nbsp;with&nbsp;"unavailable".<br>
 &nbsp;<br>
 Return&nbsp;command&nbsp;to&nbsp;tell&nbsp;whether&nbsp;GUI&nbsp;of&nbsp;GNOME&nbsp;is&nbsp;available.</tt></dd></dl>
-
-<hr>
-Data and other attributes defined here:<br>
-<dl><dt><strong>exportDD</strong> = 'export DISPLAY=:0.0 ; if test -z "$DBUS_SESSION_...N_BUS_ADDRESS &amp;&amp; export DBUS_SESSION_BUS_PID ; fi'</dl>
-
-<dl><dt><strong>exportDbus</strong> = 'if test -z "$DBUS_SESSION_BUS_ADDRESS" ; then ev...N_BUS_ADDRESS &amp;&amp; export DBUS_SESSION_BUS_PID ; fi'</dl>
-
-<dl><dt><strong>exportDisplay</strong> = 'export DISPLAY=:0.0'</dl>
 
 </td></tr></table></td></tr></table>
 </body></html>

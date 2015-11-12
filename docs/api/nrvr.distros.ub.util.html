@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.distros.html"><font color="#ffffff">distros</font></a>.<a href="nrvr.distros.ub.html"><font color="#ffffff">ub</font></a>.util</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/distros/ub/util.py">/usr/lib/python2.6/site-packages/nrvr/distros/ub/util.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.7/site-packages/nrvr/distros/ub/util.py">/usr/lib/python2.7/site-packages/nrvr/distros/ub/util.py</a></font></td></tr></table>
     <p><tt>nrvr.distros.el.util&nbsp;-&nbsp;Utilities&nbsp;for&nbsp;manipulating&nbsp;Ubuntu<br>
 &nbsp;<br>
 Class&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;ElUtil.<br>
@@ -27,7 +27,8 @@ Modified&nbsp;BSD&nbsp;License</tt></p>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="nrvr.html">nrvr</a><br>
-</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="re.html">re</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -52,6 +53,33 @@ Modified&nbsp;BSD&nbsp;License</tt></p>
 <td colspan=2><tt>Utilities&nbsp;for&nbsp;manipulating&nbsp;an&nbsp;Ubuntu&nbsp;installation.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Class methods defined here:<br>
+<dl><dt><a name="UbUtil-ubCommandToDisableAutoLogin"><strong>ubCommandToDisableAutoLogin</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;disable&nbsp;auto-login&nbsp;with&nbsp;LightDM.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;disable&nbsp;auto-login&nbsp;with&nbsp;LightDM.</tt></dd></dl>
+
+<dl><dt><a name="UbUtil-ubCommandToDisableGuestLogin"><strong>ubCommandToDisableGuestLogin</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;disable&nbsp;guest&nbsp;login&nbsp;with&nbsp;LightDM.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;disable&nbsp;guest&nbsp;login&nbsp;with&nbsp;LightDM.</tt></dd></dl>
+
+<dl><dt><a name="UbUtil-ubCommandToEnableAutoLogin"><strong>ubCommandToEnableAutoLogin</strong></a>(cls, username<font color="#909090">=None</font>)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;enable&nbsp;auto-login&nbsp;with&nbsp;LightDM.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+username<br>
+&nbsp;&nbsp;&nbsp;&nbsp;defaults&nbsp;to&nbsp;None,&nbsp;which&nbsp;effects&nbsp;disabling&nbsp;auto-login.<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;enable&nbsp;auto-login&nbsp;with&nbsp;LightDM.</tt></dd></dl>
+
+<dl><dt><a name="UbUtil-ubCommandToEnableGuestLogin"><strong>ubCommandToEnableGuestLogin</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;enable&nbsp;guest&nbsp;login&nbsp;with&nbsp;LightDM.<br>
+&nbsp;<br>
+Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
+&nbsp;<br>
+Return&nbsp;command&nbsp;to&nbsp;enable&nbsp;guest&nbsp;login&nbsp;with&nbsp;LightDM.</tt></dd></dl>
+
 <dl><dt><a name="UbUtil-ubCommandToOpenFirewallPort"><strong>ubCommandToOpenFirewallPort</strong></a>(cls, port)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Build&nbsp;command&nbsp;to&nbsp;open&nbsp;a&nbsp;firewall&nbsp;TCP&nbsp;port.<br>
 &nbsp;<br>
 Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
@@ -59,6 +87,8 @@ Must&nbsp;be&nbsp;root&nbsp;to&nbsp;succeed.<br>
 As&nbsp;implemented&nbsp;does&nbsp;not&nbsp;check&nbsp;whether&nbsp;firewall&nbsp;is&nbsp;enabled.<br>
 &nbsp;<br>
 Return&nbsp;command&nbsp;to&nbsp;open&nbsp;a&nbsp;firewall&nbsp;TCP&nbsp;port.</tt></dd></dl>
+
+<dl><dt><a name="UbUtil-ubReleaseVersion"><strong>ubReleaseVersion</strong></a>(cls, isoImagePath)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt>Return&nbsp;release&nbsp;version&nbsp;from&nbsp;isoImagePath.</tt></dd></dl>
 
 <hr>
 Class methods inherited from <a href="nrvr.distros.common.util.html#LinuxUtil">nrvr.distros.common.util.LinuxUtil</a>:<br>

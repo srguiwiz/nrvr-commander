@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="nrvr.html"><font color="#ffffff">nrvr</font></a>.<a href="nrvr.remote.html"><font color="#ffffff">remote</font></a>.ssh</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.6/site-packages/nrvr/remote/ssh.py">/usr/lib/python2.6/site-packages/nrvr/remote/ssh.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/lib/python2.7/site-packages/nrvr/remote/ssh.py">/usr/lib/python2.7/site-packages/nrvr/remote/ssh.py</a></font></td></tr></table>
     <p><tt>nrvr.remote.ssh&nbsp;-&nbsp;Remote&nbsp;commands&nbsp;over&nbsp;ssh<br>
 &nbsp;<br>
 Classes&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;include<br>
@@ -44,8 +44,9 @@ Modified&nbsp;BSD&nbsp;License</tt></p>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="os.html">os</a><br>
 <a href="pty.html">pty</a><br>
 </td><td width="25%" valign=top><a href="re.html">re</a><br>
-<a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top><a href="time.html">time</a><br>
+<a href="signal.html">signal</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="time.html">time</a><br>
 </td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -234,7 +235,7 @@ Data descriptors inherited from <a href="exceptions.html#BaseException">exceptio
 <td colspan=2><tt>Send&nbsp;a&nbsp;command&nbsp;over&nbsp;ssh.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="SshCommand-__init__"><strong>__init__</strong></a>(self, sshParameters, argv, exceptionIfNotZero<font color="#909090">=True</font>, maxConnectionRetries<font color="#909090">=10</font>, connectionRetryIntervalSeconds<font color="#909090">=5.0</font>, tickerForRetry<font color="#909090">=True</font>)</dt><dd><tt>Create&nbsp;new&nbsp;<a href="#SshCommand">SshCommand</a>&nbsp;instance.<br>
+<dl><dt><a name="SshCommand-__init__"><strong>__init__</strong></a>(self, sshParameters, argv, exceptionIfNotZero<font color="#909090">=True</font>, connectTimeoutSeconds<font color="#909090">=None</font>, maxConnectionRetries<font color="#909090">=10</font>, tickerForRetry<font color="#909090">=True</font>, checkForPermissionDenied<font color="#909090">=False</font>)</dt><dd><tt>Create&nbsp;new&nbsp;<a href="#SshCommand">SshCommand</a>&nbsp;instance.<br>
 &nbsp;<br>
 Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
 &nbsp;<br>
@@ -260,7 +261,7 @@ argv<br>
 
 <hr>
 Class methods defined here:<br>
-<dl><dt><a name="SshCommand-acceptKnownHostKey"><strong>acceptKnownHostKey</strong></a>(cls, sshParameters)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Accept&nbsp;host's&nbsp;key.<br>
+<dl><dt><a name="SshCommand-acceptKnownHostKey"><strong>acceptKnownHostKey</strong></a>(cls, sshParameters, connectTimeoutSeconds<font color="#909090">=None</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Accept&nbsp;host's&nbsp;key.<br>
 &nbsp;<br>
 Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
 &nbsp;<br>
