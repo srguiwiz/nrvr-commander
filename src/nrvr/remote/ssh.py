@@ -298,11 +298,14 @@ class SshCommand(object):
             with open (knownHostsFile, "w") as outputFile:
                 outputFile.writelines(newKnownHostLines)
         if not anyMatch: # possibly not found as plain text because hashed
+            # within this case, an even more special case has been observed with stderr containing
+            # "invalid key:" and "not a valid known_hosts file" and returncode not zero,
+            # hence exceptionIfNotZero=True
             sshKeygen = CommandCapture(["ssh-keygen",
                                         "-f", knownHostsFile,
                                         "-R", ipaddress],
                                        copyToStdio=False,
-                                       exceptionIfNotZero=False, exceptionIfAnyStderr=False)
+                                       exceptionIfNotZero=True, exceptionIfAnyStderr=False)
 
     @classmethod
     def acceptKnownHostKey(cls, sshParameters):
@@ -338,10 +341,11 @@ class SshCommand(object):
             os.execvp("ssh", ["ssh", "-l", user, ipaddress, '"sleep 1 ; exit"'])
         else:
             # in parent process
-            promptedForAccept = False
+            promptedForAccept = False # common case
+            promptedForPassword = False # less common case
             outputTillPrompt = ""
             # look for accept prompt
-            while not promptedForAccept:
+            while not promptedForAccept and not promptedForPassword:
                 try:
                     newOutput = os.read(fd, 1024)
                     if not len(newOutput):
@@ -354,52 +358,60 @@ class SshCommand(object):
                     outputTillPrompt += newOutput
                     if SshCommand._acceptPromptRegex.search(outputTillPrompt):
                         # e.g. "Are you sure you want to continue connecting (yes/no)? "
+                        # common case
                         promptedForAccept = True
+                    if SshCommand._pwdPromptRegex.search(outputTillPrompt):
+                        # e.g. "10.123.45.67's password: "
+                        # which has been observed when apparently an alternative way of storing and accepting host keys was in effect,
+                        # if it gets here it works and hence let it pass,
+                        # less common case
+                        promptedForPassword = True
                 except EnvironmentError:
                     # e.g. "@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @" and closing
                     raise Exception("failing to connect via ssh\n" + 
                                     outputTillPrompt)
-            # do a special dance here to avoid being quicker to next invocation than
-            # this invocation takes to get around to writing known_hosts file,
-            # which would cause only one of the ssh invocations to write known_hosts file,
-            # which has been observed as a problem in bulk processing
-            startTime = time.time()
-            knownHostsFile = SshCommand._knownHostFilePath
-            if os.path.exists(knownHostsFile):
-                # normal case
-                originalModificationTime = os.path.getctime(knownHostsFile)
-            else:
-                # maybe file hasn't been created yet
-                originalModificationTime = startTime
-            if originalModificationTime > startTime:
-                # fix impossible future time
-                os.utime(knownHostsFile, (startTime, startTime))
-            while originalModificationTime == startTime:
-                # wait to make sure modification will be after originalModificationTime
-                time.sleep(0.1)
+            if promptedForAccept:
+                # do a special dance here to avoid being quicker to next invocation than
+                # this invocation takes to get around to writing known_hosts file,
+                # which would cause only one of the ssh invocations to write known_hosts file,
+                # which has been observed as a problem in bulk processing
                 startTime = time.time()
-            # actually accept, one line in the middle of the special dance
-            os.write(fd, SshCommand._acceptAnswer)
-            # continue special dance
-            looksDone = False
-            while not looksDone:
+                knownHostsFile = SshCommand._knownHostFilePath
                 if os.path.exists(knownHostsFile):
                     # normal case
-                    currentModificationTime = os.path.getctime(knownHostsFile)
+                    originalModificationTime = os.path.getctime(knownHostsFile)
                 else:
                     # maybe file hasn't been created yet
-                    currentModificationTime = originalModificationTime
-                if currentModificationTime != originalModificationTime:
-                    # has been modified
-                    looksDone = True
-                    break
-                currentTime = time.time()
-                if currentTime - startTime > 3.0:
-                    # don't want to block forever, done or not
-                    looksDone = True
-                    break
-                # sleep
-                time.sleep(0.1)
+                    originalModificationTime = startTime
+                if originalModificationTime > startTime:
+                    # fix impossible future time
+                    os.utime(knownHostsFile, (startTime, startTime))
+                while originalModificationTime == startTime:
+                    # wait to make sure modification will be after originalModificationTime
+                    time.sleep(0.1)
+                    startTime = time.time()
+                # actually accept, one line in the middle of the special dance
+                os.write(fd, SshCommand._acceptAnswer)
+                # continue special dance
+                looksDone = False
+                while not looksDone:
+                    if os.path.exists(knownHostsFile):
+                        # normal case
+                        currentModificationTime = os.path.getctime(knownHostsFile)
+                    else:
+                        # maybe file hasn't been created yet
+                        currentModificationTime = originalModificationTime
+                    if currentModificationTime != originalModificationTime:
+                        # has been modified
+                        looksDone = True
+                        break
+                    currentTime = time.time()
+                    if currentTime - startTime > 3.0:
+                        # don't want to block forever, done or not
+                        looksDone = True
+                        break
+                    # sleep
+                    time.sleep(0.1)
             # NOT os.close(fd) because has been observed to prevent ssh writing known_hosts file,
             # instead enter a password, real or dummy, to accelerate closing of ssh port
             os.write(fd, pwd + "\n")
