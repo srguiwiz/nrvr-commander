@@ -12,8 +12,8 @@ Contributor - Nora Baschy
 
 Public repository - https://github.com/srguiwiz/nrvr-commander
 
-Copyright (c) Nirvana Research 2006-2014.
-Modified BSD License"""
+Copyright (c) Nirvana Research 2006-2015.
+Simplified BSD License"""
 
 class ElKickstartTemplates(object):
     """Generally usable templates for Enterprise Linux."""

@@ -7,8 +7,8 @@ Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
 
 Public repository - https://github.com/srguiwiz/nrvr-commander
 
-Copyright (c) Nirvana Research 2006-2014.
-Modified BSD License"""
+Copyright (c) Nirvana Research 2006-2015.
+Simplified BSD License"""
 
 from optparse import OptionParser
 import os

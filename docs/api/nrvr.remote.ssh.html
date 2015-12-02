@@ -32,8 +32,8 @@ Idea&nbsp;and&nbsp;first&nbsp;implementation&nbsp;-&nbsp;Leo&nbsp;Baschy&nbsp;&l
 &nbsp;<br>
 Public&nbsp;repository&nbsp;-&nbsp;https://github.com/srguiwiz/nrvr-commander<br>
 &nbsp;<br>
-Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2014.<br>
-Modified&nbsp;BSD&nbsp;License</tt></p>
+Copyright&nbsp;(c)&nbsp;Nirvana&nbsp;Research&nbsp;2006-2015.<br>
+Simplified&nbsp;BSD&nbsp;License</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -89,6 +89,8 @@ Modified&nbsp;BSD&nbsp;License</tt></p>
 &nbsp;<br>
 Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
 &nbsp;<br>
+Captures&nbsp;returncode,&nbsp;and&nbsp;output.<br>
+&nbsp;<br>
 Either&nbsp;fromPath&nbsp;or&nbsp;toPath&nbsp;is&nbsp;expected&nbsp;to&nbsp;be&nbsp;local,&nbsp;i.e.&nbsp;without&nbsp;user&nbsp;and&nbsp;without&nbsp;IP&nbsp;address.<br>
 Correspondingly&nbsp;either&nbsp;fromSshParameters&nbsp;or&nbsp;toSshParameters&nbsp;must&nbsp;NOT&nbsp;be&nbsp;assigned&nbsp;an&nbsp;<a href="#SshParameters">SshParameters</a><br>
 instance&nbsp;and&nbsp;remain&nbsp;default&nbsp;None.<br>
@@ -117,8 +119,6 @@ recurseDirectories<br>
 <hr>
 Class methods defined here:<br>
 <dl><dt><a name="ScpCommand-commandsUsedInImplementation"><strong>commandsUsedInImplementation</strong></a>(cls)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequired().<br>
-&nbsp;<br>
-This&nbsp;class&nbsp;captures&nbsp;returncode,&nbsp;and&nbsp;output.<br>
 &nbsp;<br>
 This&nbsp;class&nbsp;can&nbsp;be&nbsp;passed&nbsp;to&nbsp;SystemRequirements.commandsRequiredByImplementations().</tt></dd></dl>
 
@@ -238,6 +238,8 @@ Data descriptors inherited from <a href="exceptions.html#BaseException">exceptio
 <dl><dt><a name="SshCommand-__init__"><strong>__init__</strong></a>(self, sshParameters, argv, exceptionIfNotZero<font color="#909090">=True</font>, connectTimeoutSeconds<font color="#909090">=None</font>, maxConnectionRetries<font color="#909090">=10</font>, tickerForRetry<font color="#909090">=True</font>, checkForPermissionDenied<font color="#909090">=False</font>)</dt><dd><tt>Create&nbsp;new&nbsp;<a href="#SshCommand">SshCommand</a>&nbsp;instance.<br>
 &nbsp;<br>
 Will&nbsp;wait&nbsp;until&nbsp;completed.<br>
+&nbsp;<br>
+Captures&nbsp;returncode,&nbsp;and&nbsp;output.<br>
 &nbsp;<br>
 Output&nbsp;may&nbsp;contain&nbsp;extraneous&nbsp;leading&nbsp;or&nbsp;trailing&nbsp;newlines&nbsp;and&nbsp;whitespace.<br>
 &nbsp;<br>

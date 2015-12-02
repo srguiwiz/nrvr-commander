@@ -9,7 +9,7 @@ Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
 Public repository - https://github.com/srguiwiz/nrvr-commander
 
 Copyright (c) Nirvana Research 2006-2015.
-Modified BSD License"""
+Simplified BSD License"""
 
 import re
 

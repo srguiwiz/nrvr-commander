@@ -23,8 +23,8 @@ Idea and first implementation - Leo Baschy <srguiwiz12 AT nrvr DOT com>
 
 Public repository - https://github.com/srguiwiz/nrvr-commander
 
-Copyright (c) Nirvana Research 2006-2014.
-Modified BSD License"""
+Copyright (c) Nirvana Research 2006-2015.
+Simplified BSD License"""
 
 import os.path
 import re
@@ -102,6 +102,8 @@ class SshCommand(object):
         """Create new SshCommand instance.
         
         Will wait until completed.
+        
+        Captures returncode, and output.
         
         Output may contain extraneous leading or trailing newlines and whitespace.
         
@@ -565,8 +567,6 @@ class ScpCommand(object):
     def commandsUsedInImplementation(cls):
         """Return a list to be passed to SystemRequirements.commandsRequired().
         
-        This class captures returncode, and output.
-        
         This class can be passed to SystemRequirements.commandsRequiredByImplementations()."""
         return ["scp"]
 
@@ -581,6 +581,8 @@ class ScpCommand(object):
         """Create new ScpCommand instance.
         
         Will wait until completed.
+        
+        Captures returncode, and output.
         
         Either fromPath or toPath is expected to be local, i.e. without user and without IP address.
         Correspondingly either fromSshParameters or toSshParameters must NOT be assigned an SshParameters

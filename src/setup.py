@@ -5,7 +5,7 @@ import sys
 
 try:
     setup(name="NrvrCommander",
-          version="1.7.4",
+          version="1.7.5",
           description="Tools for automation.",
           long_description="""Tools for automation.
           
@@ -29,6 +29,7 @@ try:
           * nrvr.distros.ub.rel1404.preseedtemplates
           * nrvr.machine.ports
           * nrvr.process.commandcapture
+          * nrvr.remote.ping
           * nrvr.remote.ssh
           * nrvr.util.classproperty
           * nrvr.util.download
@@ -67,7 +68,7 @@ try:
                     "nrvr.xml"],
           maintainer='Nirvana Research',
           maintainer_email='nrvr.commander.python@nrvr.com',
-          license="Copyright (c) Nirvana Research 2006-2014, Modified BSD License",
+          license="Copyright (c) Nirvana Research 2006-2015, Simplified BSD License",
           )
 except Exception as ex:
     # attempt same output as if no try except

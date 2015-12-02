@@ -18,6 +18,7 @@ Modules provides by this package are
 * nrvr.distros.ub.rel1404.preseedtemplates
 * nrvr.machine.ports
 * nrvr.process.commandcapture
+* nrvr.remote.ping
 * nrvr.remote.ssh
 * nrvr.util.classproperty
 * nrvr.util.download
@@ -39,6 +40,6 @@ Modules provides by this package are
 * nrvr.xml.etree
 
 To install do the usual:
-	tar xzf dist/NrvrCommander-1.7.4.tar.gz
-	cd NrvrCommander-1.7.4
+	tar xzf dist/NrvrCommander-1.7.5.tar.gz
+	cd NrvrCommander-1.7.5
 	sudo python ./setup.py install
