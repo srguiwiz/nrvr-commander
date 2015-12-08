@@ -5,7 +5,7 @@ import sys
 
 try:
     setup(name="NrvrCommander",
-          version="1.7.5",
+          version="1.7.6",
           description="Tools for automation.",
           long_description="""Tools for automation.
           

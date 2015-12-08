@@ -30,7 +30,7 @@ class Ping(object):
         return ["ping"]
 
     @classmethod
-    def respondingAddresses(cls, ipaddresses, numberOfTries=3, maxConcurrency=50, ticker=True):
+    def respondingIpAddressesOf(cls, ipaddresses, numberOfTries=3, maxConcurrency=50, ticker=True):
         """Return a new list constructed from those IP addresses that have responded."""
         threads = [None] * len(ipaddresses)
         results = ['?'] * len(ipaddresses)
@@ -69,6 +69,6 @@ if __name__ == "__main__":
     from nrvr.util.requirements import SystemRequirements
     SystemRequirements.commandsRequiredByImplementations([Ping], verbose=True)
     #
-    print Ping.respondingAddresses(["127.0.0.1", "127.0.0.2"])
-    print Ping.respondingAddresses(map(lambda number: "127.0.0." + str(number), range(1, 31)))
-    print Ping.respondingAddresses(map(lambda number: "127.0.0." + str(number), range(1, 132)))
+    print Ping.respondingIpAddressesOf(["127.0.0.1", "127.0.0.2"])
+    print Ping.respondingIpAddressesOf(map(lambda number: "127.0.0." + str(number), range(1, 31)))
+    print Ping.respondingIpAddressesOf(map(lambda number: "127.0.0." + str(number), range(1, 132)))
